@@ -106,7 +106,7 @@ html.js .reveal.in { opacity: 1; transform: none; }
 
 /* Moon / sun button */
 .theme { margin-left: 4px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-2); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
-.theme:hover { background: var(--line); color: var(--accent); }
+@media (hover: hover) { .theme:hover { background: var(--line); color: var(--accent); } }
 .theme svg { width: 18px; height: 18px; }
 .theme .sun { display: none; }
 :root[data-theme="dark"] .theme .sun { display: block; }
