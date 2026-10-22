@@ -1,615 +1,90 @@
 <!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sunscript</title>
-<meta name="description" content="Sunscript — клавіатура для письма наосліп: літери пишуться простими жестами по трьох осях великого пальця. Спробуй у браузері, потренуйся в грі, встанови на Android.">
-<link rel="canonical" href="https://wheel-reinvent.com/sunscript/">
-<meta property="og:title" content="Sunscript — пиши, не дивлячись">
-<meta property="og:description" content="Не де натиснути, а як провести. Спробуй клавіатуру в браузері й потренуйся в грі.">
-<meta property="og:url" content="https://wheel-reinvent.com/sunscript/">
-<meta property="og:image" content="https://wheel-reinvent.com/sunscript/logo.jpg">
-<meta name="theme-color" content="#FBFAF7">
-<link rel="icon" href="logo.jpg" type="image/jpeg">
-<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+<title>Wheel Reinvent</title>
+<meta name="description" content="Wheel Reinvent makes apps for simple everyday things: saying thanks, typing and finding your way without sight, noticing how you feel.">
+<link rel="canonical" href="https://wheel-reinvent.com/">
+<link rel="alternate" hreflang="en" href="https://wheel-reinvent.com/">
+<link rel="alternate" hreflang="uk" href="https://wheel-reinvent.com/uk/">
+<meta property="og:title" content="Wheel Reinvent">
+<meta property="og:description" content="Wheel Reinvent makes apps for simple everyday things: saying thanks, typing and finding your way without sight, noticing how you feel.">
+<meta property="og:url" content="https://wheel-reinvent.com/">
+<meta name="theme-color" content="#F6F4EF">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
-<style>
-/* Sunscript — сторінка в родині Wheel Reinvent і DzenQ: папір і чорнило, Inter, один акцент.
-   Кольори трьох осей (з малюнка автора) — лише там, де вони щось означають: у жестах. */
-:root{
-  --bg:#FBFAF7; --ink:#1B1A17; --ink-2:#5F5B54; --ink-3:#97928A; --line:#E6E2DA; --ghost:#D8D3C9;
-  --accent:#1E6FA8; --btn:#1B1A17; --btn-ink:#F6F3EC;
-  --pad:#17140F; --padInk:#F1EDE4; --padMuted:#9A9284; --padLine:#332E26; --panel:#1C1914;
-  --axB:#1AA0E8; --axR:#EE5146; --axG:#17B354; --good:#17B354; --bad:#EE5146; --gold:#E3A548;
-  --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color-scheme:light;
-}
-:root[data-theme="dark"]{ --bg:#121315; --ink:#ECE8DF; --ink-2:#A9A69E; --ink-3:#7E7C76; --line:#2B2C2F; --ghost:#3A3B3F; --accent:#7FB8E0; --btn:#ECE8DF; --btn-ink:#121315; color-scheme:dark }
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;overflow-x:hidden;transition:background .3s,color .3s}
-p,h1,h2,h3{margin:0}
-a{color:inherit}
-.wrap{max-width:1040px;margin:0 auto;padding-left:max(24px, env(safe-area-inset-left, 0px));padding-right:max(24px, env(safe-area-inset-right, 0px))}
-@media (max-width:600px){ .wrap{padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))} }
-
-/* Шапка */
-.nav .wrap{display:flex;align-items:center;gap:16px;height:72px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:17px;margin-right:auto}
-.brand img{width:28px;height:28px;border-radius:7px}
-.by{font-size:14px;color:var(--ink-3);text-decoration:none}
-.by:hover{color:var(--ink)}
-.theme{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-.theme svg{width:18px;height:18px}
-.theme .sun{display:none}
-:root[data-theme="dark"] .theme .sun{display:block}
-:root[data-theme="dark"] .theme .moon{display:none}
-@media (hover:hover){ .theme:hover{color:var(--ink);background:var(--line)} }
-
-/* Перший екран */
-.hero{padding:64px 0 88px;text-align:center}
-.hero .mark{width:96px;height:96px;border-radius:24px;margin:0 auto 32px;display:block}
-:root[data-theme="dark"] .hero .mark{box-shadow:0 0 0 1px var(--line)}
-.hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.02;letter-spacing:-.035em;font-weight:700;text-wrap:balance}
-.hero p{margin:22px auto 0;color:var(--ink-2);font-size:clamp(17px,1.7vw,20px);max-width:28em;line-height:1.55}
-.hero p b{color:var(--ink);font-weight:600}
-.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:36px}
-.btn{display:inline-flex;align-items:center;padding:15px 26px;border-radius:999px;background:var(--btn);color:var(--btn-ink);font-weight:600;text-decoration:none;font-size:16px;border:0;cursor:pointer;font-family:inherit;transition:transform .15s}
-.btn:hover{transform:translateY(-1px)}
-.btn.ghost{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ghost)}
-.btn:focus-visible,.lvl:focus-visible,.theme:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-
-/* Розділи */
-section.part{padding:88px 0;border-top:1px solid var(--line)}
-.label{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
-.part h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;letter-spacing:-.03em;font-weight:700;max-width:18em;text-wrap:balance}
-.part .lead{margin-top:16px;color:var(--ink-2);max-width:34em}
-
-.axes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center;margin-top:40px}
-.axes svg{width:100%;max-width:340px;justify-self:center;display:block}
-.axes dl{margin:0;display:grid;gap:0}
-.axes dl>div{display:grid;grid-template-columns:40px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
-.axes dt{margin:0}.axes dd{margin:0;color:var(--ink-2)}.axes dd b{color:var(--ink);font-weight:600}
-.sw{display:block;width:40px;height:4px;border-radius:2px;margin-top:12px}
-@media (max-width:760px){ .axes{grid-template-columns:1fr;gap:24px} }
-
-.kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 40px;margin-top:40px}
-.kind{display:grid;grid-template-columns:56px 1fr;gap:4px 16px;align-items:center;padding:18px 0;border-top:1px solid var(--line)}
-.kind .g{grid-row:span 2;width:56px;height:56px;border-radius:14px;background:var(--pad);display:grid;place-items:center}
-.kind h3{font-size:16px;font-weight:600}
-.kind .ex{color:var(--ink-2);font-size:15px;line-height:1.4}
-.kind .ex b{color:var(--ink);font-weight:700;font-size:17px}
-@media (max-width:860px){ .kinds{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:540px){ .kinds{grid-template-columns:1fr} }
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;margin-top:32px}
-.pair>div{padding:18px 0;border-top:1px solid var(--line);min-width:0}
-.pair h3{font-size:16px;font-weight:600;margin-bottom:6px}
-.pair p{color:var(--ink-2);font-size:16px}
-@media (max-width:700px){ .pair{grid-template-columns:1fr} }
-
-/* Пристрій: темна площадка, як сама клавіатура */
-.device{background:var(--pad);color:var(--padInk);border-radius:28px;overflow:hidden;margin:40px auto 0;max-width:460px}
-.screen{padding:16px 18px;min-height:64px;border-bottom:1px solid var(--padLine);display:flex;gap:10px;align-items:flex-start}
-.screen .txt{flex:1;min-width:0;font-size:20px;line-height:1.35;font-weight:500;word-break:break-word;white-space:pre-wrap}
-.screen .txt::after{content:'';display:inline-block;width:2px;height:1.1em;background:var(--axB);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.screen .sbtn{flex:none;border:0;background:transparent;color:var(--padMuted);font:500 14px var(--sans);padding:6px 4px;cursor:pointer}
-.screen .sbtn:hover{color:var(--padInk)}
-.status{display:flex;justify-content:space-between;gap:8px;padding:10px 18px 0;font-size:13px;color:var(--padMuted);min-height:30px}
-.status .res{color:var(--padInk)}
-.status .svc{color:var(--gold)}
-.padzone{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
-.padzone canvas{display:block;width:100%;height:100%}
-.sandbox .padzone{height:280px}
-.cheat{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px 0;padding:10px 6px 14px;background:var(--panel);border-top:1px solid var(--padLine);pointer-events:none}
-.cheat .c{display:flex;align-items:center;justify-content:center;gap:2px;height:38px;font-weight:600;font-size:17px;color:var(--padInk)}
-.cheat .c.hit{background:rgba(255,255,255,.07);border-radius:10px}
-
-/* Гра */
-.game-grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:48px;align-items:start;margin-top:40px}
-.game-grid .device{margin:0}
-@media (max-width:860px){ .game-grid{grid-template-columns:1fr;gap:28px} .game-grid .device{margin:0 auto;width:100%} }
-.levels{display:grid;margin:0}
-.lvl{appearance:none;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;display:grid;grid-template-columns:28px 1fr auto;gap:2px 12px;align-items:baseline;padding:12px 0;cursor:pointer}
-.lvl:last-child{border-bottom:1px solid var(--line)}
-.lvl .n{color:var(--ink-3);font-size:14px;font-variant-numeric:tabular-nums}
-.lvl b{font-weight:600}
-.lvl .stars{color:var(--gold);letter-spacing:2px;font-size:14px;min-width:3.6em;text-align:right}
-.lvl .rec{grid-column:2 / 4;color:var(--ink-3);font-size:13px;font-variant-numeric:tabular-nums}
-.lvl[aria-pressed="true"] b{color:var(--accent)}
-.lvl[aria-pressed="true"] .n{color:var(--accent)}
-.lvl:disabled{cursor:not-allowed;color:var(--ink-3)}
-@media (hover:hover){ .lvl:not(:disabled):hover b{color:var(--accent)} }
-.game .stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:18px 18px 6px}
-.game .word{font-weight:700;font-size:clamp(34px,7vw,48px);line-height:1;letter-spacing:.01em;text-align:center;min-width:0;word-break:break-word}
-.game .word span{color:var(--padMuted)}
-.game .word span.done{color:var(--good)}
-.game .word span.cur{color:var(--padInk);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:8px}
-.game .hint{width:68px;height:68px;border-radius:16px;background:#0F0D0A;display:grid;place-items:center;transition:opacity .2s}
-.game .score{font-size:13px;line-height:1.5;color:var(--padMuted);text-align:right;font-variant-numeric:tabular-nums}
-.game .score b{font-size:22px;color:var(--padInk)}
-.game .bar{height:3px;background:var(--padLine);margin:8px 18px 0;border-radius:2px;overflow:hidden}
-.game .bar i{display:block;height:100%;width:0;background:var(--axB);transition:width .25s}
-.game .padzone{height:260px}
-.game .fb{position:absolute;left:0;right:0;top:12px;text-align:center;font-weight:700;font-size:18px;pointer-events:none;opacity:0;transition:opacity .25s}
-.game .fb.show{opacity:1}
-.shake{animation:shake .32s}
-@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
-.over{position:absolute;inset:0;background:rgba(23,20,15,.95);display:grid;place-items:center;text-align:center;padding:24px}
-.over[hidden]{display:none}
-.over .card{display:grid;gap:12px;justify-items:center;max-width:320px}
-.over .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--padMuted)}
-.over h3{font-size:24px;letter-spacing:-.02em}
-.over .big{font-size:36px;color:var(--gold);letter-spacing:6px}
-.over p{color:var(--padMuted);font-size:15px;line-height:1.5}
-.over .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.over .btn{background:var(--padInk);color:var(--pad)}
-.over .btn.ghost{background:none;color:var(--padInk);box-shadow:inset 0 0 0 1px #4A4438}
-.gamebox{position:relative}
-.opts{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:var(--ink-2);font-size:15px}
-.opts label{display:flex;gap:8px;align-items:center;cursor:pointer}
-@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .shake{animation:none} .screen .txt::after{animation:none} .btn{transition:none} }
-
-/* Унизу, тихо: посилання */
-.more{border-top:1px solid var(--line);padding:72px 0 40px}
-.more .cols{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
-.more h3{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-bottom:10px}
-.more ul{list-style:none;margin:0;padding:0}
-.more li a{display:flex;align-items:baseline;gap:12px;padding:13px 0;border-top:1px solid var(--line);text-decoration:none;font-size:16px}
-.more li a span{margin-left:auto;color:var(--ink-3);font-size:14px;text-align:right}
-.more li a::after{content:"→";color:var(--ink-3)}
-@media (hover:hover){ .more li a:hover,.more li a:hover::after{color:var(--accent)} }
-.more .fine{margin-top:14px;color:var(--ink-3);font-size:14px;max-width:34em}
-.foot{margin-top:48px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--ink-3)}
-.foot a{text-decoration:none}.foot a:hover{color:var(--ink)}
-@media (max-width:720px){ .more .cols{grid-template-columns:1fr;gap:36px} }
-</style>
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css?v=2">
+<script>document.documentElement.classList.add('js');try{if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
+<script src="/assets/site.js?v=2" defer></script>
 </head>
 <body>
-<header class="nav"><div class="wrap">
-  <a class="brand" href="#top"><img src="logo.jpg" alt="">Sunscript</a>
-  <a class="by" href="/uk/">Wheel Reinvent</a>
-  <button class="theme" type="button" aria-label="Темна тема" title="Темна тема"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
-</div></header>
 
-<main id="top">
-  <section class="hero"><div class="wrap">
-    <img class="mark" src="logo.jpg" alt="Три лінії, які великий палець малює найлегше">
-    <h1>Пиши, не дивлячись.</h1>
-    <p><b>Не де натиснути, а як провести.</b> Три лінії великого пальця, шість напрямків — і вся українська абетка. Однаковий жест завжди дає ту саму літеру.</p>
-    <div class="btns"><a class="btn" href="#try">Спробувати</a><a class="btn ghost" href="#game">Гра</a><a class="btn ghost" href="sunscript.apk">Android</a></div>
-  </div></section>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="1.5"><line x1="12.00" y1="22.50" x2="12.00" y2="1.50"/><line x1="21.09" y1="17.25" x2="2.91" y2="6.75"/><line x1="2.91" y1="17.25" x2="21.09" y2="6.75"/></g><circle cx="12" cy="12" r="2.6" style="fill:var(--accent)"/></svg>Wheel Reinvent</a>
+    <nav class="links"><a href="#products">Products</a><a href="#contact">Contact</a></nav>
+    <div class="lang"><a href="/uk/" hreflang="uk" lang="uk">UA</a><span>·</span><span class="on">EN</span></div>
+    <button class="theme" type="button" aria-label="Dark mode" title="Dark mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+  </div>
+</header>
 
-  <section class="part" id="how"><div class="wrap">
-    <div class="label">Як це працює</div>
-    <h2>Три лінії, шість напрямків.</h2>
-    <p class="lead">Де саме на екрані провести — неважливо. Довжина й швидкість теж. Важить напрям і те, що палець робить по дорозі.</p>
-    <div class="axes">
-      <div id="starSvg"></div>
-      <dl>
-        <div><dt><span class="sw" style="background:var(--axB)"></span></dt><dd><b>Синя</b> — майже вертикаль. Вгору <b>а</b>, вниз <b>і</b>.</dd></div>
-        <div><dt><span class="sw" style="background:var(--axR)"></span></dt><dd><b>Червона</b> — полога, як «/». Вгору-праворуч <b>е</b>, вниз-ліворуч <b>о</b>.</dd></div>
-        <div><dt><span class="sw" style="background:var(--axG)"></span></dt><dd><b>Зелена</b> — навскіс, як «\». Вгору-ліворуч <b>у</b>, вниз-праворуч <b>и</b>.</dd></div>
-      </dl>
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>We make apps for <em>simple everyday things</em>.</h1>
+      <p class="lead">Saying thanks so that it stays. Typing and finding your way without sight. Noticing how you really feel. Wheel Reinvent makes simple tools for these.</p>
     </div>
-  </div></section>
+  </section>
 
-  <section class="part"><div class="wrap">
-    <div class="label">Шість жестів</div>
-    <h2>Провів і відпустив — голосна. Решта — приголосні.</h2>
-    <p class="lead">Ось усі шість на синій лінії вгору. На інших лініях так само.</p>
-    <div class="kinds" id="kinds"></div>
-    <div class="pair">
-      <div><h3>Тапи</h3><p>Тап — пробіл. Довгий тап — стерти. Подвійний тап, потім рух — команда: ↑ велика, ↓ Enter, ↗ символи, ↙ стерти слово, ↘ мова.</p></div>
-      <div><h3>Двома руками</h3><p>Хто торкнувся першим — той перший такт. Тап, потім лінія — пауза. Лінія, потім тап — потримати. Дві лінії в один бік — далі, у протилежні — назад.</p></div>
-    </div>
-  </div></section>
-
-  <section class="part" id="try"><div class="wrap">
-    <div class="label">Спробувати</div>
-    <h2>Без встановлення, прямо тут.</h2>
-    <p class="lead">Проводь пальцем або мишкою по темному полю. Внизу — абетка: біля кожної літери її жест.</p>
-    <div class="device sandbox">
-      <div class="screen"><div class="txt" id="sbText"></div><button class="sbtn" type="button" id="sbClear">Очистити</button></div>
-      <div class="status"><span class="res" id="sbRes">проведи пальцем</span><span class="svc" id="sbSvc"></span></div>
-      <div class="padzone" id="sbPad"><canvas></canvas></div>
-      <div class="cheat" id="sbCheat"></div>
-    </div>
-  </div></section>
-
-  <section class="part" id="game"><div class="wrap">
-    <div class="label">Гра</div>
-    <h2>Спершу повтори. Потім згадай.</h2>
-    <p class="lead">Кожен рівень додає один жест: спершу повторюєш з підказкою, потім згадуєш без неї. Зірки — лише за те, що згадав сам. Наприкінці іспит і спринт на 60 секунд; рекорди зберігаються на цьому пристрої.</p>
-    <div class="game-grid">
-      <div>
-        <div class="levels" id="levels"></div>
-        <div class="opts"><label><input type="checkbox" id="optHint" checked> підказка</label><label><input type="checkbox" id="optCheat"> шпаргалка</label></div>
-      </div>
-      <div>
-        <div class="device game gamebox" id="gameBox">
-          <div class="stage">
-            <div class="hint" id="gHint" aria-label="підказка"></div>
-            <div class="word" id="gWord" aria-live="polite"></div>
-            <div class="score"><b id="gScore">0</b><br><span id="gCombo">×1</span></div>
-          </div>
-          <div class="bar"><i id="gBar"></i></div>
-          <div class="status"><span class="res" id="gRes">&nbsp;</span><span id="gCount"></span></div>
-          <div class="padzone" id="gPad"><canvas></canvas><div class="fb" id="gFb"></div></div>
-          <div class="over" id="gOver"><div class="card" id="gOverCard"></div></div>
+  <section class="products" id="products">
+    <div class="wrap">
+      <div class="label">Our products</div>
+      <a class="feature reveal" href="https://dzenq.com/">
+        <div>
+          <div class="name"><svg viewBox="75 40 1000 880" fill="none" aria-hidden="true"><defs><linearGradient id="b" x1="140" y1="160" x2="760" y2="560" gradientUnits="userSpaceOnUse"><stop stop-color="#FFCF7A"/><stop offset="1" stop-color="#F6A85C"/></linearGradient><linearGradient id="f" x1="330" y1="720" x2="930" y2="540" gradientUnits="userSpaceOnUse"><stop stop-color="#86E1D0"/><stop offset="1" stop-color="#4CC3B2"/></linearGradient></defs><rect x="140" y="160" width="620" height="400" rx="90" stroke="url(#b)" stroke-width="56"/><rect x="390" y="380" width="620" height="400" rx="90" stroke="url(#f)" stroke-width="56" transform="rotate(14 700 580)"/></svg><b>Dzen<span>Q</span></b><span class="state">Beta · live</span></div>
+          <p>A thank-you with your signature that nobody can forge or take back. It stays with the person for good, and it can open doors: a discount, a way in, a private chat.</p>
         </div>
-        <div class="device" id="gCheatWrap" hidden style="margin-top:12px"><div class="cheat" id="gCheat"></div></div>
+        <span class="go">Go to dzenq.com</span>
+      </a>
+
+      <a class="feature reveal" href="/sunscript/">
+        <div>
+          <div class="name"><img src="/sunscript/logo.jpg" alt="" width="44" height="44"><b>Sunscript</b><span class="state">Beta · try it online</span></div>
+          <p>A keyboard for typing without looking. Letters are simple strokes anywhere on the screen, for blind people and for anyone typing on the go. Try it in the browser and learn it in a game.</p>
+        </div>
+        <span class="go">Try Sunscript</span>
+      </a>
+
+      <div class="next reveal">
+        <div class="label">Coming next</div>
+        <div class="list">
+          <div class="item"><h3>Vis2Sound</h3><p>A navigator for blind people. The camera films the way ahead, and the app turns the video into stereo sound you can find your way by.</p></div>
+          <div class="item"><h3>Tektonika</h3><p>A journal that reads your state. You write, and it shows how your mood and energy change over time.</p></div>
+        </div>
       </div>
     </div>
-  </div></section>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <div>
+        <h2>Want to test something, work with us or support us?</h2>
+        <p>Write to us. We answer personally.</p>
+      </div>
+      <a class="btn" href="mailto:liubomyr.ivanitskyi@gmail.com">Write to us</a>
+    </div>
+  </section>
 </main>
 
-<footer class="more" id="get"><div class="wrap">
-  <div class="cols">
-    <div>
-      <h3>Спробувати</h3>
-      <ul>
-        <li><a href="#try">У браузері<span>без встановлення</span></a></li>
-        <li><a href="#game">Гра<span>9 рівнів і спринт</span></a></li>
-        <li><a href="sunscript.apk">Android<span>APK · 0.7.4 · 749 КБ</span></a></li>
-      </ul>
-      <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
-    </div>
-    <div>
-      <h3>Wheel Reinvent</h3>
-      <ul>
-        <li><a href="/uk/">Про компанію<span>wheel-reinvent.com</span></a></li>
-        <li><a href="mailto:liubomyr.ivanitskyi@gmail.com?subject=Sunscript">Написати нам<span>відгук, тест, ідеї</span></a></li>
-      </ul>
-    </div>
+<footer>
+  <div class="wrap">
+    <span>© 2026 Wheel Reinvent · Why the name? Because reinventing the wheel is nothing to be afraid of.</span>
+    <a href="mailto:liubomyr.ivanitskyi@gmail.com">liubomyr.ivanitskyi@gmail.com</a>
   </div>
-  <div class="foot"><span>Sunscript · пиши, не дивлячись</span><span>© 2026 Wheel Reinvent</span></div>
-</div></footer>
+</footer>
 
-<script>
-try{ if(localStorage.getItem('theme')==='dark') document.documentElement.dataset.theme='dark'; }catch(e){}
-document.querySelector('.theme').addEventListener('click',function(){
-  var dark=document.documentElement.dataset.theme!=='dark';
-  if(dark) document.documentElement.dataset.theme='dark'; else delete document.documentElement.dataset.theme;
-  try{ localStorage.setItem('theme', dark?'dark':'light'); }catch(e){}
-});
-</script>
-<script id="engine">
-// ── Розпізнавач зірки (той самий, що в клавіатурі; паритет перевірено на записаних штрихах) ──
-var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12};
-var DIRS=['U','NE','SE','D','SW','NW'];
-var OPP={U:'D',D:'U',NE:'SW',SW:'NE',NW:'SE',SE:'NW'};
-var ARROW={U:'↑',NE:'↗',SE:'↘',D:'↓',SW:'↙',NW:'↖'};
-function starAngles(){ var r=CFG.axRed,b=CFG.axBlue,g=CFG.axGreen; return {NE:r,SW:r+180,U:b,D:b+180,NW:g,SE:g+180}; }
-function angOf(dx,dy){ var a=Math.atan2(-dy,dx)*180/Math.PI; return (a+360)%360; }
-function angDist(a,b){ var d=Math.abs(a-b)%360; return d>180?360-d:d; }
-function nearestDir(dx,dy){ var A=starAngles(), a=angOf(dx,dy), best=null, bd=999;
-  DIRS.forEach(function(k){ var d=angDist(a,A[k]); if(d<bd){bd=d;best=k;} }); return {dir:best, off:bd, ang:a}; }
-function starSegs(P){
-  var steps=[], anc=0;
-  for(var i=1;i<P.length;i++){ var dx=P[i].x-P[anc].x, dy=P[i].y-P[anc].y; if(Math.hypot(dx,dy)<16) continue; steps.push({d:nearestDir(dx,dy).dir,i0:anc,i1:i}); anc=i; }
-  function runs(a){ var r=[]; a.forEach(function(x){ var l=r[r.length-1]; if(l&&l.d===x.d){ l.n+=x.n||1; l.i1=x.i1; } else r.push({d:x.d,n:x.n||1,i0:x.i0,i1:x.i1}); }); return r; }
-  var r=runs(steps);
-  if(r.length>1&&steps.length>=3){ var keep=r.filter(function(x){return x.n>1;}); if(keep.length) r=runs(keep); }
-  var merged=[];
-  r.forEach(function(x){ var l=merged[merged.length-1]; if(l&&x.d!==OPP[l.d]){ l.i1=x.i1; l.n+=x.n; } else merged.push({d:x.d,n:x.n,i0:x.i0,i1:x.i1}); });
-  return merged.map(function(x){ var nd=nearestDir(P[x.i1].x-P[x.i0].x, P[x.i1].y-P[x.i0].y); return {d:nd.dir, off:nd.off, ang:nd.ang}; });
-}
-function analyze(P){
-  var p0=P[0], pN=P[P.length-1], dist=Math.hypot(pN.x-p0.x,pN.y-p0.y);
-  var cum=[0]; for(var q=1;q<P.length;q++) cum.push(cum[q-1]+Math.hypot(P[q].x-P[q-1].x,P[q].y-P[q-1].y));
-  var path=cum[P.length-1], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
-  var retPct= far>0?(far-dist)/far*100:0, dur=pN.t-p0.t;
-  function lowIdx(t){ var lo=0; while(lo<P.length-1&&P[lo+1].t<=t) lo++; return lo; }
-  function distAt(t){ var lo=lowIdx(t); if(lo>=P.length-1) return cum[P.length-1]; var a0=P[lo].t,a1=P[lo+1].t; return a1>a0? cum[lo]+(cum[lo+1]-cum[lo])*(t-a0)/(a1-a0) : cum[lo]; }
-  function posAt(t){ var lo=lowIdx(t); if(lo>=P.length-1) return [pN.x,pN.y]; var a0=P[lo].t,a1=P[lo+1].t,f=a1>a0?(t-a0)/(a1-a0):0; return [P[lo].x+(P[lo+1].x-P[lo].x)*f, P[lo].y+(P[lo+1].y-P[lo].y)*f]; }
-  var bins=[];
-  for(var tt=p0.t; tt<pN.t; tt+=16){ var ta=Math.max(p0.t,tt-16), tb=Math.min(pN.t,tt+32), A=posAt(ta), B=posAt(tb); bins.push(Math.hypot(B[0]-A[0],B[1]-A[1])/Math.max(1,tb-ta)*1000); }
-  var sm=bins.map(function(v,i){ var a=i>0?bins[i-1]:v, c=i<bins.length-1?bins[i+1]:v; return (a+v+c)/3; });
-  var peak=sm.length?Math.max.apply(null,sm):0, thr=peak*CFG.dipPct/100, edge=peak*CFG.edgePct/100;
-  var sIdx=sm.findIndex(function(v){return v>edge;}), eIdx=-1; for(var z=sm.length-1;z>=0;z--){ if(sm[z]>edge){eIdx=z;break;} }
-  if(sIdx<0){ sIdx=0; eIdx=Math.max(0,sm.length-1); }
-  var startDwell=Math.min(dur,sIdx*16), endDwell=Math.max(0,dur-(eIdx+1)*16), moveMs=Math.max(16,dur-startDwell-endDwell);
-  var dips=[];
-  if(sm.length){ var t0=p0.t+startDwell, t1=pN.t-endDwell, dTotal=Math.max(1,distAt(t1)-distAt(t0)), inDip=false, dStart=0;
-    for(var i2=sIdx;i2<=eIdx;i2++){ var low=sm[i2]<thr; if(low&&!inDip){inDip=true;dStart=i2;}
-      if((!low||i2===eIdx)&&inDip){ inDip=false; var before=distAt(p0.t+dStart*16)-distAt(t0), after=distAt(t1)-distAt(p0.t+i2*16);
-        if(before>dTotal*0.2&&after>dTotal*0.2) dips.push(before/dTotal); } } }
-  var wMax=0; P.forEach(function(q){ if(q.w>wMax) wMax=q.w; });
-  return {dist:dist,path:path,dur:dur,startPct:startDwell/moveMs*100,endPct:endDwell/moveMs*100,retPct:retPct,dips:dips,wMax:wMax,star:starSegs(P)};
-}
-// Результат: 'tap' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
-function classify(a){
-  if(a.dist<12&&a.path<40) return 'tap';
-  var segs=a.star; if(!segs.length) return 'tap';
-  var f=segs[0]; if(f.off>CFG.axTol) return '?';
-  if(a.startPct>=CFG.starPause) return {d:f.d,k:'P'};
-  if(a.wMax>=CFG.padThr) return {d:f.d,k:'*'};
-  var k='';
-  if(segs.length>=2){ if(segs[1].d===OPP[f.d]) k='<'; else return '?'; }
-  else if(a.retPct>=CFG.backPct) k='<';
-  else if(a.dips.length>=1) k='>';
-  else if(a.endPct>=CFG.endPct) k='H';
-  return {d:f.d,k:k};
-}
-function chord(a1,a2){
-  var t1=a1.dist<12&&a1.path<40, t2=a2.dist<12&&a2.path<40;
-  function dirOf(a){ var f=a.star[0]; return f&&f.off<=CFG.axTol? f.d : null; }
-  if(t1&&t2) return '?';
-  if(t1){ var d=dirOf(a2); return d?{d:d,k:'P'}:'?'; }
-  if(t2){ var e=dirOf(a1); return e?{d:e,k:'H'}:'?'; }
-  var d1=dirOf(a1), d2=dirOf(a2); if(!d1||!d2) return '?';
-  if(d2===d1) return {d:d1,k:'>'}; if(d2===OPP[d1]) return {d:d1,k:'<'}; return '?';
-}
-// Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
-var LAY={
-  uk:{U:'а б п в я ф',NE:'е д т з є с',SE:'и ч щ ж ь ш',D:'і ґ к г ї х',SW:'о м н л й р',NW:"у ц ' , ю ."},
-  sym:{U:'. , ! ? # <',NE:'1 2 3 4 $ >',SE:'5 6 7 8 % [',D:'9 0 - : & ]',SW:"' \" ( ) * {",NW:'@ + = / _ }'}
-};
-var KINDS=['','>','<','H','*','P'];
-function charOf(r,layer){ if(!r||typeof r!=='object') return null; return LAY[layer||'uk'][r.d].split(' ')[KINDS.indexOf(r.k)]; }
-function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].split(' ').indexOf(ch); if(i>=0) return {d:d,k:KINDS[i]}; } return null; }
-</script>
-
-<script>
-(function(){
-  var ABC="а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ь ю я ' , .".split(' ');
-  var ABC_SYM="1 2 3 4 5 6 7 8 9 0 . , ! ? - : ' \" ( ) [ ] { } < > @ # $ % & * _ + = /".split(' ');
-  var AXC={U:'var(--axB)',D:'var(--axB)',NE:'var(--axR)',SW:'var(--axR)',NW:'var(--axG)',SE:'var(--axG)'};
-  var KLABEL={'':'провів і відпустив','>':'далі: пригальмував і ще раз туди ж','<':'назад: повернувся тією ж лінією','H':'потримав у кінці','*':'подушкою пальця','P':'постояв на старті, потім провів'};
-  var KNAME={'':'Відпустити','>':'Далі','<':'Назад','H':'Потримати','*':'Подушка','P':'Пауза'};
-  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
-  function storeGet(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
-  function storeSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
-
-  // ── Малюнки жестів (наконечник — напрям; кружок — постояв; два наконечники — далі; пуста стрілка — подушка) ──
-  function vec(d){ var a=starAngles()[d]*Math.PI/180; return [Math.cos(a),-Math.sin(a)]; }
-  function arrowHead(x,y,ux,uy,col,sz){ sz=sz||6; var px=-uy,py=ux;
-    return '<path d="M'+(x-ux*sz+px*sz*0.6).toFixed(1)+' '+(y-uy*sz+py*sz*0.6).toFixed(1)+' L'+x.toFixed(1)+' '+y.toFixed(1)+' L'+(x-ux*sz-px*sz*0.6).toFixed(1)+' '+(y-uy*sz-py*sz*0.6).toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'; }
-  function seg(x1,y1,x2,y2,col,w){ return '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+col+'" stroke-width="'+(w||2.6)+'" stroke-linecap="round"/>'; }
-  function glyph(d,kind,size){
-    size=size||44; var h=size/2, L=size*0.34, b=Math.max(4.5,size*0.13), col=AXC[d], out='<svg width="'+size+'" height="'+size+'" viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" aria-hidden="true">';
-    var u=vec(d), px=-u[1], py=u[0], sx=-u[0]*L, sy=-u[1]*L, ex=u[0]*L, ey=u[1]*L;
-    function ring(x,y,r){ return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="1.8"/>'; }
-    function P2(x,y){ return x.toFixed(1)+' '+y.toFixed(1); }
-    if(kind==='*'){ var w=3.2, hw=b+1.5, bx=ex-u[0]*7, by=ey-u[1]*7;
-      out+='<path d="M'+P2(sx+px*w,sy+py*w)+' L'+P2(bx+px*w,by+py*w)+' L'+P2(bx+px*hw,by+py*hw)+' L'+P2(ex+u[0]*2,ey+u[1]*2)+' L'+P2(bx-px*hw,by-py*hw)+' L'+P2(bx-px*w,by-py*w)+' L'+P2(sx-px*w,sy-py*w)+' Z" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linejoin="round"/>'; }
-    else if(!kind) out+=seg(sx,sy,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col);
-    else if(kind==='P'){ var cx0=sx+u[0]*2, cy0=sy+u[1]*2; out+=ring(cx0,cy0,3.4)+seg(cx0+u[0]*3.4,cy0+u[1]*3.4,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col); }
-    else if(kind==='>') out+=seg(sx,sy,ex,ey,col)+arrowHead(u[0]*2,u[1]*2,u[0],u[1],col)+arrowHead(ex,ey,u[0],u[1],col);
-    else if(kind==='<') out+=seg(sx,sy,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col)+arrowHead(-u[0]*L*0.55,-u[1]*L*0.55,-u[0],-u[1],col,Math.min(6,L*0.42));
-    else if(kind==='H'){ var hx=ex-u[0]*5, hy=ey-u[1]*5; out+=seg(sx,sy,hx,hy,col)+arrowHead(hx,hy,u[0],u[1],col)+ring(hx+u[0]*3.4,hy+u[1]*3.4,3.4); }
-    return out+'</svg>';
-  }
-
-  // ── Зірка в розділі «Як це працює» ──
-  (function(){
-    var size=340, h=size/2, R=108, out='<svg viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" role="img" aria-label="Шість напрямків і голосні на їхніх кінцях">';
-    DIRS.forEach(function(d){ var u=vec(d), col=AXC[d];
-      out+=seg(u[0]*16,u[1]*16,u[0]*R,u[1]*R,col,5)+arrowHead(u[0]*R,u[1]*R,u[0],u[1],col,12).replace('stroke-width="2.4"','stroke-width="5"');
-      out+='<text x="'+(u[0]*(R+34)).toFixed(1)+'" y="'+(u[1]*(R+34)+12).toFixed(1)+'" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="30" fill="var(--ink)">'+LAY.uk[d].split(' ')[0]+'</text>'; });
-    out+='<circle r="6" fill="var(--ink)"/></svg>';
-    document.getElementById('starSvg').innerHTML=out;
-    document.getElementById('kinds').innerHTML=KINDS.map(function(k){
-      var ch=LAY.uk.U.split(' ')[KINDS.indexOf(k)];
-      return '<div class="kind"><div class="g">'+glyph('U',k,54)+'</div><h3>'+KNAME[k]+'</h3><div class="ex">'+esc(KLABEL[k])+' → <b>'+esc(ch)+'</b></div></div>'; }).join('');
-  })();
-
-  function cheatHTML(layer,upper,hl){
-    var order= layer==='sym'? ABC_SYM : ABC;
-    return order.map(function(ch){ var w=whereOf(ch,layer); if(!w) return '';
-      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('');
-  }
-
-  // ── Площадка: один штрих або акорд двох рук; тап, довгий тап, подвійний тап ──
-  function Pad(zone,onResult){
-    var cv=zone.querySelector('canvas'), ctx=cv.getContext('2d'), W=0,H=0, s1=null, s2=null, trails=[], raf=0, lastTap=null;
-    function resize(){ var r=zone.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
-    window.addEventListener('resize',resize); setTimeout(resize,0);
-    // Ширина дотику: з pointer-подій, а якщо браузер її не дає (буває 0 або 1) — з touch-подій (radiusX/radiusY).
-    var touchW=0;
-    function onTouch(e){ var m=0; for(var i=0;i<e.touches.length;i++){ var t=e.touches[i]; m=Math.max(m,2*Math.max(t.radiusX||0,t.radiusY||0)); } if(m>0) touchW=m; }
-    zone.addEventListener('touchstart',onTouch,{passive:true}); zone.addEventListener('touchmove',onTouch,{passive:true});
-    function pt(e){ var r=cv.getBoundingClientRect(), w=Math.max(e.width||0,e.height||0);
-      if(e.pointerType==='touch' && w<=2 && touchW) w=touchW;
-      return {x:e.clientX-r.left,y:e.clientY-r.top,t:e.timeStamp,w:w}; }
-    this.lastWidth=0; var self=this;
-    function line(P,a){ if(P.length<2) return; ctx.globalAlpha=a; ctx.strokeStyle='#F1EDE4'; ctx.lineWidth=5; ctx.lineCap='round'; ctx.lineJoin='round';
-      ctx.beginPath(); ctx.moveTo(P[0].x,P[0].y); for(var i=1;i<P.length;i++) ctx.lineTo(P[i].x,P[i].y); ctx.stroke(); ctx.globalAlpha=1; }
-    function draw(){ ctx.clearRect(0,0,W,H); var now=performance.now(); trails=trails.filter(function(t){return now-t.t<900;});
-      trails.forEach(function(t){ line(t.pts,(1-(now-t.t)/900)*0.8); }); if(s1&&!s1.done) line(s1.pts,1); if(s2&&!s2.done) line(s2.pts,1); }
-    function loop(){ cancelAnimationFrame(raf); (function tick(){ draw(); if(s1||s2||trails.length) raf=requestAnimationFrame(tick); })(); }
-    zone.addEventListener('pointerdown',function(e){
-      if(s1 && !s2 && !s1.done && e.pointerId!==s1.id){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s2={id:e.pointerId,pts:[pt(e)]}; return; }
-      if(s1) return;
-      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s1={id:e.pointerId,pts:[pt(e)]}; loop(); });
-    zone.addEventListener('pointermove',function(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
-      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); });
-    function up(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
-      var l=pt(e), lp=s.pts[s.pts.length-1]; if(l.w===0&&lp) l.w=lp.w; s.pts.push(l); s.done=true; trails.push({pts:s.pts,t:performance.now()});
-      if(s1.done && (!s2||s2.done)){ var A=s1, B=s2; s1=null; s2=null; finish(A,B); } }
-    zone.addEventListener('pointerup',up);
-    zone.addEventListener('pointercancel',function(){ s1=null; s2=null; });
-    function finish(A,B){
-      var r; self.lastWidth=Math.round(Math.max.apply(null,A.pts.map(function(q){return q.w||0;})));
-      if(B) r=chord(analyze(A.pts),analyze(B.pts));
-      else { var P=A.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
-        if(far<12 && P[P.length-1].t-p0.t>=450){ lastTap=null; onResult('long'); return; }
-        r=classify(analyze(P)); }
-      if(r==='tap'){ var now=performance.now(), p=A.pts[0];
-        if(lastTap && now-lastTap.t<=300 && Math.hypot(p.x-lastTap.x,p.y-lastTap.y)<40){ lastTap=null; onResult('dbl'); return; }
-        lastTap={t:now,x:p.x,y:p.y}; onResult('tap'); return; }
-      lastTap=null; onResult(r);
-    }
-  }
-
-  // ── Пісочниця ──
-  (function(){
-    var text='', layer='uk', upper=false, service=false;
-    var tEl=document.getElementById('sbText'), res=document.getElementById('sbRes'), svc=document.getElementById('sbSvc'), cheat=document.getElementById('sbCheat');
-    var pad=null;
-    function render(hl){ tEl.textContent=text; cheat.innerHTML=cheatHTML(layer,upper,hl);
-      var w= pad&&pad.lastWidth ? 'дотик '+pad.lastWidth+' px'+(pad.lastWidth>=CFG.padThr?' · подушка':'') : '';
-      svc.textContent= service?'команда: ↑ велика · ↓ Enter · ↗ символи · ↙ слово · ↘ мова':(upper?'⇧ велика':(layer==='sym'?'символи':w)); }
-    document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
-    pad=new Pad(document.getElementById('sbPad'),function(r){
-      if(r==='dbl'){ text=text.replace(/ $/,''); service=true; res.textContent='подвійний тап'; render(); return; }
-      if(service){ service=false;
-        if(r&&typeof r==='object'){ var c={U:'велика',D:'Enter',NE:'символи ⇄ літери',SW:'стерти слово',SE:'мова (тут лише українська)',NW:"апостроф"}[r.d];
-          if(r.d==='U') upper=true; else if(r.d==='D') text+='\n'; else if(r.d==='NE') layer= layer==='sym'?'uk':'sym';
-          else if(r.d==='SW') text=text.replace(/\s*\S+\s*$/,''); else if(r.d==='NW') text+="'";
-          res.textContent=c; } else res.textContent='команду скасовано';
-        render(); return; }
-      if(r==='tap'){ text+=' '; res.textContent='пробіл'; render(); return; }
-      if(r==='long'){ text=text.slice(0,-1); res.textContent='стерти'; render(); return; }
-      if(r==='?'){ res.textContent='не схоже на жоден напрям — тримайся однієї з трьох осей'; render(); return; }
-      var ch=charOf(r,layer); if(!ch){ render(); return; }
-      if(upper&&layer!=='sym'){ ch=ch.toUpperCase(); upper=false; }
-      text+=ch; res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+ch; render(ch.toLowerCase());
-    });
-    render();
-  })();
-
-  // ── Гра ──
-  var LEVELS=[
-    {name:'Голосні', k:[''], add:'а е и і о у', about:'провів і відпустив'},
-    {name:'Далі', k:['>'], add:'б д ч ґ м ц', about:'пригальмуй і штовхни ще раз'},
-    {name:'Назад', k:['<'], add:"п т щ к н '", about:'туди й назад тією ж лінією'},
-    {name:'Потримати', k:['H'], add:'в з ж г л ,', about:'доведи й постій'},
-    {name:'Подушка', k:['*'], add:'я є ь ї й ю', about:'проведи подушечкою пальця', touchOnly:true},
-    {name:'Пауза', k:['P'], add:'ф с ш х р .', about:'постій на старті, потім веди'},
-    {name:'Слова', words:true, about:'цілі слова'},
-    {name:'Іспит', exam:true, about:'усі вивчені літери впереміш, без підказок'},
-    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'}
-  ];
-  var WORDS='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
-  var touchy= window.matchMedia && matchMedia('(pointer:coarse)').matches;
-  var prog=storeGet('sunscript-game',{best:{}});
-  var cur=0, G=null;
-  var el={levels:document.getElementById('levels'), word:document.getElementById('gWord'), hint:document.getElementById('gHint'), score:document.getElementById('gScore'), combo:document.getElementById('gCombo'),
-    bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
-    box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat')};
-  function unlocked(i){ if(i===0) return true; var p=prog.best[i-1]; return !!(p&&p.stars>0) || (LEVELS[i-1].touchOnly&&!touchy&&unlocked(i-1)); }
-  function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
-  function renderLevels(){
-    el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
-      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><span class="n">'+(i+1)+'</span><b>'+L.name+(L.touchOnly&&!touchy?' <span style="color:var(--ink-3);font-weight:400">· телефон</span>':'')+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):'')+'</span>'+(b&&(b.cpm||b.per)?'<span class="rec">рекорд: '+(L.sprint? b.cpm+' літер за хвилину' : b.per.toFixed(1)+' с на літеру')+'</span>':'')+'</button>'; }).join('');
-    el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro(); }); });
-  }
-  function pool(i){ var L=LEVELS[i];
-    if(L.words) return null;
-    var fresh=L.add.split(' '), old=[]; for(var j=0;j<i;j++){ if(!LEVELS[j].words && !(LEVELS[j].touchOnly&&!touchy)) old=old.concat(LEVELS[j].add.split(' ')); }
-    return {fresh:fresh, old:old}; }
-  function learnedLetters(upto){ var all=[]; for(var j=0;j<upto;j++){ var l=LEVELS[j]; if(l.add && !(l.touchOnly&&!touchy)) all=all.concat(l.add.split(' ')); } return all; }
-  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
-  function makeTargets(i){ var L=LEVELS[i];
-    if(L.exam){ var all=learnedLetters(LEVELS.length), out=[], last='';
-      for(var n=0;n<(L.sprint?400:20);n++){ var c; do{ c=all[Math.floor(Math.random()*all.length)]; }while(c===last); last=c; out.push({w:c,hint:false}); } return out; }
-    var raw=makeRaw(i);
-    if(L.words) return raw.map(function(w){ return {w:w,hint:false}; });
-    // спершу повтори кожну нову літеру з підказкою, потім згадай без неї
-    var fresh=L.add.split(' '), learn=shuffle(fresh.slice()).concat(shuffle(fresh.slice()).slice(0,2));
-    return learn.map(function(c){ return {w:c,hint:true}; }).concat(raw.slice(0,12).map(function(c){ return {w:c,hint:false}; }));
-  }
-  function makeRaw(i){ var L=LEVELS[i], out=[];
-    if(L.words){ var allowed={}; LEVELS.forEach(function(l){ if(l.add && !(l.touchOnly&&!touchy)) l.add.split(' ').forEach(function(c){allowed[c]=1;}); });
-      var ws=WORDS.filter(function(w){ return w.split('').every(function(c){return allowed[c];}); });
-      for(var n=0;n<6;n++) out.push(ws[Math.floor(Math.random()*ws.length)]); return out; }
-    var p=pool(i), last='';
-    for(var k=0;k<15;k++){ var src= (p.old.length && Math.random()<0.3)? p.old : p.fresh, c; do{ c=src[Math.floor(Math.random()*src.length)]; }while(c===last && src.length>1); last=c; out.push(c); }
-    return out; }
-  function intro(){
-    var L=LEVELS[cur]; G=null;
-    el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
-    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
-    var phoneOnly= L.touchOnly && !touchy;
-    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':L.exam?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
-      (ex?'<div class="row">'+ex+'</div>':'')+
-      (phoneOnly?'<p>Подушка потребує ширини дотику — мишка її не передає. Цей рівень пройди з телефона; далі можна грати й так.</p>':'')+
-      '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Все одно спробувати':'Почати')+'</button></div>';
-    el.over.hidden=false;
-    document.getElementById('gStart').addEventListener('click',start);
-  }
-  function start(){
-    G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, rHits:0, rTries:0, score:0, combo:1, t0:performance.now(), misses:{}};
-    el.over.hidden=true; show();
-    if(LEVELS[cur].sprint){ var g=G; clearInterval(start.timer); start.timer=setInterval(function(){
-      if(G!==g){ clearInterval(start.timer); return; }
-      var left=Math.max(0,60-(performance.now()-g.t0)/1000); el.count.textContent=Math.ceil(left)+' с'; el.bar.style.width=((60-left)/60*100)+'%';
-      if(left<=0){ clearInterval(start.timer); done(); } },200); }
-  }
-  function curT(){ return G.targets[G.ti]; }
-  function curChar(){ var t=curT(); return t? t.w[G.ci] : null; }
-  function show(){
-    var t=curT(); if(!t){ return done(); } var w=t.w;
-    el.word.innerHTML=w.split('').map(function(c,i){ return '<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+'">'+esc(c)+'</span>'; }).join('');
-    var c=curChar(), where=whereOf(c), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
-    el.hint.innerHTML= where? glyph(where.d,where.k,60) : ''; el.hint.style.opacity= showHint?1:0;
-    el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
-    if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'повтори':'згадай')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
-    if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML('uk',false,c); } else el.cheatWrap.hidden=true;
-  }
-  function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
-  function onGame(r){
-    if(!G || !el.over.hidden) return;
-    if(r==='tap'||r==='dbl'||r==='long') return;
-    var want=curChar(); if(!want) return;
-    var t=curT(), recall=!t.hint;
-    G.tries++; if(recall) G.rTries++;
-    var got= r==='?'? null : charOf(r);
-    if(got===want){
-      G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
-      flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
-      if(G.ci>=t.w.length){ G.ti++; G.ci=0; }
-      show(); return;
-    }
-    G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1;
-    var w=whereOf(want);
-    el.res.textContent= got? ('вийшло «'+got+'» — '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; треба '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'не схоже на жоден напрям';
-    flash(got?('«'+got+'»'):'?','var(--bad)');
-    el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake');
-    show();
-  }
-  function countRecall(){ return G.targets.reduce(function(n,t){ return n+(t.hint?0:t.w.length); },0); }
-  function weak(){ var m={}; Object.keys(G.misses).forEach(function(k){ var p=k.split(':'), t=G.targets[+p[0]]; if(t) m[t.w[+p[1]]]=1; }); return Object.keys(m); }
-  function done(){
-    // Зірки — лише за частину без підказки: чи пам'ятаєш, а не чи вмієш повторити.
-    var L=LEVELS[cur], secs=(performance.now()-G.t0)/1000, per=secs/Math.max(1,G.hits);
-    var recallN= L.sprint? G.hits+Object.keys(G.misses).length : countRecall();
-    var acc=recallN? G.rHits/recallN : 0, cpm=Math.round(G.hits/Math.max(1,Math.min(secs,L.sprint?60:secs))*60);
-    var st= L.sprint ? (cpm>=40&&acc>=0.85?3 : cpm>=25&&acc>=0.75?2 : cpm>=12?1 : 0)
-                     : acc>=0.7 ? (acc>=0.9 && per<=2 ? 3 : acc>=0.8 ? 2 : 1) : 0;
-    // Особисті рекорди: найменше секунд на літеру, найбільше літер за хвилину, найбільше очок.
-    var b=prog.best[cur]||{stars:0,score:0}, rec=[];
-    if(st>0 && (!b.per || per<b.per)){ if(b.per) rec.push('найшвидше: '+per.toFixed(1)+' с на літеру'); b.per=+per.toFixed(2); }
-    if(st>0 && (!b.cpm || cpm>b.cpm)){ if(b.cpm) rec.push('найбільше: '+cpm+' літер за хвилину'); b.cpm=cpm; }
-    if(G.score>b.score){ if(b.score) rec.push('найбільше очок: '+G.score); b.score=G.score; }
-    if(st>b.stars) b.stars=st; b.acc=Math.max(b.acc||0,Math.round(acc*100));
-    prog.best[cur]=b; storeSet('sunscript-game',prog);
-    el.bar.style.width='100%';
-    var next= cur+1<LEVELS.length && unlocked(cur+1);
-    el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(rec.length?'Новий рекорд!':st? 'Рівень пройдено':'Ще трохи')+'</h3>'+
-      (rec.length?'<p style="color:var(--gold)">'+rec.map(esc).join('<br>')+'</p>':'')+
-      (L.sprint? '<p>'+G.hits+' літер за 60 с · без помилки з першої спроби '+Math.round(acc*100)+'% · '+G.score+' очок</p>'
-               : '<p>Згадав без підказки з першої спроби: '+G.rHits+' з '+recallN+' ('+Math.round(acc*100)+'%) · '+per.toFixed(1)+' с на літеру · '+cpm+' літер/хв · '+G.score+' очок</p>')+
-      '<p>Твої рекорди тут: '+(b.per?b.per.toFixed(1)+' с на літеру · ':'')+(b.cpm?b.cpm+' літер/хв · ':'')+b.score+' очок</p>'+
-      (weak().length?'<p>Повтори: '+weak().map(esc).join(' ')+'</p>':'')+
-      (st?'':(L.sprint?'<p>Для зірки — хоча б 12 літер за хвилину.</p>':'<p>Для проходження треба 70% без підказки.</p>'))+
-      '<div class="row"><button type="button" class="btn ghost" id="gAgain">Ще раз</button>'+(next?'<button type="button" class="btn" id="gNext">Далі</button>':'')+'</div>';
-    el.over.hidden=false; G=null; renderLevels();
-    document.getElementById('gAgain').addEventListener('click',start);
-    var nb=document.getElementById('gNext'); if(nb) nb.addEventListener('click',function(){ cur++; renderLevels(); intro(); });
-  }
-  el.optHint.addEventListener('change',function(){ if(G) show(); });
-  el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML('uk',false); });
-  new Pad(document.getElementById('gPad'),onGame);
-  for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; }
-  renderLevels(); intro();
-})();
-</script>
 </body>
 </html>
