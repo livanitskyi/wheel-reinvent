@@ -133,6 +133,8 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
 .game .word span{color:var(--padMuted)}
 .game .word span.done{color:var(--good)}
 .game .word span.cur{color:var(--padInk);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:8px}
+.game .word.long{font-size:clamp(22px,4.6vw,30px);line-height:1.35}
+.game .word span.sp{opacity:.45;font-weight:400}
 .game .hint{width:68px;height:68px;border-radius:16px;background:#0F0D0A;display:grid;place-items:center;transition:opacity .2s}
 .game .score{font-size:13px;line-height:1.5;color:var(--padMuted);text-align:right;font-variant-numeric:tabular-nums}
 .game .score b{font-size:22px;color:var(--padInk)}
@@ -235,7 +237,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
   <section class="part" id="game"><div class="wrap">
     <div class="label">Гра</div>
     <h2>Спершу повтори. Потім згадай.</h2>
-    <p class="lead">Кожен рівень додає один жест: спершу повторюєш з підказкою, потім згадуєш без неї. Зірки — лише за те, що згадав сам. Наприкінці іспит і спринт на 60 секунд; рекорди зберігаються на цьому пристрої.</p>
+    <p class="lead">Кожен рівень додає один жест: спершу повторюєш з підказкою, потім згадуєш без неї. Зірки — лише за те, що згадав сам. Далі іспит на точність, спринт на 60 секунд, фрази на швидкість і робота над помилками; рекорди зберігаються на цьому пристрої.</p>
     <div class="game-grid">
       <div>
         <div class="seg kbsw" role="group" aria-label="Мова гри"><button type="button" data-kb="uk">Українська</button><button type="button" data-kb="en">English</button></div>
@@ -266,8 +268,8 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <h3>Спробувати</h3>
       <ul>
         <li><a href="#try">У браузері<span>без встановлення</span></a></li>
-        <li><a href="#game">Гра<span>9 рівнів і спринт</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.9.0 · 751 КБ</span></a></li>
+        <li><a href="#game">Гра<span>11 рівнів: пам’ять, точність, швидкість</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.10.0 · 773 КБ</span></a></li>
       </ul>
       <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
     </div>
@@ -525,7 +527,9 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     {name:'Пауза', k:['P'], add:'ф с ш х р .', about:'постій на старті, потім веди'},
     {name:'Слова', words:true, about:'цілі слова'},
     {name:'Іспит', exam:true, about:'усі вивчені літери впереміш, без підказок'},
-    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'}
+    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'},
+    {name:'Фрази', phrases:true, about:'цілі фрази з пробілами (тап): швидкість у літерах і словах за хвилину'},
+    {name:'Помилки', weak:true, about:'20 літер, які ти найчастіше плутаєш'}
   ];
   var LEVELS_EN=[
     {name:'Голосні', k:[''], add:'a e y i o u', about:'провів і відпустив'},
@@ -536,25 +540,32 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     {name:'Пауза', k:['P'], add:'f s x r .', about:'постій на старті, потім веди'},
     {name:'Слова', words:true, about:'цілі слова'},
     {name:'Іспит', exam:true, about:'усі вивчені літери впереміш, без підказок'},
-    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'}
+    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'},
+    {name:'Фрази', phrases:true, about:'цілі фрази з пробілами (тап): швидкість у літерах і словах за хвилину'},
+    {name:'Помилки', weak:true, about:'20 літер, які ти найчастіше плутаєш'}
   ];
+  var PHRASES_UK=['сьогодні в автобусі знову багато людей','добрий ранок','я вже йду додому','дякую за допомогу','де ти зараз','купи хліба і молока','зустрінемось біля метро','гарного дня','я трохи запізнююсь','все буде добре','подзвони мені пізніше','що ти робиш увечері'];
+  var PHRASES_EN=['good morning','see you soon','i am on my way','thank you so much','where are you now','have a nice day','call me later','the bus is late again','all will be fine','let us meet at noon','what are you doing tonight','i will be home soon'];
   var WORDS_EN='hello world water house light night music happy green table river smile bread story horse paper money dream heart sound voice phone city road time love good day year child mother father friend door book'.split(' ');
   var LEVELS=KB==='en'?LEVELS_EN:LEVELS_UK;
   var WORDS_UK='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
   var touchy= window.matchMedia && matchMedia('(pointer:coarse)').matches;
-  var WORDS=KB==='en'?WORDS_EN:WORDS_UK;
+  var WORDS=KB==='en'?WORDS_EN:WORDS_UK, PHRASES=KB==='en'?PHRASES_EN:PHRASES_UK;
   function progKey(){ return KB==='en'?'sunscript-game-en':'sunscript-game'; }
   var prog=storeGet(progKey(),{best:{}});
   var cur=0, G=null;
   var el={levels:document.getElementById('levels'), word:document.getElementById('gWord'), hint:document.getElementById('gHint'), score:document.getElementById('gScore'), combo:document.getElementById('gCombo'),
     bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
     box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat')};
-  function unlocked(i){ if(i===0) return true; var p=prog.best[i-1]; return !!(p&&p.stars>0) || (LEVELS[i-1].touchOnly&&!touchy&&unlocked(i-1)); }
+  function examIdx(){ for(var j=0;j<LEVELS.length;j++) if(LEVELS[j].exam&&!LEVELS[j].sprint) return j; return 0; }
+  function unlocked(i){ if(i===0) return true; if(LEVELS[i].phrases||LEVELS[i].weak) return unlocked(examIdx()); var p=prog.best[i-1]; return !!(p&&p.stars>0) || (LEVELS[i-1].touchOnly&&!touchy&&unlocked(i-1)); }
   function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
   function renderLevels(){
     el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
-      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><span class="n">'+(i+1)+'</span><b>'+L.name+(L.touchOnly&&!touchy?' <span style="color:var(--ink-3);font-weight:400">· телефон</span>':'')+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):'')+'</span>'+(b&&(b.cpm||b.per)?'<span class="rec">рекорд: '+(L.sprint? b.cpm+' літер за хвилину' : b.per.toFixed(1)+' с на літеру')+'</span>':'')+'</button>'; }).join('');
-    el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro(); }); });
+      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><span class="n">'+(i+1)+'</span><b>'+L.name+(L.touchOnly&&!touchy?' <span style="color:var(--ink-3);font-weight:400">· телефон</span>':'')+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):'')+'</span>'+(b&&(b.cpm||b.per)?'<span class="rec">рекорд: '+(L.phrases? Math.round(b.cpm/5)+' слів за хвилину' : L.sprint? b.cpm+' літер за хвилину' : b.per.toFixed(1)+' с на літеру')+'</span>':'')+'</button>'; }).join('');
+    el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro();
+      // на вузькому екрані список рівнів над грою — після вибору прокрутити до гри
+      if(window.innerWidth<=860){ var r=el.box.getBoundingClientRect(); if(r.top>window.innerHeight*0.5||r.top<0) el.box.scrollIntoView({behavior:'smooth',block:'start'}); } }); });
   }
   function pool(i){ var L=LEVELS[i];
     if(L.words) return null;
@@ -562,7 +573,13 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     return {fresh:fresh, old:old}; }
   function learnedLetters(upto){ var all=[]; for(var j=0;j<upto;j++){ var l=LEVELS[j]; if(l.add && !(l.touchOnly&&!touchy)) all=all.concat(l.add.split(' ')); } return all; }
   function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function allowedMap(){ var a={' ':1}; LEVELS.forEach(function(l){ if(l.add && !(l.touchOnly&&!touchy)) l.add.split(' ').forEach(function(c){a[c]=1;}); }); return a; }
+  // Статистика по літерах (усі ігри): скільки разів просили і скільки разів помилився — для «Помилок».
+  function stat(c,miss){ if(c===' ') return; var st=prog.stats||(prog.stats={}), x=st[c]||(st[c]={n:0,m:0}); x.n++; if(miss) x.m++; }
   function makeTargets(i){ var L=LEVELS[i];
+    if(L.phrases){ var al=allowedMap(), ps=shuffle(PHRASES.filter(function(ph){ return ph.split('').every(function(c){return al[c];}); })); return ps.slice(0,3).map(function(ph){ return {w:ph,hint:false}; }); }
+    if(L.weak){ var all=learnedLetters(LEVELS.length), st=prog.stats||{}, wts=all.map(function(c){ var x=st[c]||{n:0,m:0}; return (x.m+1)/(x.n+2); }), sum=wts.reduce(function(a,b){return a+b;},0), out=[], last='';
+      for(var n=0;n<20;n++){ var c, guard=0; do{ var r=Math.random()*sum, j=0; while(j<all.length-1 && (r-=wts[j])>0) j++; c=all[j]; }while(c===last && ++guard<10); last=c; out.push({w:c,hint:false}); } return out; }
     if(L.exam){ var all=learnedLetters(LEVELS.length), out=[], last='';
       for(var n=0;n<(L.sprint?400:20);n++){ var c; do{ c=all[Math.floor(Math.random()*all.length)]; }while(c===last); last=c; out.push({w:c,hint:false}); } return out; }
     var raw=makeRaw(i);
@@ -583,13 +600,16 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
     var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c,KB); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
     var phoneOnly= L.touchOnly && !touchy;
-    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':L.exam?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
+    var wk= L.weak? weakest(5) : [];
+    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.phrases?'. Пробіл — тап. Підказка з’явиться після двох помилок.':L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':(L.exam||L.weak)?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
+      (L.weak? (wk.length?'<p>Найчастіше плутаєш: '+wk.map(function(x){ return esc(x.c)+' '+Math.round(x.r*100)+'%'; }).join(' · ')+'</p>':'<p>Поки мало даних — пограй інші рівні, і тут з’являться твої слабкі літери.</p>') : '')+
       (ex?'<div class="row">'+ex+'</div>':'')+
       (phoneOnly?'<p>Подушка потребує ширини дотику — мишка її не передає. Цей рівень пройди з телефона; далі можна грати й так.</p>':'')+
       '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Все одно спробувати':'Почати')+'</button></div>';
     el.over.hidden=false;
     document.getElementById('gStart').addEventListener('click',start);
   }
+  function weakest(k){ var st=prog.stats||{}; return Object.keys(st).filter(function(c){ return st[c].n>=3 && st[c].m>0 && whereOf(c,KB); }).map(function(c){ return {c:c,r:st[c].m/st[c].n}; }).sort(function(a,b){ return b.r-a.r; }).slice(0,k); }
   function start(){
     G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, rHits:0, rTries:0, score:0, combo:1, t0:performance.now(), misses:{}};
     el.over.hidden=true; show();
@@ -602,9 +622,14 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   function curChar(){ var t=curT(); return t? t.w[G.ci] : null; }
   function show(){
     var t=curT(); if(!t){ return done(); } var w=t.w;
-    el.word.innerHTML=w.split('').map(function(c,i){ return '<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+'">'+esc(c)+'</span>'; }).join('');
+    el.word.classList.toggle('long', w.length>12);
+    // Слово не розривається посередині: кожне слово — в одному шматку, переноси лише на пробілах.
+    var html='', open=false;
+    w.split('').forEach(function(c,i){ var sp='<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+(c===' '?' sp':'')+'">'+(c===' '?'␣':esc(c))+'</span>';
+      if(c===' '){ if(open){ html+='</span>'; open=false; } html+=sp+'<wbr>'; } else { if(!open){ html+='<span style="white-space:nowrap;color:inherit">'; open=true; } html+=sp; } });
+    el.word.innerHTML=html+(open?'</span>':'');
     var c=curChar(), where=whereOf(c,KB), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
-    el.hint.innerHTML= where? glyph(where.d,where.k,60) : ''; el.hint.style.opacity= showHint?1:0;
+    el.hint.innerHTML= where? glyph(where.d,where.k,60) : c===' '? '<span style="font:600 15px var(--sans);color:var(--padMuted)">тап</span>' : ''; el.hint.style.opacity= (showHint||c===' ')?1:0;
     el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
     if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'повтори':'згадай')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
     if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML(KB,false,c); } else el.cheatWrap.hidden=true;
@@ -612,19 +637,23 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
   function onGame(r){
     if(!G || !el.over.hidden) return;
-    if(typeof r==='string' && r!=='?') return;
     var want=curChar(); if(!want) return;
+    var phr=LEVELS[cur].phrases;
+    if(r==='tap' && !(phr||want===' ')) return;
+    if(typeof r==='string' && r!=='?' && r!=='tap') return;
     var t=curT(), recall=!t.hint;
     G.tries++; if(recall) G.rTries++;
-    var got= r==='?'? null : charOf(r,KB);
+    var got= r==='?'? null : r==='tap'? ' ' : charOf(r,KB);
+    stat(want, got!==want);
     if(got===want){
       G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
-      flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
+      flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent= r==='tap'? 'тап → пробіл' : ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
       if(G.ci>=t.w.length){ G.ti++; G.ci=0; }
       show(); return;
     }
     G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1;
     var w=whereOf(want,KB);
+    if(want===' '||got===' '){ el.res.textContent= want===' '? 'тут пробіл — тап' : 'тап — це пробіл; треба '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase(); flash(want===' '?'␣':'?','var(--bad)'); el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake'); show(); return; }
     el.res.textContent= got? ('вийшло «'+got+'» — '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; треба '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'не схоже на жоден напрям';
     flash(got?('«'+got+'»'):'?','var(--bad)');
     el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake');
@@ -638,6 +667,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var recallN= L.sprint? G.hits+Object.keys(G.misses).length : countRecall();
     var acc=recallN? G.rHits/recallN : 0, cpm=Math.round(G.hits/Math.max(1,Math.min(secs,L.sprint?60:secs))*60);
     var st= L.sprint ? (cpm>=40&&acc>=0.85?3 : cpm>=25&&acc>=0.75?2 : cpm>=12?1 : 0)
+          : L.phrases ? (acc>=0.9&&cpm>=50?3 : acc>=0.8&&cpm>=30?2 : acc>=0.7?1 : 0)
                      : acc>=0.7 ? (acc>=0.9 && per<=2 ? 3 : acc>=0.8 ? 2 : 1) : 0;
     // Особисті рекорди: найменше секунд на літеру, найбільше літер за хвилину, найбільше очок.
     var b=prog.best[cur]||{stars:0,score:0}, rec=[];
@@ -650,7 +680,8 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var next= cur+1<LEVELS.length && unlocked(cur+1);
     el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(rec.length?'Новий рекорд!':st? 'Рівень пройдено':'Ще трохи')+'</h3>'+
       (rec.length?'<p style="color:var(--gold)">'+rec.map(esc).join('<br>')+'</p>':'')+
-      (L.sprint? '<p>'+G.hits+' літер за 60 с · без помилки з першої спроби '+Math.round(acc*100)+'% · '+G.score+' очок</p>'
+      (L.phrases? '<p>'+Math.round(cpm/5)+' слів/хв ('+cpm+' літер/хв) · без помилки з першої спроби '+Math.round(acc*100)+'% · '+G.score+' очок</p>' :
+       L.sprint? '<p>'+G.hits+' літер за 60 с · без помилки з першої спроби '+Math.round(acc*100)+'% · '+G.score+' очок</p>'
                : '<p>Згадав без підказки з першої спроби: '+G.rHits+' з '+recallN+' ('+Math.round(acc*100)+'%) · '+per.toFixed(1)+' с на літеру · '+cpm+' літер/хв · '+G.score+' очок</p>')+
       '<p>Твої рекорди тут: '+(b.per?b.per.toFixed(1)+' с на літеру · ':'')+(b.cpm?b.cpm+' літер/хв · ':'')+b.score+' очок</p>'+
       (weak().length?'<p>Повтори: '+weak().map(esc).join(' ')+'</p>':'')+
@@ -662,7 +693,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   }
   el.optHint.addEventListener('change',function(){ if(G) show(); });
   el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML(KB,false); });
-  kbListeners.push(function(l){ clearInterval(start.timer); LEVELS= l==='en'?LEVELS_EN:LEVELS_UK; WORDS= l==='en'?WORDS_EN:WORDS_UK; prog=storeGet(progKey(),{best:{}}); G=null; cur=0;
+  kbListeners.push(function(l){ clearInterval(start.timer); LEVELS= l==='en'?LEVELS_EN:LEVELS_UK; WORDS= l==='en'?WORDS_EN:WORDS_UK; PHRASES= l==='en'?PHRASES_EN:PHRASES_UK; prog=storeGet(progKey(),{best:{}}); G=null; cur=0;
     for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; } if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
   new Pad(document.getElementById('gPad'),onGame);
   for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; }
