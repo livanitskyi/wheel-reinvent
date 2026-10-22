@@ -148,6 +148,10 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
 .over{position:absolute;inset:0;background:rgba(23,20,15,.95);display:grid;place-items:center;text-align:center;padding:24px}
 .over[hidden]{display:none}
 .over .card{display:grid;gap:12px;justify-items:center;max-width:320px}
+.over .card input{font:inherit;font-size:17px;width:100%;box-sizing:border-box;padding:12px 16px;border-radius:12px;border:1px solid var(--padLine);background:transparent;color:var(--padInk);text-align:center}
+.status .nextw{font:inherit;font-size:13px;font-weight:600;color:var(--padInk);background:none;border:1px solid var(--padLine);border-radius:999px;padding:3px 12px;cursor:pointer}
+.reps{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:6px 18px 0;font-size:13px;color:var(--padMuted);min-height:22px}
+.reps b{color:var(--good);font-weight:600}
 .over .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--padMuted)}
 .over h3{font-size:24px;letter-spacing:-.02em}
 .over .big{font-size:36px;color:var(--gold);letter-spacing:6px}
@@ -253,6 +257,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
           </div>
           <div class="bar"><i id="gBar"></i></div>
           <div class="status"><span class="res" id="gRes">&nbsp;</span><span id="gCount"></span></div>
+          <div class="reps" id="gReps" hidden></div>
           <div class="padzone" id="gPad"><canvas></canvas><div class="fb" id="gFb"></div></div>
           <div class="over" id="gOver"><div class="card" id="gOverCard"></div></div>
         </div>
@@ -269,7 +274,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">In the browser<span>no install</span></a></li>
         <li><a href="#game">Game<span>11 levels: memory, accuracy, speed</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.10.1 · 773 KB</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.11.0 · 774 KB</span></a></li>
       </ul>
       <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
     </div>
@@ -529,7 +534,8 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     {name:'Exam', exam:true, about:'all learned letters, mixed, no hints'},
     {name:'Sprint', sprint:true, exam:true, about:'60 seconds: how many letters you can do without hints'},
     {name:'Phrases', phrases:true, about:'whole phrases with spaces (tap): speed in letters and words a minute'},
-    {name:'Mistakes', weak:true, about:'20 letters you mix up most often'}
+    {name:'Mistakes', weak:true, about:'20 letters you mix up most often'},
+    {name:'Word sprint', drill:true, about:'one word again and again, until you want the next one'}
   ];
   var LEVELS_EN=[
     {name:'Vowels', k:[''], add:'a e y i o u', about:'swipe and let go'},
@@ -542,7 +548,8 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     {name:'Exam', exam:true, about:'all learned letters, mixed, no hints'},
     {name:'Sprint', sprint:true, exam:true, about:'60 seconds: how many letters you can do without hints'},
     {name:'Phrases', phrases:true, about:'whole phrases with spaces (tap): speed in letters and words a minute'},
-    {name:'Mistakes', weak:true, about:'20 letters you mix up most often'}
+    {name:'Mistakes', weak:true, about:'20 letters you mix up most often'},
+    {name:'Word sprint', drill:true, about:'one word again and again, until you want the next one'}
   ];
   var PHRASES_UK=['сьогодні в автобусі знову багато людей','добрий ранок','я вже йду додому','дякую за допомогу','де ти зараз','купи хліба і молока','зустрінемось біля метро','гарного дня','я трохи запізнююсь','все буде добре','подзвони мені пізніше','що ти робиш увечері'];
   var PHRASES_EN=['good morning','see you soon','i am on my way','thank you so much','where are you now','have a nice day','call me later','the bus is late again','all will be fine','let us meet at noon','what are you doing tonight','i will be home soon'];
@@ -556,7 +563,16 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   var cur=0, G=null;
   var el={levels:document.getElementById('levels'), word:document.getElementById('gWord'), hint:document.getElementById('gHint'), score:document.getElementById('gScore'), combo:document.getElementById('gCombo'),
     bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
-    box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat')};
+    box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat'), reps:document.getElementById('gReps')};
+  // «Слово на швидкість»: час повтору — від першого дотику до останньої літери; пауза між повторами не рахується.
+  var lastDown=0; document.getElementById('gPad').addEventListener('pointerdown',function(){ lastDown=performance.now(); },true);
+  function drillWords(){ var al=allowedMap(); return WORDS.filter(function(w){ return w.split('').every(function(c){return al[c];}); }); }
+  function nextDrill(word){ var ws=drillWords(), w=word; if(!w){ do{ w=ws[Math.floor(Math.random()*ws.length)]; }while(ws.length>1 && G.dr && w===G.dr.word); }
+    G.targets=[{w:w,hint:false}]; G.ti=0; G.ci=0; G.misses={}; G.dr={word:w, reps:[], t0:null, errs:0}; showReps(); show(); }
+  function fmt(ms){ return (ms/1000).toFixed(1)+' s'; }
+  function showReps(){ var d=G&&G.dr; if(!d){ el.reps.hidden=true; return; } el.reps.hidden=false;
+    var best=(prog.drill||{})[KB+':'+d.word];
+    el.reps.innerHTML= d.reps.length? d.reps.slice(-6).map(function(x){ return x.ms===Math.min.apply(null,d.reps.map(function(y){return y.ms;}))?'<b>'+fmt(x.ms)+'</b>':fmt(x.ms)+(x.errs?' ·'+x.errs:''); }).join(' ')+(best?' · record '+fmt(best):'') : (best?'record '+fmt(best):'write the word: the clock starts at the first touch'); }
   function examIdx(){ for(var j=0;j<LEVELS.length;j++) if(LEVELS[j].exam&&!LEVELS[j].sprint) return j; return 0; }
   function unlocked(i){ return true; }
   function firstUndone(){ for(var i=0;i<LEVELS.length;i++){ var b=prog.best[i]; if(!(b&&b.stars>0)) return i; } return 0; }  // усі рівні відкриті (рішення автора)
@@ -597,7 +613,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     for(var k=0;k<15;k++){ var src= (p.old.length && Math.random()<0.3)? p.old : p.fresh, c; do{ c=src[Math.floor(Math.random()*src.length)]; }while(c===last && src.length>1); last=c; out.push(c); }
     return out; }
   function intro(){
-    var L=LEVELS[cur]; G=null;
+    var L=LEVELS[cur]; G=null; el.reps.hidden=true;
     el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
     var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c,KB); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
     var phoneOnly= L.touchOnly && !touchy;
@@ -605,6 +621,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Level '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.phrases?'. Space is a tap. A hint appears after two mistakes.':L.words?'. No space needed between words. A hint appears after two mistakes.':(L.exam||L.weak)?'. A hint appears after two mistakes.':'. First repeat with a hint, then recall without it.')+'</p>'+
       (L.weak? (wk.length?'<p>You mix up most: '+wk.map(function(x){ return esc(x.c)+' '+Math.round(x.r*100)+'%'; }).join(' · ')+'</p>':'<p>Not enough data yet: play other levels and your weak letters will show up here.</p>') : '')+
       (ex?'<div class="row">'+ex+'</div>':'')+
+      (L.drill?'<p>After each round: your time and your record for this word. Tap: next word. A mistake doesn’t reset the round, but it counts.</p><input id="gOwn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="your own word (optional)">':'')+
       (phoneOnly?'<p>The pad needs the touch width, which a mouse doesn’t give. Play this level on a phone; the rest works either way.</p>':'')+
       '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Try anyway':'Start')+'</button></div>';
     el.over.hidden=false;
@@ -612,6 +629,11 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   }
   function weakest(k){ var st=prog.stats||{}; return Object.keys(st).filter(function(c){ return st[c].n>=3 && st[c].m>0 && whereOf(c,KB); }).map(function(c){ return {c:c,r:st[c].m/st[c].n}; }).sort(function(a,b){ return b.r-a.r; }).slice(0,k); }
   function start(){
+    if(LEVELS[cur].drill){ var own=(document.getElementById('gOwn')||{}).value||'', al=allowedMap(); own=own.trim().toLowerCase();
+      if(own && !own.split('').every(function(c){ return al[c] && c!==' '; })) own='';
+      G={targets:[], ti:0, ci:0, hits:0, tries:0, rHits:0, rTries:0, score:0, combo:1, t0:performance.now(), misses:{}};
+      el.over.hidden=true; nextDrill(own||null); return; }
+    el.reps.hidden=true;
     G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, rHits:0, rTries:0, score:0, combo:1, t0:performance.now(), misses:{}};
     el.over.hidden=true; show();
     if(LEVELS[cur].sprint){ var g=G; clearInterval(start.timer); start.timer=setInterval(function(){
@@ -632,14 +654,18 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var c=curChar(), where=whereOf(c,KB), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
     el.hint.innerHTML= where? glyph(where.d,where.k,60) : c===' '? '<span style="font:600 15px var(--sans);color:var(--padMuted)">tap</span>' : ''; el.hint.style.opacity= (showHint||c===' ')?1:0;
     el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
-    if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'repeat':'recall')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
+    if(LEVELS[cur].drill){ el.count.innerHTML='<button type="button" class="nextw" id="gNextW">next →</button>'; el.bar.style.width='0';
+      document.getElementById('gNextW').onclick=function(){ nextDrill(); }; }
+    else if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'repeat':'recall')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
     if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML(KB,false,c); } else el.cheatWrap.hidden=true;
   }
   function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
   function onGame(r){
     if(!G || !el.over.hidden) return;
     var want=curChar(); if(!want) return;
-    var phr=LEVELS[cur].phrases;
+    var phr=LEVELS[cur].phrases, dr=LEVELS[cur].drill;
+    if(dr && r==='tap'){ nextDrill(); return; }            // тап — наступне слово
+    if(dr && G.dr.t0===null && r!=='dbl' && r!=='cmd') G.dr.t0=lastDown||performance.now();
     if(r==='tap' && !(phr||want===' ')) return;
     if(typeof r==='string' && r!=='?' && r!=='tap') return;
     var t=curT(), recall=!t.hint;
@@ -649,10 +675,16 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     if(got===want){
       G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
       flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent= r==='tap'? 'tap → space' : ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
-      if(G.ci>=t.w.length){ G.ti++; G.ci=0; }
+      if(G.ci>=t.w.length){
+        if(dr){ var d=G.dr, ms=performance.now()-d.t0; d.reps.push({ms:ms,errs:d.errs}); d.t0=null; d.errs=0; G.ci=0; G.misses={};
+          var key=KB+':'+d.word, pd=prog.drill||(prog.drill={}), rec= !pd[key] || ms<pd[key]; if(rec){ pd[key]=Math.round(ms); }
+          storeSet(progKey(),prog);
+          flash(fmt(ms),rec?'var(--gold)':'var(--good)'); el.res.textContent= (rec&&d.reps.length>1?'record! ':'')+d.word+': '+fmt(ms)+' · '+Math.round(d.word.length/ms*60000)+' letters/min';
+          showReps(); show(); return; }
+        G.ti++; G.ci=0; }
       show(); return;
     }
-    G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1;
+    G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1; if(G.dr) G.dr.errs++;
     var w=whereOf(want,KB);
     if(want===' '||got===' '){ el.res.textContent= want===' '? 'a space here: tap' : 'tap is a space; needed '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase(); flash(want===' '?'␣':'?','var(--bad)'); el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake'); show(); return; }
     el.res.textContent= got? ('got “'+got+'”: '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; needed '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'not one of the directions';
