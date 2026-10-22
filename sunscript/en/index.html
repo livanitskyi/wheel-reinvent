@@ -274,7 +274,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">In the browser<span>no install</span></a></li>
         <li><a href="#game">Game<span>11 levels: memory, accuracy, speed</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.13.0 · 779 KB</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.13.1 · 780 KB</span></a></li>
       </ul>
       <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
     </div>
@@ -761,10 +761,11 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var a=logSave(logLoad().concat([rec])); logUI(a.length); }
   function logUI(n){ var c=document.getElementById('logCount'); if(c) c.textContent=n; }
   if(APP){
-    var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px';
-    box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
+    var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px'; box.style.alignItems='center';
+    box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logSave" style="color:var(--ink);border-color:var(--line)">зберегти файл</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
     el.optHint.closest('.opts').after(box); logUI(logLoad().length);
-    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.13.0', attempts:a})); };
+    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.13.1', attempts:a})); };
+    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.13.1', attempts:a})); };
     document.getElementById('logClear').onclick=function(){ if(confirm('Стерти всі збережені логи?')){ logSave([]); logUI(0); } };
   }
   cur=firstUndone();
