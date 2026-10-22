@@ -274,7 +274,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">In the browser<span>no install</span></a></li>
         <li><a href="#game">Game<span>11 levels: memory, accuracy, speed</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.12.1 · 778 KB</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.13.0 · 779 KB</span></a></li>
       </ul>
       <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
     </div>
@@ -332,6 +332,10 @@ function analyze(P){
   var peak=sm.length?Math.max.apply(null,sm):0, thr=peak*CFG.dipPct/100, edge=peak*CFG.edgePct/100;
   var sIdx=sm.findIndex(function(v){return v>edge;}), eIdx=-1; for(var z=sm.length-1;z>=0;z--){ if(sm[z]>edge){eIdx=z;break;} }
   if(sIdx<0){ sIdx=0; eIdx=Math.max(0,sm.length-1); }
+  // Старт: поки палець не вийшов з кола R від точки дотику — це ще стояння (палець, притискаючись, з'їжджає на кілька px).
+  // Рух почався тоді, коли вийшов з кола, мінус час пройти R на піковій швидкості.
+  var R=Math.max(16,0.15*far), tl=null; for(var q2=0;q2<P.length;q2++){ if(Math.hypot(P[q2].x-p0.x,P[q2].y-p0.y)>R){ tl=P[q2].t-p0.t; break; } }
+  if(tl!==null && peak>0){ var sd2=tl-R/peak*1000; if(sd2>sIdx*16) sIdx=Math.min(Math.max(sIdx,Math.floor(sd2/16)),Math.max(sIdx,eIdx)); }
   var startDwell=Math.min(dur,sIdx*16), endDwell=Math.max(0,dur-(eIdx+1)*16), moveMs=Math.max(16,dur-startDwell-endDwell);
   var dips=[];
   if(sm.length){ var t0=p0.t+startDwell, t1=pN.t-endDwell, dTotal=Math.max(1,distAt(t1)-distAt(t0)), inDip=false, dStart=0;
@@ -760,7 +764,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px';
     box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
     el.optHint.closest('.opts').after(box); logUI(logLoad().length);
-    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.12.1', attempts:a})); };
+    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.13.0', attempts:a})); };
     document.getElementById('logClear').onclick=function(){ if(confirm('Стерти всі збережені логи?')){ logSave([]); logUI(0); } };
   }
   cur=firstUndone();
