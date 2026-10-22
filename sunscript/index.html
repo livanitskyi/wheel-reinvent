@@ -151,6 +151,10 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
 .gamebox{position:relative}
 .opts{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:var(--ink-2);font-size:15px}
 .opts label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;margin-top:22px}
+.seg button{font:inherit;font-size:14px;font-weight:600;letter-spacing:.02em;border:0;background:transparent;color:var(--ink-2);padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.game-grid .seg{margin-top:0;margin-bottom:14px}
 @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .shake{animation:none} .screen .txt::after{animation:none} .btn{transition:none} }
 
 /* Унизу, тихо: посилання */
@@ -204,7 +208,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
     <p class="lead">Ось усі шість на синій лінії вгору. На інших лініях так само.</p>
     <div class="kinds" id="kinds"></div>
     <div class="pair">
-      <div><h3>Тапи</h3><p>Тап — пробіл. Довгий тап — стерти. Подвійний тап, потім рух — команда: ↑ велика, ↓ Enter, ↗ символи, ↙ стерти слово, ↘ мова.</p></div>
+      <div><h3>Пробіл і стерти</h3><p>Тап — пробіл. Постій на місці, потім веди ліворуч — стерти літеру (горизонталь не зайнята жодною літерою, тож випадково не стреш). Подвійний тап, потім рух — команда: ↑ велика, ↓ Enter, ↗ символи, ↙ стерти слово, ↘ мова.</p></div>
       <div><h3>Двома руками</h3><p>Хто торкнувся першим — той перший такт. Тап, потім лінія — пауза. Лінія, потім тап — потримати. Дві лінії в один бік — далі, у протилежні — назад.</p></div>
     </div>
   </div></section>
@@ -212,7 +216,8 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
   <section class="part" id="try"><div class="wrap">
     <div class="label">Спробувати</div>
     <h2>Без встановлення, прямо тут.</h2>
-    <p class="lead">Проводь пальцем або мишкою по темному полю. Внизу — абетка: біля кожної літери її жест.</p>
+    <p class="lead">Проводь пальцем або мишкою по темному полю. Внизу — абетка: біля кожної літери її жест. Англійська — та сама логіка: однаковий звук пишеться однаковим жестом.</p>
+    <div class="seg kbsw" role="group" aria-label="Мова клавіатури"><button type="button" data-kb="uk">Українська</button><button type="button" data-kb="en">English</button></div>
     <div class="device sandbox">
       <div class="screen"><div class="txt" id="sbText"></div><button class="sbtn" type="button" id="sbClear">Очистити</button></div>
       <div class="status"><span class="res" id="sbRes">проведи пальцем</span><span class="svc" id="sbSvc"></span></div>
@@ -227,6 +232,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
     <p class="lead">Кожен рівень додає один жест: спершу повторюєш з підказкою, потім згадуєш без неї. Зірки — лише за те, що згадав сам. Наприкінці іспит і спринт на 60 секунд; рекорди зберігаються на цьому пристрої.</p>
     <div class="game-grid">
       <div>
+        <div class="seg kbsw" role="group" aria-label="Мова гри"><button type="button" data-kb="uk">Українська</button><button type="button" data-kb="en">English</button></div>
         <div class="levels" id="levels"></div>
         <div class="opts"><label><input type="checkbox" id="optHint" checked> підказка</label><label><input type="checkbox" id="optCheat"> шпаргалка</label></div>
       </div>
@@ -255,7 +261,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">У браузері<span>без встановлення</span></a></li>
         <li><a href="#game">Гра<span>9 рівнів і спринт</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.7.4 · 749 КБ</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.8.0 · 750 КБ</span></a></li>
       </ul>
       <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
     </div>
@@ -280,7 +286,7 @@ document.querySelector('.theme').addEventListener('click',function(){
 </script>
 <script id="engine">
 // ── Розпізнавач зірки (той самий, що в клавіатурі; паритет перевірено на записаних штрихах) ──
-var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12};
+var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12, delHoldMs:300};
 var DIRS=['U','NE','SE','D','SW','NW'];
 var OPP={U:'D',D:'U',NE:'SW',SW:'NE',NW:'SE',SE:'NW'};
 var ARROW={U:'↑',NE:'↗',SE:'↘',D:'↓',SW:'↙',NW:'↖'};
@@ -320,13 +326,17 @@ function analyze(P){
       if((!low||i2===eIdx)&&inDip){ inDip=false; var before=distAt(p0.t+dStart*16)-distAt(t0), after=distAt(t1)-distAt(p0.t+i2*16);
         if(before>dTotal*0.2&&after>dTotal*0.2) dips.push(before/dTotal); } } }
   var wMax=0; P.forEach(function(q){ if(q.w>wMax) wMax=q.w; });
-  return {dist:dist,path:path,dur:dur,startPct:startDwell/moveMs*100,endPct:endDwell/moveMs*100,retPct:retPct,dips:dips,wMax:wMax,star:starSegs(P)};
+  return {dist:dist,path:path,dur:dur,startDwell:startDwell,startPct:startDwell/moveMs*100,endPct:endDwell/moveMs*100,retPct:retPct,dips:dips,wMax:wMax,star:starSegs(P)};
 }
-// Результат: 'tap' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
+function isLeft(ang){ var A=starAngles(), dl=angDist(ang,180); return DIRS.every(function(k){ return dl<angDist(ang,A[k]); }); }
+// Результат: 'tap' | 'del' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
 function classify(a){
   if(a.dist<12&&a.path<40) return 'tap';
   var segs=a.star; if(!segs.length) return 'tap';
-  var f=segs[0]; if(f.off>CFG.axTol) return '?';
+  var f=segs[0];
+  // Стерти: постояв (≥ delHoldMs) і повів ліворуч — ближче до горизонталі, ніж до будь-якої осі. Горизонталь вільна.
+  if(a.startDwell>=CFG.delHoldMs && isLeft(f.ang)) return 'del';
+  if(f.off>CFG.axTol) return '?';
   if(a.startPct>=CFG.starPause) return {d:f.d,k:'P'};
   if(a.wMax>=CFG.padThr) return {d:f.d,k:'*'};
   var k='';
@@ -348,16 +358,22 @@ function chord(a1,a2){
 // Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
 var LAY={
   uk:{U:'а б п в я ф',NE:'е д т з є с',SE:'и ч щ ж ь ш',D:'і ґ к г ї х',SW:'о м н л й р',NW:"у ц ' , ю ."},
+  // EN: той самий «рот» — однаковий звук, однаковий жест (b=б, d=д, k=к, h=г, x=х, r=р…; y=и, c=ч, j=ж як у транслітерації). «·» — порожньо.
+  en:{U:'a b p v w f',NE:'e d t z - s',SE:'y c ! j · ·',D:'i g k h · x',SW:'o m n l · r',NW:"u ? ' , q ."},
   sym:{U:'. , ! ? # <',NE:'1 2 3 4 $ >',SE:'5 6 7 8 % [',D:'9 0 - : & ]',SW:"' \" ( ) * {",NW:'@ + = / _ }'}
 };
 var KINDS=['','>','<','H','*','P'];
-function charOf(r,layer){ if(!r||typeof r!=='object') return null; return LAY[layer||'uk'][r.d].split(' ')[KINDS.indexOf(r.k)]; }
-function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].split(' ').indexOf(ch); if(i>=0) return {d:d,k:KINDS[i]}; } return null; }
+function charOf(r,layer){ if(!r||typeof r!=='object') return null; var c=LAY[layer||'uk'][r.d].split(' ')[KINDS.indexOf(r.k)]; return c==='·'?null:c; }
+function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].split(' ').indexOf(ch); if(i>=0) return {d:d,k:KINDS[i]}; } return null; }
 </script>
 
 <script>
 (function(){
   var ABC="а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ь ю я ' , .".split(' ');
+  var ABC_EN="a b c d e f g h i j k l m n o p q r s t u v w x y z ' , . ? ! -".split(' ');
+  var KB=storeGet('sunscript-kb','uk'); if(KB!=='en') KB='uk';
+  var kbListeners=[];
+  function setKB(l){ KB=l; storeSet('sunscript-kb',l); document.querySelectorAll('.kbsw button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-kb')===l); }); kbListeners.forEach(function(f){ f(l); }); }
   var ABC_SYM="1 2 3 4 5 6 7 8 9 0 . , ! ? - : ' \" ( ) [ ] { } < > @ # $ % & * _ + = /".split(' ');
   var AXC={U:'var(--axB)',D:'var(--axB)',NE:'var(--axR)',SW:'var(--axR)',NW:'var(--axG)',SE:'var(--axG)'};
   var KLABEL={'':'провів і відпустив','>':'далі: пригальмував і ще раз туди ж','<':'назад: повернувся тією ж лінією','H':'потримав у кінці','*':'подушкою пальця','P':'постояв на старті, потім провів'};
@@ -399,10 +415,14 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
       return '<div class="kind"><div class="g">'+glyph('U',k,54)+'</div><h3>'+KNAME[k]+'</h3><div class="ex">'+esc(KLABEL[k])+' → <b>'+esc(ch)+'</b></div></div>'; }).join('');
   })();
 
+  // ⌫: кружок (постояв), потім стрілка ліворуч. Колір — чорнило: це не літера жодної осі.
+  function delGlyph(size){ size=size||28; var h=size/2, L=size*0.34, col='currentColor';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" aria-hidden="true"><circle cx="'+(L-2).toFixed(1)+'" cy="0" r="3.4" fill="none" stroke="'+col+'" stroke-width="1.8"/>'+seg(L-5.4,0,-L,0,col)+arrowHead(-L,0,-1,0,col)+'</svg>'; }
   function cheatHTML(layer,upper,hl){
-    var order= layer==='sym'? ABC_SYM : ABC;
+    var order= layer==='sym'? ABC_SYM : layer==='en'? ABC_EN : ABC;
     return order.map(function(ch){ var w=whereOf(ch,layer); if(!w) return '';
-      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('');
+      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('')+
+      '<div class="c"><span>⌫</span>'+delGlyph(28)+'</div>';
   }
 
   // ── Площадка: один штрих або акорд двох рук; тап, довгий тап, подвійний тап ──
@@ -451,7 +471,8 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
 
   // ── Пісочниця ──
   (function(){
-    var text='', layer='uk', upper=false, service=false;
+    var text='', layer=KB, upper=false, service=false;
+    kbListeners.push(function(l){ if(layer!=='sym') layer=l; render(); });
     var tEl=document.getElementById('sbText'), res=document.getElementById('sbRes'), svc=document.getElementById('sbSvc'), cheat=document.getElementById('sbCheat');
     var pad=null;
     function render(hl){ tEl.textContent=text; cheat.innerHTML=cheatHTML(layer,upper,hl);
@@ -461,15 +482,16 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     pad=new Pad(document.getElementById('sbPad'),function(r){
       if(r==='dbl'){ text=text.replace(/ $/,''); service=true; res.textContent='подвійний тап'; render(); return; }
       if(service){ service=false;
-        if(r&&typeof r==='object'){ var c={U:'велика',D:'Enter',NE:'символи ⇄ літери',SW:'стерти слово',SE:'мова (тут лише українська)',NW:"апостроф"}[r.d];
-          if(r.d==='U') upper=true; else if(r.d==='D') text+='\n'; else if(r.d==='NE') layer= layer==='sym'?'uk':'sym';
+        if(r&&typeof r==='object'){ var c={U:'велика',D:'Enter',NE:'символи ⇄ літери',SW:'стерти слово',SE:'мова: '+(KB==='uk'?'English':'українська'),NW:"апостроф"}[r.d];
+          if(r.d==='U') upper=true; else if(r.d==='D') text+='\n'; else if(r.d==='NE') layer= layer==='sym'?KB:'sym'; else if(r.d==='SE'){ setKB(KB==='uk'?'en':'uk'); layer=KB; }
           else if(r.d==='SW') text=text.replace(/\s*\S+\s*$/,''); else if(r.d==='NW') text+="'";
           res.textContent=c; } else res.textContent='команду скасовано';
         render(); return; }
       if(r==='tap'){ text+=' '; res.textContent='пробіл'; render(); return; }
-      if(r==='long'){ text=text.slice(0,-1); res.textContent='стерти'; render(); return; }
+      if(r==='long'){ res.textContent='довгий дотик — нічого'; render(); return; }
+      if(r==='del'){ text=text.slice(0,-1); res.textContent='постояв і ліворуч → стерти'; render(); return; }
       if(r==='?'){ res.textContent='не схоже на жоден напрям — тримайся однієї з трьох осей'; render(); return; }
-      var ch=charOf(r,layer); if(!ch){ render(); return; }
+      var ch=charOf(r,layer); if(!ch){ res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' — тут нічого'; render(); return; }
       if(upper&&layer!=='sym'){ ch=ch.toUpperCase(); upper=false; }
       text+=ch; res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+ch; render(ch.toLowerCase());
     });
@@ -477,7 +499,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   })();
 
   // ── Гра ──
-  var LEVELS=[
+  var LEVELS_UK=[
     {name:'Голосні', k:[''], add:'а е и і о у', about:'провів і відпустив'},
     {name:'Далі', k:['>'], add:'б д ч ґ м ц', about:'пригальмуй і штовхни ще раз'},
     {name:'Назад', k:['<'], add:"п т щ к н '", about:'туди й назад тією ж лінією'},
@@ -488,9 +510,24 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     {name:'Іспит', exam:true, about:'усі вивчені літери впереміш, без підказок'},
     {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'}
   ];
-  var WORDS='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
+  var LEVELS_EN=[
+    {name:'Голосні', k:[''], add:'a e y i o u', about:'провів і відпустив'},
+    {name:'Далі', k:['>'], add:'b d c g m ?', about:'пригальмуй і штовхни ще раз'},
+    {name:'Назад', k:['<'], add:"p t ! k n '", about:'туди й назад тією ж лінією'},
+    {name:'Потримати', k:['H'], add:'v z j h l ,', about:'доведи й постій'},
+    {name:'Подушка', k:['*'], add:'w - q', about:'проведи подушечкою пальця', touchOnly:true},
+    {name:'Пауза', k:['P'], add:'f s x r .', about:'постій на старті, потім веди'},
+    {name:'Слова', words:true, about:'цілі слова'},
+    {name:'Іспит', exam:true, about:'усі вивчені літери впереміш, без підказок'},
+    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'}
+  ];
+  var WORDS_EN='hello world water house light night music happy green table river smile bread story horse paper money dream heart sound voice phone city road time love good day year child mother father friend door book'.split(' ');
+  var LEVELS=KB==='en'?LEVELS_EN:LEVELS_UK;
+  var WORDS_UK='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
   var touchy= window.matchMedia && matchMedia('(pointer:coarse)').matches;
-  var prog=storeGet('sunscript-game',{best:{}});
+  var WORDS=KB==='en'?WORDS_EN:WORDS_UK;
+  function progKey(){ return KB==='en'?'sunscript-game-en':'sunscript-game'; }
+  var prog=storeGet(progKey(),{best:{}});
   var cur=0, G=null;
   var el={levels:document.getElementById('levels'), word:document.getElementById('gWord'), hint:document.getElementById('gHint'), score:document.getElementById('gScore'), combo:document.getElementById('gCombo'),
     bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
@@ -527,7 +564,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   function intro(){
     var L=LEVELS[cur]; G=null;
     el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
-    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
+    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c,KB); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
     var phoneOnly= L.touchOnly && !touchy;
     el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':L.exam?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
       (ex?'<div class="row">'+ex+'</div>':'')+
@@ -549,20 +586,20 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   function show(){
     var t=curT(); if(!t){ return done(); } var w=t.w;
     el.word.innerHTML=w.split('').map(function(c,i){ return '<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+'">'+esc(c)+'</span>'; }).join('');
-    var c=curChar(), where=whereOf(c), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
+    var c=curChar(), where=whereOf(c,KB), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
     el.hint.innerHTML= where? glyph(where.d,where.k,60) : ''; el.hint.style.opacity= showHint?1:0;
     el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
     if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'повтори':'згадай')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
-    if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML('uk',false,c); } else el.cheatWrap.hidden=true;
+    if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML(KB,false,c); } else el.cheatWrap.hidden=true;
   }
   function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
   function onGame(r){
     if(!G || !el.over.hidden) return;
-    if(r==='tap'||r==='dbl'||r==='long') return;
+    if(r==='tap'||r==='dbl'||r==='long'||r==='del') return;
     var want=curChar(); if(!want) return;
     var t=curT(), recall=!t.hint;
     G.tries++; if(recall) G.rTries++;
-    var got= r==='?'? null : charOf(r);
+    var got= r==='?'? null : charOf(r,KB);
     if(got===want){
       G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
       flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
@@ -570,7 +607,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
       show(); return;
     }
     G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1;
-    var w=whereOf(want);
+    var w=whereOf(want,KB);
     el.res.textContent= got? ('вийшло «'+got+'» — '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; треба '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'не схоже на жоден напрям';
     flash(got?('«'+got+'»'):'?','var(--bad)');
     el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake');
@@ -591,7 +628,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     if(st>0 && (!b.cpm || cpm>b.cpm)){ if(b.cpm) rec.push('найбільше: '+cpm+' літер за хвилину'); b.cpm=cpm; }
     if(G.score>b.score){ if(b.score) rec.push('найбільше очок: '+G.score); b.score=G.score; }
     if(st>b.stars) b.stars=st; b.acc=Math.max(b.acc||0,Math.round(acc*100));
-    prog.best[cur]=b; storeSet('sunscript-game',prog);
+    prog.best[cur]=b; storeSet(progKey(),prog);
     el.bar.style.width='100%';
     var next= cur+1<LEVELS.length && unlocked(cur+1);
     el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(rec.length?'Новий рекорд!':st? 'Рівень пройдено':'Ще трохи')+'</h3>'+
@@ -607,10 +644,13 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     var nb=document.getElementById('gNext'); if(nb) nb.addEventListener('click',function(){ cur++; renderLevels(); intro(); });
   }
   el.optHint.addEventListener('change',function(){ if(G) show(); });
-  el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML('uk',false); });
+  el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML(KB,false); });
+  kbListeners.push(function(l){ clearInterval(start.timer); LEVELS= l==='en'?LEVELS_EN:LEVELS_UK; WORDS= l==='en'?WORDS_EN:WORDS_UK; prog=storeGet(progKey(),{best:{}}); G=null; cur=0;
+    for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; } if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
   new Pad(document.getElementById('gPad'),onGame);
   for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; }
   renderLevels(); intro();
+  document.querySelectorAll('.kbsw button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-kb')===KB); b.addEventListener('click',function(){ if(KB!==b.getAttribute('data-kb')) setKB(b.getAttribute('data-kb')); }); });
 })();
 </script>
 </body>
