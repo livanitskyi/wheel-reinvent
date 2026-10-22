@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sunscript</title>
+<meta name="description" content="Sunscript is a keyboard for typing without looking: letters are simple swipes along three thumb lines. Try it in the browser, practise in a game, install it on Android.">
+<link rel="canonical" href="https://wheel-reinvent.com/sunscript/en/">
+<link rel="alternate" hreflang="uk" href="https://wheel-reinvent.com/sunscript/">
+<link rel="alternate" hreflang="en" href="https://wheel-reinvent.com/sunscript/en/">
+<meta property="og:title" content="Sunscript: type without looking">
+<meta property="og:description" content="Not where you tap, but how you swipe. Try the keyboard in your browser and practise in a game.">
+<meta property="og:url" content="https://wheel-reinvent.com/sunscript/en/">
+<meta property="og:image" content="https://wheel-reinvent.com/sunscript/logo.jpg">
+<meta name="theme-color" content="#FBFAF7">
+<link rel="icon" href="/sunscript/logo.jpg" type="image/jpeg">
+<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<style>
+/* Sunscript — сторінка в родині Wheel Reinvent і DzenQ: папір і чорнило, Inter, один акцент.
+   Кольори трьох осей (з малюнка автора) — лише там, де вони щось означають: у жестах. */
+:root{
+  --bg:#FBFAF7; --ink:#1B1A17; --ink-2:#5F5B54; --ink-3:#97928A; --line:#E6E2DA; --ghost:#D8D3C9;
+  --accent:#1E6FA8; --btn:#1B1A17; --btn-ink:#F6F3EC;
+  --pad:#17140F; --padInk:#F1EDE4; --padMuted:#9A9284; --padLine:#332E26; --panel:#1C1914;
+  --axB:#1AA0E8; --axR:#EE5146; --axG:#17B354; --good:#17B354; --bad:#EE5146; --gold:#E3A548;
+  --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{ --bg:#121315; --ink:#ECE8DF; --ink-2:#A9A69E; --ink-3:#7E7C76; --line:#2B2C2F; --ghost:#3A3B3F; --accent:#7FB8E0; --btn:#ECE8DF; --btn-ink:#121315; color-scheme:dark }
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;overflow-x:hidden;transition:background .3s,color .3s}
+p,h1,h2,h3{margin:0}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(24px, env(safe-area-inset-left, 0px));padding-right:max(24px, env(safe-area-inset-right, 0px))}
+@media (max-width:600px){ .wrap{padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))} }
+
+/* Шапка */
+.nav .wrap{display:flex;align-items:center;gap:16px;height:72px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:17px;margin-right:auto}
+.brand img{width:28px;height:28px;border-radius:7px}
+.by{font-size:14px;color:var(--ink-3);text-decoration:none}
+.by:hover{color:var(--ink)}
+.lng{font-size:14px;font-weight:600;color:var(--ink-2);text-decoration:none;letter-spacing:.04em;padding:6px 4px}
+.lng span{color:var(--ink-3);font-weight:400;margin:0 4px}.lng b{color:var(--ink)}
+@media (hover:hover){ .lng:hover{color:var(--accent)} }
+.theme{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.theme svg{width:18px;height:18px}
+.theme .sun{display:none}
+:root[data-theme="dark"] .theme .sun{display:block}
+:root[data-theme="dark"] .theme .moon{display:none}
+@media (hover:hover){ .theme:hover{color:var(--ink);background:var(--line)} }
+
+/* Перший екран */
+.hero{padding:64px 0 88px;text-align:center}
+.hero .mark{width:96px;height:96px;border-radius:24px;margin:0 auto 32px;display:block}
+:root[data-theme="dark"] .hero .mark{box-shadow:0 0 0 1px var(--line)}
+.hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.02;letter-spacing:-.035em;font-weight:700;text-wrap:balance}
+.hero p{margin:22px auto 0;color:var(--ink-2);font-size:clamp(17px,1.7vw,20px);max-width:28em;line-height:1.55}
+.hero p b{color:var(--ink);font-weight:600}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:36px}
+.btn{display:inline-flex;align-items:center;padding:15px 26px;border-radius:999px;background:var(--btn);color:var(--btn-ink);font-weight:600;text-decoration:none;font-size:16px;border:0;cursor:pointer;font-family:inherit;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ghost)}
+.btn:focus-visible,.lvl:focus-visible,.theme:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Розділи */
+section.part{padding:88px 0;border-top:1px solid var(--line)}
+.label{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+.part h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;letter-spacing:-.03em;font-weight:700;max-width:18em;text-wrap:balance}
+.part .lead{margin-top:16px;color:var(--ink-2);max-width:34em}
+
+.axes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center;margin-top:40px}
+.axes svg{width:100%;max-width:340px;justify-self:center;display:block}
+.axes dl{margin:0;display:grid;gap:0}
+.axes dl>div{display:grid;grid-template-columns:40px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.axes dt{margin:0}.axes dd{margin:0;color:var(--ink-2)}.axes dd b{color:var(--ink);font-weight:600}
+.sw{display:block;width:40px;height:4px;border-radius:2px;margin-top:12px}
+@media (max-width:760px){ .axes{grid-template-columns:1fr;gap:24px} }
+
+.kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 40px;margin-top:40px}
+.kind{display:grid;grid-template-columns:56px 1fr;gap:4px 16px;align-items:center;padding:18px 0;border-top:1px solid var(--line)}
+.kind .g{grid-row:span 2;width:56px;height:56px;border-radius:14px;background:var(--pad);display:grid;place-items:center}
+.kind h3{font-size:16px;font-weight:600}
+.kind .ex{color:var(--ink-2);font-size:15px;line-height:1.4}
+.kind .ex b{color:var(--ink);font-weight:700;font-size:17px}
+@media (max-width:860px){ .kinds{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:540px){ .kinds{grid-template-columns:1fr} }
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;margin-top:32px}
+.pair>div{padding:18px 0;border-top:1px solid var(--line);min-width:0}
+.pair h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.pair p{color:var(--ink-2);font-size:16px}
+@media (max-width:700px){ .pair{grid-template-columns:1fr} }
+
+/* Пристрій: темна площадка, як сама клавіатура */
+.device{background:var(--pad);color:var(--padInk);border-radius:28px;overflow:hidden;margin:40px auto 0;max-width:460px}
+.screen{padding:16px 18px;min-height:64px;border-bottom:1px solid var(--padLine);display:flex;gap:10px;align-items:flex-start}
+.screen .txt{flex:1;min-width:0;font-size:20px;line-height:1.35;font-weight:500;word-break:break-word;white-space:pre-wrap}
+.screen .txt::after{content:'';display:inline-block;width:2px;height:1.1em;background:var(--axB);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.screen .sbtn{flex:none;border:0;background:transparent;color:var(--padMuted);font:500 14px var(--sans);padding:6px 4px;cursor:pointer}
+.screen .sbtn:hover{color:var(--padInk)}
+.status{display:flex;justify-content:space-between;gap:8px;padding:10px 18px 0;font-size:13px;color:var(--padMuted);min-height:30px}
+.status .res{color:var(--padInk)}
+.status .svc{color:var(--gold)}
+.padzone{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
+.padzone canvas{display:block;width:100%;height:100%}
+.sandbox .padzone{height:280px}
+.cheat{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px 0;padding:10px 6px 14px;background:var(--panel);border-top:1px solid var(--padLine);pointer-events:none}
+.cheat .c{display:flex;align-items:center;justify-content:center;gap:2px;height:38px;font-weight:600;font-size:17px;color:var(--padInk)}
+.cheat .c.hit{background:rgba(255,255,255,.07);border-radius:10px}
+
+/* Гра */
+.game-grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:48px;align-items:start;margin-top:40px}
+.game-grid .device{margin:0}
+@media (max-width:860px){ .game-grid{grid-template-columns:1fr;gap:28px} .game-grid .device{margin:0 auto;width:100%} }
+.levels{display:grid;margin:0}
+.lvl{appearance:none;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;display:grid;grid-template-columns:28px 1fr auto;gap:2px 12px;align-items:baseline;padding:12px 0;cursor:pointer}
+.lvl:last-child{border-bottom:1px solid var(--line)}
+.lvl .n{color:var(--ink-3);font-size:14px;font-variant-numeric:tabular-nums}
+.lvl b{font-weight:600}
+.lvl .stars{color:var(--gold);letter-spacing:2px;font-size:14px;min-width:3.6em;text-align:right}
+.lvl .rec{grid-column:2 / 4;color:var(--ink-3);font-size:13px;font-variant-numeric:tabular-nums}
+.lvl[aria-pressed="true"] b{color:var(--accent)}
+.lvl[aria-pressed="true"] .n{color:var(--accent)}
+.lvl:disabled{cursor:not-allowed;color:var(--ink-3)}
+@media (hover:hover){ .lvl:not(:disabled):hover b{color:var(--accent)} }
+.game .stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:18px 18px 6px}
+.game .word{font-weight:700;font-size:clamp(34px,7vw,48px);line-height:1;letter-spacing:.01em;text-align:center;min-width:0;word-break:break-word}
+.game .word span{color:var(--padMuted)}
+.game .word span.done{color:var(--good)}
+.game .word span.cur{color:var(--padInk);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:8px}
+.game .hint{width:68px;height:68px;border-radius:16px;background:#0F0D0A;display:grid;place-items:center;transition:opacity .2s}
+.game .score{font-size:13px;line-height:1.5;color:var(--padMuted);text-align:right;font-variant-numeric:tabular-nums}
+.game .score b{font-size:22px;color:var(--padInk)}
+.game .bar{height:3px;background:var(--padLine);margin:8px 18px 0;border-radius:2px;overflow:hidden}
+.game .bar i{display:block;height:100%;width:0;background:var(--axB);transition:width .25s}
+.game .padzone{height:260px}
+.game .fb{position:absolute;left:0;right:0;top:12px;text-align:center;font-weight:700;font-size:18px;pointer-events:none;opacity:0;transition:opacity .25s}
+.game .fb.show{opacity:1}
+.shake{animation:shake .32s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.over{position:absolute;inset:0;background:rgba(23,20,15,.95);display:grid;place-items:center;text-align:center;padding:24px}
+.over[hidden]{display:none}
+.over .card{display:grid;gap:12px;justify-items:center;max-width:320px}
+.over .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--padMuted)}
+.over h3{font-size:24px;letter-spacing:-.02em}
+.over .big{font-size:36px;color:var(--gold);letter-spacing:6px}
+.over p{color:var(--padMuted);font-size:15px;line-height:1.5}
+.over .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.over .btn{background:var(--padInk);color:var(--pad)}
+.over .btn.ghost{background:none;color:var(--padInk);box-shadow:inset 0 0 0 1px #4A4438}
+.gamebox{position:relative}
+.opts{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:var(--ink-2);font-size:15px}
+.opts label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;margin-top:22px}
+.seg button{font:inherit;font-size:14px;font-weight:600;letter-spacing:.02em;border:0;background:transparent;color:var(--ink-2);padding:6px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.game-grid .seg{margin-top:0;margin-bottom:14px}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .shake{animation:none} .screen .txt::after{animation:none} .btn{transition:none} }
+
+/* Унизу, тихо: посилання */
+.more{border-top:1px solid var(--line);padding:72px 0 40px}
+.more .cols{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
+.more h3{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-bottom:10px}
+.more ul{list-style:none;margin:0;padding:0}
+.more li a{display:flex;align-items:baseline;gap:12px;padding:13px 0;border-top:1px solid var(--line);text-decoration:none;font-size:16px}
+.more li a span{margin-left:auto;color:var(--ink-3);font-size:14px;text-align:right}
+.more li a::after{content:"→";color:var(--ink-3)}
+@media (hover:hover){ .more li a:hover,.more li a:hover::after{color:var(--accent)} }
+.more .fine{margin-top:14px;color:var(--ink-3);font-size:14px;max-width:34em}
+.foot{margin-top:48px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--ink-3)}
+.foot a{text-decoration:none}.foot a:hover{color:var(--ink)}
+@media (max-width:720px){ .more .cols{grid-template-columns:1fr;gap:36px} }
+</style>
+
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#top"><img src="/sunscript/logo.jpg" alt="">Sunscript</a>
+  <a class="by" href="/">Wheel Reinvent</a>
+  <a class="lng" href="/sunscript/" hreflang="uk" lang="uk">UA<span>·</span><b>EN</b></a>
+  <button class="theme" type="button" aria-label="Dark mode" title="Dark mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+</div></header>
+
+<main id="top">
+  <section class="hero"><div class="wrap">
+    <img class="mark" src="/sunscript/logo.jpg" alt="The three lines a thumb draws most easily">
+    <h1>Type without looking.</h1>
+    <p><b>Not where you tap, but how you swipe.</b> Three thumb lines, six directions, the whole alphabet, in English and Ukrainian. The same gesture always gives the same letter.</p>
+    <div class="btns"><a class="btn" href="#try">Try it</a><a class="btn ghost" href="#game">Game</a><a class="btn ghost" href="/sunscript/sunscript.apk">Android</a></div>
+  </div></section>
+
+  <section class="part" id="how"><div class="wrap">
+    <div class="label">How it works</div>
+    <h2>Three lines, six directions.</h2>
+    <p class="lead">Where on the screen you swipe doesn’t matter. Neither does length or speed. What counts is the direction and what your finger does along the way.</p>
+    <div class="axes">
+      <div id="starSvg"></div>
+      <dl>
+        <div><dt><span class="sw" style="background:var(--axB)"></span></dt><dd><b>Blue</b>: almost vertical. Up is <b>a</b>, down is <b>i</b>.</dd></div>
+        <div><dt><span class="sw" style="background:var(--axR)"></span></dt><dd><b>Red</b>: shallow, like “/”. Up-right is <b>e</b>, down-left is <b>o</b>.</dd></div>
+        <div><dt><span class="sw" style="background:var(--axG)"></span></dt><dd><b>Green</b>: slanted, like “\”. Up-left is <b>u</b>, down-right is <b>y</b>.</dd></div>
+      </dl>
+    </div>
+  </div></section>
+
+  <section class="part"><div class="wrap">
+    <div class="label">Six gestures</div>
+    <h2>Swipe and let go: a vowel. The rest: consonants.</h2>
+    <p class="lead">Here are all six on the blue line, upward. The other lines work the same way.</p>
+    <div class="kinds" id="kinds"></div>
+    <div class="pair">
+      <div><h3>Space and delete</h3><p>Tap: space. Rest in place, then swipe left: delete a letter (no letter uses the horizontal, so you won’t delete by accident). Double tap, then a swipe: a command. ↑ capital, ↓ Enter, ↗ symbols, ↙ delete word, ↘ language.</p></div>
+      <div><h3>With two hands</h3><p>Whichever finger touches first is the first beat. Tap, then a line: pause. A line, then a tap: hold. Two lines the same way: next. Opposite ways: back.</p></div>
+    </div>
+  </div></section>
+
+  <section class="part" id="try"><div class="wrap">
+    <div class="label">Try it</div>
+    <h2>No install, right here.</h2>
+    <p class="lead">Swipe with a finger or a mouse on the dark field. Below is the alphabet, with each letter’s gesture next to it. English and Ukrainian share one logic: the same sound is written with the same gesture.</p>
+    <div class="seg kbsw" role="group" aria-label="Keyboard language"><button type="button" data-kb="uk">Ukrainian</button><button type="button" data-kb="en">English</button></div>
+    <div class="device sandbox">
+      <div class="screen"><div class="txt" id="sbText"></div><button class="sbtn" type="button" id="sbClear">Clear</button></div>
+      <div class="status"><span class="res" id="sbRes">swipe with a finger</span><span class="svc" id="sbSvc"></span></div>
+      <div class="padzone" id="sbPad"><canvas></canvas></div>
+      <div class="cheat" id="sbCheat"></div>
+    </div>
+  </div></section>
+
+  <section class="part" id="game"><div class="wrap">
+    <div class="label">Game</div>
+    <h2>First repeat. Then recall.</h2>
+    <p class="lead">Each level adds one gesture: first you repeat it with a hint, then you recall it without one. Stars only for what you recalled yourself. At the end, an exam and a 60-second sprint; records stay on this device.</p>
+    <div class="game-grid">
+      <div>
+        <div class="seg kbsw" role="group" aria-label="Game language"><button type="button" data-kb="uk">Ukrainian</button><button type="button" data-kb="en">English</button></div>
+        <div class="levels" id="levels"></div>
+        <div class="opts"><label><input type="checkbox" id="optHint" checked> hint</label><label><input type="checkbox" id="optCheat"> cheat sheet</label></div>
+      </div>
+      <div>
+        <div class="device game gamebox" id="gameBox">
+          <div class="stage">
+            <div class="hint" id="gHint" aria-label="hint"></div>
+            <div class="word" id="gWord" aria-live="polite"></div>
+            <div class="score"><b id="gScore">0</b><br><span id="gCombo">×1</span></div>
+          </div>
+          <div class="bar"><i id="gBar"></i></div>
+          <div class="status"><span class="res" id="gRes">&nbsp;</span><span id="gCount"></span></div>
+          <div class="padzone" id="gPad"><canvas></canvas><div class="fb" id="gFb"></div></div>
+          <div class="over" id="gOver"><div class="card" id="gOverCard"></div></div>
+        </div>
+        <div class="device" id="gCheatWrap" hidden style="margin-top:12px"><div class="cheat" id="gCheat"></div></div>
+      </div>
+    </div>
+  </div></section>
+</main>
+
+<footer class="more" id="get"><div class="wrap">
+  <div class="cols">
+    <div>
+      <h3>Try it</h3>
+      <ul>
+        <li><a href="#try">In the browser<span>no install</span></a></li>
+        <li><a href="#game">Game<span>9 levels and a sprint</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.8.0 · 750 KB</span></a></li>
+      </ul>
+      <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
+    </div>
+    <div>
+      <h3>Wheel Reinvent</h3>
+      <ul>
+        <li><a href="/">About the company<span>wheel-reinvent.com</span></a></li>
+        <li><a href="mailto:liubomyr.ivanitskyi@gmail.com?subject=Sunscript">Write to us<span>feedback, testing, ideas</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Sunscript · type without looking</span><span>© 2026 Wheel Reinvent</span></div>
+</div></footer>
+
+<script>
+try{ if(localStorage.getItem('theme')==='dark') document.documentElement.dataset.theme='dark'; }catch(e){}
+document.querySelector('.theme').addEventListener('click',function(){
+  var dark=document.documentElement.dataset.theme!=='dark';
+  if(dark) document.documentElement.dataset.theme='dark'; else delete document.documentElement.dataset.theme;
+  try{ localStorage.setItem('theme', dark?'dark':'light'); }catch(e){}
+});
+</script>
+<script id="engine">
+// ── Розпізнавач зірки (той самий, що в клавіатурі; паритет перевірено на записаних штрихах) ──
+var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12, delHoldMs:300};
+var DIRS=['U','NE','SE','D','SW','NW'];
+var OPP={U:'D',D:'U',NE:'SW',SW:'NE',NW:'SE',SE:'NW'};
+var ARROW={U:'↑',NE:'↗',SE:'↘',D:'↓',SW:'↙',NW:'↖'};
+function starAngles(){ var r=CFG.axRed,b=CFG.axBlue,g=CFG.axGreen; return {NE:r,SW:r+180,U:b,D:b+180,NW:g,SE:g+180}; }
+function angOf(dx,dy){ var a=Math.atan2(-dy,dx)*180/Math.PI; return (a+360)%360; }
+function angDist(a,b){ var d=Math.abs(a-b)%360; return d>180?360-d:d; }
+function nearestDir(dx,dy){ var A=starAngles(), a=angOf(dx,dy), best=null, bd=999;
+  DIRS.forEach(function(k){ var d=angDist(a,A[k]); if(d<bd){bd=d;best=k;} }); return {dir:best, off:bd, ang:a}; }
+function starSegs(P){
+  var steps=[], anc=0;
+  for(var i=1;i<P.length;i++){ var dx=P[i].x-P[anc].x, dy=P[i].y-P[anc].y; if(Math.hypot(dx,dy)<16) continue; steps.push({d:nearestDir(dx,dy).dir,i0:anc,i1:i}); anc=i; }
+  function runs(a){ var r=[]; a.forEach(function(x){ var l=r[r.length-1]; if(l&&l.d===x.d){ l.n+=x.n||1; l.i1=x.i1; } else r.push({d:x.d,n:x.n||1,i0:x.i0,i1:x.i1}); }); return r; }
+  var r=runs(steps);
+  if(r.length>1&&steps.length>=3){ var keep=r.filter(function(x){return x.n>1;}); if(keep.length) r=runs(keep); }
+  var merged=[];
+  r.forEach(function(x){ var l=merged[merged.length-1]; if(l&&x.d!==OPP[l.d]){ l.i1=x.i1; l.n+=x.n; } else merged.push({d:x.d,n:x.n,i0:x.i0,i1:x.i1}); });
+  return merged.map(function(x){ var nd=nearestDir(P[x.i1].x-P[x.i0].x, P[x.i1].y-P[x.i0].y); return {d:nd.dir, off:nd.off, ang:nd.ang}; });
+}
+function analyze(P){
+  var p0=P[0], pN=P[P.length-1], dist=Math.hypot(pN.x-p0.x,pN.y-p0.y);
+  var cum=[0]; for(var q=1;q<P.length;q++) cum.push(cum[q-1]+Math.hypot(P[q].x-P[q-1].x,P[q].y-P[q-1].y));
+  var path=cum[P.length-1], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+  var retPct= far>0?(far-dist)/far*100:0, dur=pN.t-p0.t;
+  function lowIdx(t){ var lo=0; while(lo<P.length-1&&P[lo+1].t<=t) lo++; return lo; }
+  function distAt(t){ var lo=lowIdx(t); if(lo>=P.length-1) return cum[P.length-1]; var a0=P[lo].t,a1=P[lo+1].t; return a1>a0? cum[lo]+(cum[lo+1]-cum[lo])*(t-a0)/(a1-a0) : cum[lo]; }
+  function posAt(t){ var lo=lowIdx(t); if(lo>=P.length-1) return [pN.x,pN.y]; var a0=P[lo].t,a1=P[lo+1].t,f=a1>a0?(t-a0)/(a1-a0):0; return [P[lo].x+(P[lo+1].x-P[lo].x)*f, P[lo].y+(P[lo+1].y-P[lo].y)*f]; }
+  var bins=[];
+  for(var tt=p0.t; tt<pN.t; tt+=16){ var ta=Math.max(p0.t,tt-16), tb=Math.min(pN.t,tt+32), A=posAt(ta), B=posAt(tb); bins.push(Math.hypot(B[0]-A[0],B[1]-A[1])/Math.max(1,tb-ta)*1000); }
+  var sm=bins.map(function(v,i){ var a=i>0?bins[i-1]:v, c=i<bins.length-1?bins[i+1]:v; return (a+v+c)/3; });
+  var peak=sm.length?Math.max.apply(null,sm):0, thr=peak*CFG.dipPct/100, edge=peak*CFG.edgePct/100;
+  var sIdx=sm.findIndex(function(v){return v>edge;}), eIdx=-1; for(var z=sm.length-1;z>=0;z--){ if(sm[z]>edge){eIdx=z;break;} }
+  if(sIdx<0){ sIdx=0; eIdx=Math.max(0,sm.length-1); }
+  var startDwell=Math.min(dur,sIdx*16), endDwell=Math.max(0,dur-(eIdx+1)*16), moveMs=Math.max(16,dur-startDwell-endDwell);
+  var dips=[];
+  if(sm.length){ var t0=p0.t+startDwell, t1=pN.t-endDwell, dTotal=Math.max(1,distAt(t1)-distAt(t0)), inDip=false, dStart=0;
+    for(var i2=sIdx;i2<=eIdx;i2++){ var low=sm[i2]<thr; if(low&&!inDip){inDip=true;dStart=i2;}
+      if((!low||i2===eIdx)&&inDip){ inDip=false; var before=distAt(p0.t+dStart*16)-distAt(t0), after=distAt(t1)-distAt(p0.t+i2*16);
+        if(before>dTotal*0.2&&after>dTotal*0.2) dips.push(before/dTotal); } } }
+  var wMax=0; P.forEach(function(q){ if(q.w>wMax) wMax=q.w; });
+  return {dist:dist,path:path,dur:dur,startDwell:startDwell,startPct:startDwell/moveMs*100,endPct:endDwell/moveMs*100,retPct:retPct,dips:dips,wMax:wMax,star:starSegs(P)};
+}
+function isLeft(ang){ var A=starAngles(), dl=angDist(ang,180); return DIRS.every(function(k){ return dl<angDist(ang,A[k]); }); }
+// Результат: 'tap' | 'del' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
+function classify(a){
+  if(a.dist<12&&a.path<40) return 'tap';
+  var segs=a.star; if(!segs.length) return 'tap';
+  var f=segs[0];
+  // Стерти: постояв (≥ delHoldMs) і повів ліворуч — ближче до горизонталі, ніж до будь-якої осі. Горизонталь вільна.
+  if(a.startDwell>=CFG.delHoldMs && isLeft(f.ang)) return 'del';
+  if(f.off>CFG.axTol) return '?';
+  if(a.startPct>=CFG.starPause) return {d:f.d,k:'P'};
+  if(a.wMax>=CFG.padThr) return {d:f.d,k:'*'};
+  var k='';
+  if(segs.length>=2){ if(segs[1].d===OPP[f.d]) k='<'; else return '?'; }
+  else if(a.retPct>=CFG.backPct) k='<';
+  else if(a.dips.length>=1) k='>';
+  else if(a.endPct>=CFG.endPct) k='H';
+  return {d:f.d,k:k};
+}
+function chord(a1,a2){
+  var t1=a1.dist<12&&a1.path<40, t2=a2.dist<12&&a2.path<40;
+  function dirOf(a){ var f=a.star[0]; return f&&f.off<=CFG.axTol? f.d : null; }
+  if(t1&&t2) return '?';
+  if(t1){ var d=dirOf(a2); return d?{d:d,k:'P'}:'?'; }
+  if(t2){ var e=dirOf(a1); return e?{d:e,k:'H'}:'?'; }
+  var d1=dirOf(a1), d2=dirOf(a2); if(!d1||!d2) return '?';
+  if(d2===d1) return {d:d1,k:'>'}; if(d2===OPP[d1]) return {d:d1,k:'<'}; return '?';
+}
+// Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
+var LAY={
+  uk:{U:'а б п в я ф',NE:'е д т з є с',SE:'и ч щ ж ь ш',D:'і ґ к г ї х',SW:'о м н л й р',NW:"у ц ' , ю ."},
+  // EN: той самий «рот» — однаковий звук, однаковий жест (b=б, d=д, k=к, h=г, x=х, r=р…; y=и, c=ч, j=ж як у транслітерації). «·» — порожньо.
+  en:{U:'a b p v w f',NE:'e d t z - s',SE:'y c ! j · ·',D:'i g k h · x',SW:'o m n l · r',NW:"u ? ' , q ."},
+  sym:{U:'. , ! ? # <',NE:'1 2 3 4 $ >',SE:'5 6 7 8 % [',D:'9 0 - : & ]',SW:"' \" ( ) * {",NW:'@ + = / _ }'}
+};
+var KINDS=['','>','<','H','*','P'];
+function charOf(r,layer){ if(!r||typeof r!=='object') return null; var c=LAY[layer||'uk'][r.d].split(' ')[KINDS.indexOf(r.k)]; return c==='·'?null:c; }
+function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].split(' ').indexOf(ch); if(i>=0) return {d:d,k:KINDS[i]}; } return null; }
+</script>
+
+<script>
+(function(){
+  var ABC="а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ь ю я ' , .".split(' ');
+  var ABC_EN="a b c d e f g h i j k l m n o p q r s t u v w x y z ' , . ? ! -".split(' ');
+  var KB=storeGet('sunscript-kb-en','en'); if(KB!=='uk') KB='en';
+  var kbListeners=[];
+  function setKB(l){ KB=l; storeSet('sunscript-kb-en',l); document.querySelectorAll('.kbsw button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-kb')===l); }); kbListeners.forEach(function(f){ f(l); }); }
+  var ABC_SYM="1 2 3 4 5 6 7 8 9 0 . , ! ? - : ' \" ( ) [ ] { } < > @ # $ % & * _ + = /".split(' ');
+  var AXC={U:'var(--axB)',D:'var(--axB)',NE:'var(--axR)',SW:'var(--axR)',NW:'var(--axG)',SE:'var(--axG)'};
+  var KLABEL={'':'swipe and let go','>':'next: slow down, then push on the same way','<':'back: return along the same line','H':'hold at the end','*':'with the pad of the finger','P':'rest at the start, then swipe'};
+  var KNAME={'':'Release','>':'Next','<':'Back','H':'Hold','*':'Pad','P':'Pause'};
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+  function storeGet(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+  function storeSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+  // ── Малюнки жестів (наконечник — напрям; кружок — постояв; два наконечники — далі; пуста стрілка — подушка) ──
+  function vec(d){ var a=starAngles()[d]*Math.PI/180; return [Math.cos(a),-Math.sin(a)]; }
+  function arrowHead(x,y,ux,uy,col,sz){ sz=sz||6; var px=-uy,py=ux;
+    return '<path d="M'+(x-ux*sz+px*sz*0.6).toFixed(1)+' '+(y-uy*sz+py*sz*0.6).toFixed(1)+' L'+x.toFixed(1)+' '+y.toFixed(1)+' L'+(x-ux*sz-px*sz*0.6).toFixed(1)+' '+(y-uy*sz-py*sz*0.6).toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'; }
+  function seg(x1,y1,x2,y2,col,w){ return '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+col+'" stroke-width="'+(w||2.6)+'" stroke-linecap="round"/>'; }
+  function glyph(d,kind,size){
+    size=size||44; var h=size/2, L=size*0.34, b=Math.max(4.5,size*0.13), col=AXC[d], out='<svg width="'+size+'" height="'+size+'" viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" aria-hidden="true">';
+    var u=vec(d), px=-u[1], py=u[0], sx=-u[0]*L, sy=-u[1]*L, ex=u[0]*L, ey=u[1]*L;
+    function ring(x,y,r){ return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="1.8"/>'; }
+    function P2(x,y){ return x.toFixed(1)+' '+y.toFixed(1); }
+    if(kind==='*'){ var w=3.2, hw=b+1.5, bx=ex-u[0]*7, by=ey-u[1]*7;
+      out+='<path d="M'+P2(sx+px*w,sy+py*w)+' L'+P2(bx+px*w,by+py*w)+' L'+P2(bx+px*hw,by+py*hw)+' L'+P2(ex+u[0]*2,ey+u[1]*2)+' L'+P2(bx-px*hw,by-py*hw)+' L'+P2(bx-px*w,by-py*w)+' L'+P2(sx-px*w,sy-py*w)+' Z" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linejoin="round"/>'; }
+    else if(!kind) out+=seg(sx,sy,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col);
+    else if(kind==='P'){ var cx0=sx+u[0]*2, cy0=sy+u[1]*2; out+=ring(cx0,cy0,3.4)+seg(cx0+u[0]*3.4,cy0+u[1]*3.4,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col); }
+    else if(kind==='>') out+=seg(sx,sy,ex,ey,col)+arrowHead(u[0]*2,u[1]*2,u[0],u[1],col)+arrowHead(ex,ey,u[0],u[1],col);
+    else if(kind==='<') out+=seg(sx,sy,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col)+arrowHead(-u[0]*L*0.55,-u[1]*L*0.55,-u[0],-u[1],col,Math.min(6,L*0.42));
+    else if(kind==='H'){ var hx=ex-u[0]*5, hy=ey-u[1]*5; out+=seg(sx,sy,hx,hy,col)+arrowHead(hx,hy,u[0],u[1],col)+ring(hx+u[0]*3.4,hy+u[1]*3.4,3.4); }
+    return out+'</svg>';
+  }
+
+  // ── Зірка в розділі «Як це працює» ──
+  (function(){
+    var size=340, h=size/2, R=108, out='<svg viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" role="img" aria-label="Six directions and the vowels at their ends">';
+    DIRS.forEach(function(d){ var u=vec(d), col=AXC[d];
+      out+=seg(u[0]*16,u[1]*16,u[0]*R,u[1]*R,col,5)+arrowHead(u[0]*R,u[1]*R,u[0],u[1],col,12).replace('stroke-width="2.4"','stroke-width="5"');
+      out+='<text x="'+(u[0]*(R+34)).toFixed(1)+'" y="'+(u[1]*(R+34)+12).toFixed(1)+'" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="30" fill="var(--ink)">'+LAY.en[d].split(' ')[0]+'</text>'; });
+    out+='<circle r="6" fill="var(--ink)"/></svg>';
+    document.getElementById('starSvg').innerHTML=out;
+    document.getElementById('kinds').innerHTML=KINDS.map(function(k){
+      var ch=LAY.en.U.split(' ')[KINDS.indexOf(k)];
+      return '<div class="kind"><div class="g">'+glyph('U',k,54)+'</div><h3>'+KNAME[k]+'</h3><div class="ex">'+esc(KLABEL[k])+' → <b>'+esc(ch)+'</b></div></div>'; }).join('');
+  })();
+
+  // ⌫: кружок (постояв), потім стрілка ліворуч. Колір — чорнило: це не літера жодної осі.
+  function delGlyph(size){ size=size||28; var h=size/2, L=size*0.34, col='currentColor';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" aria-hidden="true"><circle cx="'+(L-2).toFixed(1)+'" cy="0" r="3.4" fill="none" stroke="'+col+'" stroke-width="1.8"/>'+seg(L-5.4,0,-L,0,col)+arrowHead(-L,0,-1,0,col)+'</svg>'; }
+  function cheatHTML(layer,upper,hl){
+    var order= layer==='sym'? ABC_SYM : layer==='en'? ABC_EN : ABC;
+    return order.map(function(ch){ var w=whereOf(ch,layer); if(!w) return '';
+      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('')+
+      '<div class="c"><span>⌫</span>'+delGlyph(28)+'</div>';
+  }
+
+  // ── Площадка: один штрих або акорд двох рук; тап, довгий тап, подвійний тап ──
+  function Pad(zone,onResult){
+    var cv=zone.querySelector('canvas'), ctx=cv.getContext('2d'), W=0,H=0, s1=null, s2=null, trails=[], raf=0, lastTap=null;
+    function resize(){ var r=zone.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
+    window.addEventListener('resize',resize); setTimeout(resize,0);
+    // Ширина дотику: з pointer-подій, а якщо браузер її не дає (буває 0 або 1) — з touch-подій (radiusX/radiusY).
+    var touchW=0;
+    var diag={pw:0,tr:0,pr:0,tf:0}; this.diag=diag;
+    function onTouch(e){ var m=0; for(var i=0;i<e.touches.length;i++){ var t=e.touches[i]; m=Math.max(m,2*Math.max(t.radiusX||0,t.radiusY||0)); diag.tf=Math.max(diag.tf,t.force||0); } diag.tr=Math.max(diag.tr,m); if(m>0) touchW=m; }
+    zone.addEventListener('touchstart',onTouch,{passive:true}); zone.addEventListener('touchmove',onTouch,{passive:true});
+    function pt(e){ var r=cv.getBoundingClientRect(), w=Math.max(e.width||0,e.height||0);
+      diag.pw=Math.max(diag.pw,w); diag.pr=Math.max(diag.pr,e.pressure||0);
+      if(e.pointerType==='touch' && w<=2 && touchW) w=touchW;
+      return {x:e.clientX-r.left,y:e.clientY-r.top,t:e.timeStamp,w:w}; }
+    this.lastWidth=0; var self=this;
+    function line(P,a){ if(P.length<2) return; ctx.globalAlpha=a; ctx.strokeStyle='#F1EDE4'; ctx.lineWidth=5; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath(); ctx.moveTo(P[0].x,P[0].y); for(var i=1;i<P.length;i++) ctx.lineTo(P[i].x,P[i].y); ctx.stroke(); ctx.globalAlpha=1; }
+    function draw(){ ctx.clearRect(0,0,W,H); var now=performance.now(); trails=trails.filter(function(t){return now-t.t<900;});
+      trails.forEach(function(t){ line(t.pts,(1-(now-t.t)/900)*0.8); }); if(s1&&!s1.done) line(s1.pts,1); if(s2&&!s2.done) line(s2.pts,1); }
+    function loop(){ cancelAnimationFrame(raf); (function tick(){ draw(); if(s1||s2||trails.length) raf=requestAnimationFrame(tick); })(); }
+    zone.addEventListener('pointerdown',function(e){
+      if(s1 && !s2 && !s1.done && e.pointerId!==s1.id){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s2={id:e.pointerId,pts:[pt(e)]}; return; }
+      if(s1) return;
+      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} diag.pw=diag.tr=diag.pr=diag.tf=0; s1={id:e.pointerId,pts:[pt(e)]}; loop(); });
+    zone.addEventListener('pointermove',function(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
+      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); });
+    function up(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
+      var l=pt(e), lp=s.pts[s.pts.length-1]; if(l.w===0&&lp) l.w=lp.w; s.pts.push(l); s.done=true; trails.push({pts:s.pts,t:performance.now()});
+      if(s1.done && (!s2||s2.done)){ var A=s1, B=s2; s1=null; s2=null; finish(A,B); } }
+    zone.addEventListener('pointerup',up);
+    zone.addEventListener('pointercancel',function(){ s1=null; s2=null; });
+    function finish(A,B){
+      var r; self.lastWidth=Math.round(Math.max.apply(null,A.pts.map(function(q){return q.w||0;})));
+      if(B) r=chord(analyze(A.pts),analyze(B.pts));
+      else { var P=A.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+        if(far<12 && P[P.length-1].t-p0.t>=450){ lastTap=null; onResult('long'); return; }
+        r=classify(analyze(P)); }
+      if(r==='tap'){ var now=performance.now(), p=A.pts[0];
+        if(lastTap && now-lastTap.t<=300 && Math.hypot(p.x-lastTap.x,p.y-lastTap.y)<40){ lastTap=null; onResult('dbl'); return; }
+        lastTap={t:now,x:p.x,y:p.y}; onResult('tap'); return; }
+      lastTap=null; onResult(r);
+    }
+  }
+
+  // ── Пісочниця ──
+  (function(){
+    var text='', layer=KB, upper=false, service=false;
+    kbListeners.push(function(l){ if(layer!=='sym') layer=l; render(); });
+    var tEl=document.getElementById('sbText'), res=document.getElementById('sbRes'), svc=document.getElementById('sbSvc'), cheat=document.getElementById('sbCheat');
+    var pad=null;
+    function render(hl){ tEl.textContent=text; cheat.innerHTML=cheatHTML(layer,upper,hl);
+      var d=pad&&pad.diag, w= pad&&pad.lastWidth ? 'touch '+pad.lastWidth+' px'+(pad.lastWidth>=CFG.padThr?' · pad':'')+(d?' · w'+Math.round(d.pw)+' r'+Math.round(d.tr)+' p'+d.pr.toFixed(2)+' f'+d.tf.toFixed(2)+' ×'+(window.devicePixelRatio||1).toFixed(1):'') : '';
+      svc.textContent= service?'command: ↑ capital · ↓ Enter · ↗ symbols · ↙ word · ↘ language':(upper?'⇧ capital':(layer==='sym'?'symbols':w)); }
+    document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
+    pad=new Pad(document.getElementById('sbPad'),function(r){
+      if(r==='dbl'){ text=text.replace(/ $/,''); service=true; res.textContent='double tap'; render(); return; }
+      if(service){ service=false;
+        if(r&&typeof r==='object'){ var c={U:'capital',D:'Enter',NE:'symbols ⇄ letters',SW:'delete word',SE:'language: '+(KB==='uk'?'English':'Ukrainian'),NW:"apostrophe"}[r.d];
+          if(r.d==='U') upper=true; else if(r.d==='D') text+='\n'; else if(r.d==='NE') layer= layer==='sym'?KB:'sym'; else if(r.d==='SE'){ setKB(KB==='uk'?'en':'uk'); layer=KB; }
+          else if(r.d==='SW') text=text.replace(/\s*\S+\s*$/,''); else if(r.d==='NW') text+="'";
+          res.textContent=c; } else res.textContent='command cancelled';
+        render(); return; }
+      if(r==='tap'){ text+=' '; res.textContent='space'; render(); return; }
+      if(r==='long'){ res.textContent='long press: nothing'; render(); return; }
+      if(r==='del'){ text=text.slice(0,-1); res.textContent='rest, then left → delete'; render(); return; }
+      if(r==='?'){ res.textContent='not one of the directions: stay on one of the three lines'; render(); return; }
+      var ch=charOf(r,layer); if(!ch){ res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+': nothing here'; render(); return; }
+      if(upper&&layer!=='sym'){ ch=ch.toUpperCase(); upper=false; }
+      text+=ch; res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+ch; render(ch.toLowerCase());
+    });
+    render();
+  })();
+
+  // ── Гра ──
+  var LEVELS_UK=[
+    {name:'Vowels', k:[''], add:'а е и і о у', about:'swipe and let go'},
+    {name:'Next', k:['>'], add:'б д ч ґ м ц', about:'slow down and push again'},
+    {name:'Back', k:['<'], add:"п т щ к н '", about:'there and back along the same line'},
+    {name:'Hold', k:['H'], add:'в з ж г л ,', about:'swipe, then stay'},
+    {name:'Pad', k:['*'], add:'я є ь ї й ю', about:'swipe with the pad of your finger', touchOnly:true},
+    {name:'Pause', k:['P'], add:'ф с ш х р .', about:'rest at the start, then swipe'},
+    {name:'Words', words:true, about:'whole words'},
+    {name:'Exam', exam:true, about:'all learned letters, mixed, no hints'},
+    {name:'Sprint', sprint:true, exam:true, about:'60 seconds: how many letters you can do without hints'}
+  ];
+  var LEVELS_EN=[
+    {name:'Vowels', k:[''], add:'a e y i o u', about:'swipe and let go'},
+    {name:'Next', k:['>'], add:'b d c g m ?', about:'slow down and push again'},
+    {name:'Back', k:['<'], add:"p t ! k n '", about:'there and back along the same line'},
+    {name:'Hold', k:['H'], add:'v z j h l ,', about:'swipe, then stay'},
+    {name:'Pad', k:['*'], add:'w - q', about:'swipe with the pad of your finger', touchOnly:true},
+    {name:'Pause', k:['P'], add:'f s x r .', about:'rest at the start, then swipe'},
+    {name:'Words', words:true, about:'whole words'},
+    {name:'Exam', exam:true, about:'all learned letters, mixed, no hints'},
+    {name:'Sprint', sprint:true, exam:true, about:'60 seconds: how many letters you can do without hints'}
+  ];
+  var WORDS_EN='hello world water house light night music happy green table river smile bread story horse paper money dream heart sound voice phone city road time love good day year child mother father friend door book'.split(' ');
+  var LEVELS=KB==='en'?LEVELS_EN:LEVELS_UK;
+  var WORDS_UK='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
+  var touchy= window.matchMedia && matchMedia('(pointer:coarse)').matches;
+  var WORDS=KB==='en'?WORDS_EN:WORDS_UK;
+  function progKey(){ return KB==='en'?'sunscript-game-en':'sunscript-game'; }
+  var prog=storeGet(progKey(),{best:{}});
+  var cur=0, G=null;
+  var el={levels:document.getElementById('levels'), word:document.getElementById('gWord'), hint:document.getElementById('gHint'), score:document.getElementById('gScore'), combo:document.getElementById('gCombo'),
+    bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
+    box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat')};
+  function unlocked(i){ if(i===0) return true; var p=prog.best[i-1]; return !!(p&&p.stars>0) || (LEVELS[i-1].touchOnly&&!touchy&&unlocked(i-1)); }
+  function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
+  function renderLevels(){
+    el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
+      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><span class="n">'+(i+1)+'</span><b>'+L.name+(L.touchOnly&&!touchy?' <span style="color:var(--ink-3);font-weight:400">· phone</span>':'')+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):'')+'</span>'+(b&&(b.cpm||b.per)?'<span class="rec">record: '+(L.sprint? b.cpm+' letters a minute' : b.per.toFixed(1)+' s per letter')+'</span>':'')+'</button>'; }).join('');
+    el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro(); }); });
+  }
+  function pool(i){ var L=LEVELS[i];
+    if(L.words) return null;
+    var fresh=L.add.split(' '), old=[]; for(var j=0;j<i;j++){ if(!LEVELS[j].words && !(LEVELS[j].touchOnly&&!touchy)) old=old.concat(LEVELS[j].add.split(' ')); }
+    return {fresh:fresh, old:old}; }
+  function learnedLetters(upto){ var all=[]; for(var j=0;j<upto;j++){ var l=LEVELS[j]; if(l.add && !(l.touchOnly&&!touchy)) all=all.concat(l.add.split(' ')); } return all; }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function makeTargets(i){ var L=LEVELS[i];
+    if(L.exam){ var all=learnedLetters(LEVELS.length), out=[], last='';
+      for(var n=0;n<(L.sprint?400:20);n++){ var c; do{ c=all[Math.floor(Math.random()*all.length)]; }while(c===last); last=c; out.push({w:c,hint:false}); } return out; }
+    var raw=makeRaw(i);
+    if(L.words) return raw.map(function(w){ return {w:w,hint:false}; });
+    // спершу повтори кожну нову літеру з підказкою, потім згадай без неї
+    var fresh=L.add.split(' '), learn=shuffle(fresh.slice()).concat(shuffle(fresh.slice()).slice(0,2));
+    return learn.map(function(c){ return {w:c,hint:true}; }).concat(raw.slice(0,12).map(function(c){ return {w:c,hint:false}; }));
+  }
+  function makeRaw(i){ var L=LEVELS[i], out=[];
+    if(L.words){ var allowed={}; LEVELS.forEach(function(l){ if(l.add && !(l.touchOnly&&!touchy)) l.add.split(' ').forEach(function(c){allowed[c]=1;}); });
+      var ws=WORDS.filter(function(w){ return w.split('').every(function(c){return allowed[c];}); });
+      for(var n=0;n<6;n++) out.push(ws[Math.floor(Math.random()*ws.length)]); return out; }
+    var p=pool(i), last='';
+    for(var k=0;k<15;k++){ var src= (p.old.length && Math.random()<0.3)? p.old : p.fresh, c; do{ c=src[Math.floor(Math.random()*src.length)]; }while(c===last && src.length>1); last=c; out.push(c); }
+    return out; }
+  function intro(){
+    var L=LEVELS[cur]; G=null;
+    el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
+    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c,KB); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
+    var phoneOnly= L.touchOnly && !touchy;
+    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Level '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. No space needed between words. A hint appears after two mistakes.':L.exam?'. A hint appears after two mistakes.':'. First repeat with a hint, then recall without it.')+'</p>'+
+      (ex?'<div class="row">'+ex+'</div>':'')+
+      (phoneOnly?'<p>The pad needs the touch width, which a mouse doesn’t give. Play this level on a phone; the rest works either way.</p>':'')+
+      '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Try anyway':'Start')+'</button></div>';
+    el.over.hidden=false;
+    document.getElementById('gStart').addEventListener('click',start);
+  }
+  function start(){
+    G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, rHits:0, rTries:0, score:0, combo:1, t0:performance.now(), misses:{}};
+    el.over.hidden=true; show();
+    if(LEVELS[cur].sprint){ var g=G; clearInterval(start.timer); start.timer=setInterval(function(){
+      if(G!==g){ clearInterval(start.timer); return; }
+      var left=Math.max(0,60-(performance.now()-g.t0)/1000); el.count.textContent=Math.ceil(left)+' s'; el.bar.style.width=((60-left)/60*100)+'%';
+      if(left<=0){ clearInterval(start.timer); done(); } },200); }
+  }
+  function curT(){ return G.targets[G.ti]; }
+  function curChar(){ var t=curT(); return t? t.w[G.ci] : null; }
+  function show(){
+    var t=curT(); if(!t){ return done(); } var w=t.w;
+    el.word.innerHTML=w.split('').map(function(c,i){ return '<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+'">'+esc(c)+'</span>'; }).join('');
+    var c=curChar(), where=whereOf(c,KB), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
+    el.hint.innerHTML= where? glyph(where.d,where.k,60) : ''; el.hint.style.opacity= showHint?1:0;
+    el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
+    if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'repeat':'recall')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
+    if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML(KB,false,c); } else el.cheatWrap.hidden=true;
+  }
+  function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
+  function onGame(r){
+    if(!G || !el.over.hidden) return;
+    if(r==='tap'||r==='dbl'||r==='long'||r==='del') return;
+    var want=curChar(); if(!want) return;
+    var t=curT(), recall=!t.hint;
+    G.tries++; if(recall) G.rTries++;
+    var got= r==='?'? null : charOf(r,KB);
+    if(got===want){
+      G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
+      flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
+      if(G.ci>=t.w.length){ G.ti++; G.ci=0; }
+      show(); return;
+    }
+    G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1;
+    var w=whereOf(want,KB);
+    el.res.textContent= got? ('got “'+got+'”: '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; needed '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'not one of the directions';
+    flash(got?('“'+got+'”'):'?','var(--bad)');
+    el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake');
+    show();
+  }
+  function countRecall(){ return G.targets.reduce(function(n,t){ return n+(t.hint?0:t.w.length); },0); }
+  function weak(){ var m={}; Object.keys(G.misses).forEach(function(k){ var p=k.split(':'), t=G.targets[+p[0]]; if(t) m[t.w[+p[1]]]=1; }); return Object.keys(m); }
+  function done(){
+    // Зірки — лише за частину без підказки: чи пам'ятаєш, а не чи вмієш повторити.
+    var L=LEVELS[cur], secs=(performance.now()-G.t0)/1000, per=secs/Math.max(1,G.hits);
+    var recallN= L.sprint? G.hits+Object.keys(G.misses).length : countRecall();
+    var acc=recallN? G.rHits/recallN : 0, cpm=Math.round(G.hits/Math.max(1,Math.min(secs,L.sprint?60:secs))*60);
+    var st= L.sprint ? (cpm>=40&&acc>=0.85?3 : cpm>=25&&acc>=0.75?2 : cpm>=12?1 : 0)
+                     : acc>=0.7 ? (acc>=0.9 && per<=2 ? 3 : acc>=0.8 ? 2 : 1) : 0;
+    // Особисті рекорди: найменше секунд на літеру, найбільше літер за хвилину, найбільше очок.
+    var b=prog.best[cur]||{stars:0,score:0}, rec=[];
+    if(st>0 && (!b.per || per<b.per)){ if(b.per) rec.push('fastest: '+per.toFixed(1)+' s per letter'); b.per=+per.toFixed(2); }
+    if(st>0 && (!b.cpm || cpm>b.cpm)){ if(b.cpm) rec.push('most: '+cpm+' letters a minute'); b.cpm=cpm; }
+    if(G.score>b.score){ if(b.score) rec.push('most points: '+G.score); b.score=G.score; }
+    if(st>b.stars) b.stars=st; b.acc=Math.max(b.acc||0,Math.round(acc*100));
+    prog.best[cur]=b; storeSet(progKey(),prog);
+    el.bar.style.width='100%';
+    var next= cur+1<LEVELS.length && unlocked(cur+1);
+    el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(rec.length?'New record!':st? 'Level passed':'Almost')+'</h3>'+
+      (rec.length?'<p style="color:var(--gold)">'+rec.map(esc).join('<br>')+'</p>':'')+
+      (L.sprint? '<p>'+G.hits+' letters in 60 s · right first time '+Math.round(acc*100)+'% · '+G.score+' points</p>'
+               : '<p>Recalled without a hint, first try: '+G.rHits+' of '+recallN+' ('+Math.round(acc*100)+'%) · '+per.toFixed(1)+' s per letter · '+cpm+' letters/min · '+G.score+' points</p>')+
+      '<p>Your records here: '+(b.per?b.per.toFixed(1)+' s per letter · ':'')+(b.cpm?b.cpm+' letters/min · ':'')+b.score+' points</p>'+
+      (weak().length?'<p>Practise: '+weak().map(esc).join(' ')+'</p>':'')+
+      (st?'':(L.sprint?'<p>For a star: at least 12 letters a minute.</p>':'<p>To pass: 70% without a hint.</p>'))+
+      '<div class="row"><button type="button" class="btn ghost" id="gAgain">Again</button>'+(next?'<button type="button" class="btn" id="gNext">Next</button>':'')+'</div>';
+    el.over.hidden=false; G=null; renderLevels();
+    document.getElementById('gAgain').addEventListener('click',start);
+    var nb=document.getElementById('gNext'); if(nb) nb.addEventListener('click',function(){ cur++; renderLevels(); intro(); });
+  }
+  el.optHint.addEventListener('change',function(){ if(G) show(); });
+  el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML(KB,false); });
+  kbListeners.push(function(l){ clearInterval(start.timer); LEVELS= l==='en'?LEVELS_EN:LEVELS_UK; WORDS= l==='en'?WORDS_EN:WORDS_UK; prog=storeGet(progKey(),{best:{}}); G=null; cur=0;
+    for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; } if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
+  new Pad(document.getElementById('gPad'),onGame);
+  for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; }
+  renderLevels(); intro();
+  document.querySelectorAll('.kbsw button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-kb')===KB); b.addEventListener('click',function(){ if(KB!==b.getAttribute('data-kb')) setKB(b.getAttribute('data-kb')); }); });
+})();
+</script>
+</body>
+</html>
