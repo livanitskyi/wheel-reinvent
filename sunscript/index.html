@@ -412,9 +412,11 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     window.addEventListener('resize',resize); setTimeout(resize,0);
     // Ширина дотику: з pointer-подій, а якщо браузер її не дає (буває 0 або 1) — з touch-подій (radiusX/radiusY).
     var touchW=0;
-    function onTouch(e){ var m=0; for(var i=0;i<e.touches.length;i++){ var t=e.touches[i]; m=Math.max(m,2*Math.max(t.radiusX||0,t.radiusY||0)); } if(m>0) touchW=m; }
+    var diag={pw:0,tr:0,pr:0,tf:0}; this.diag=diag;
+    function onTouch(e){ var m=0; for(var i=0;i<e.touches.length;i++){ var t=e.touches[i]; m=Math.max(m,2*Math.max(t.radiusX||0,t.radiusY||0)); diag.tf=Math.max(diag.tf,t.force||0); } diag.tr=Math.max(diag.tr,m); if(m>0) touchW=m; }
     zone.addEventListener('touchstart',onTouch,{passive:true}); zone.addEventListener('touchmove',onTouch,{passive:true});
     function pt(e){ var r=cv.getBoundingClientRect(), w=Math.max(e.width||0,e.height||0);
+      diag.pw=Math.max(diag.pw,w); diag.pr=Math.max(diag.pr,e.pressure||0);
       if(e.pointerType==='touch' && w<=2 && touchW) w=touchW;
       return {x:e.clientX-r.left,y:e.clientY-r.top,t:e.timeStamp,w:w}; }
     this.lastWidth=0; var self=this;
@@ -426,7 +428,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     zone.addEventListener('pointerdown',function(e){
       if(s1 && !s2 && !s1.done && e.pointerId!==s1.id){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s2={id:e.pointerId,pts:[pt(e)]}; return; }
       if(s1) return;
-      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s1={id:e.pointerId,pts:[pt(e)]}; loop(); });
+      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} diag.pw=diag.tr=diag.pr=diag.tf=0; s1={id:e.pointerId,pts:[pt(e)]}; loop(); });
     zone.addEventListener('pointermove',function(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
       var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); });
     function up(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
@@ -453,7 +455,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     var tEl=document.getElementById('sbText'), res=document.getElementById('sbRes'), svc=document.getElementById('sbSvc'), cheat=document.getElementById('sbCheat');
     var pad=null;
     function render(hl){ tEl.textContent=text; cheat.innerHTML=cheatHTML(layer,upper,hl);
-      var w= pad&&pad.lastWidth ? 'дотик '+pad.lastWidth+' px'+(pad.lastWidth>=CFG.padThr?' · подушка':'') : '';
+      var d=pad&&pad.diag, w= pad&&pad.lastWidth ? 'дотик '+pad.lastWidth+' px'+(pad.lastWidth>=CFG.padThr?' · подушка':'')+(d?' · w'+Math.round(d.pw)+' r'+Math.round(d.tr)+' p'+d.pr.toFixed(2)+' f'+d.tf.toFixed(2)+' ×'+(window.devicePixelRatio||1).toFixed(1):'') : '';
       svc.textContent= service?'команда: ↑ велика · ↓ Enter · ↗ символи · ↙ слово · ↘ мова':(upper?'⇧ велика':(layer==='sym'?'символи':w)); }
     document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
     pad=new Pad(document.getElementById('sbPad'),function(r){
