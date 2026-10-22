@@ -149,7 +149,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
 .over[hidden]{display:none}
 .over .card{display:grid;gap:12px;justify-items:center;max-width:320px}
 .over .card input{font:inherit;font-size:17px;width:100%;box-sizing:border-box;padding:12px 16px;border-radius:12px;border:1px solid var(--padLine);background:transparent;color:var(--padInk);text-align:center}
-.status .nextw{font:inherit;font-size:13px;font-weight:600;color:var(--padInk);background:none;border:1px solid var(--padLine);border-radius:999px;padding:3px 12px;cursor:pointer}
+.nextw{font:inherit;font-size:13px;font-weight:600;color:var(--padInk);background:none;border:1px solid var(--padLine);border-radius:999px;padding:3px 12px;cursor:pointer}
 .reps{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:6px 18px 0;font-size:13px;color:var(--padMuted);min-height:22px}
 .reps b{color:var(--good);font-weight:600}
 .over .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--padMuted)}
@@ -274,7 +274,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">У браузері<span>без встановлення</span></a></li>
         <li><a href="#game">Гра<span>11 рівнів: пам’ять, точність, швидкість</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.11.1 · 774 КБ</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.12.0 · 778 КБ</span></a></li>
       </ul>
       <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
     </div>
@@ -476,6 +476,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     zone.addEventListener('pointercancel',function(){ s1=null; s2=null; stopRep(); follow=false; });
     function finish(A,B){
       var wasRep=repeating, wasFollow=follow; stopRep(); follow=false;
+      self.lastStroke={P:A.pts, B:B?B.pts:null};
       if(wasRep) return;
       self.lastWidth=Math.round(Math.max.apply(null,A.pts.map(function(q){return q.w||0;})));
       if(B){ onResult(chord(analyze(A.pts),analyze(B.pts))); return; }
@@ -678,7 +679,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var t=curT(), recall=!t.hint;
     G.tries++; if(recall) G.rTries++;
     var got= r==='?'? null : r==='tap'? ' ' : charOf(r,KB);
-    stat(want, got!==want);
+    stat(want, got!==want); logAttempt(want,r,got);
     if(got===want){
       G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
       flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent= r==='tap'? 'тап → пробіл' : ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
@@ -736,7 +737,28 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML(KB,false); });
   kbListeners.push(function(l){ clearInterval(start.timer); LEVELS= l==='en'?LEVELS_EN:LEVELS_UK; WORDS= l==='en'?WORDS_EN:WORDS_UK; PHRASES= l==='en'?PHRASES_EN:PHRASES_UK; prog=storeGet(progKey(),{best:{}}); G=null; cur=0;
     cur=firstUndone(); if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
-  new Pad(document.getElementById('gPad'),onGame);
+  var gpad=new Pad(document.getElementById('gPad'),onGame);
+  // ── Логи тренування (лише в застосунку): штрихи з ціллю — щоб автор міг надіслати їх для розбору. Не більше LOG_MAX спроб. ──
+  var APP=window.SunscriptApp, LOG_MAX=1500, LOG_KEY='sunscript-log';
+  function logLoad(){ return storeGet(LOG_KEY,[]); }
+  function logSave(a){ if(a.length>LOG_MAX) a=a.slice(a.length-LOG_MAX); storeSet(LOG_KEY,a); return a; }
+  function keyOf(r){ if(r==='tap') return 'tap'; if(!r||typeof r!=='object') return '?'; return r.k==='P'?'star:P'+r.d:'star:'+r.d+r.k; }
+  function logAttempt(want,r,got){ if(!APP) return; var st=gpad.lastStroke; if(!st) return;
+    var w=whereOf(want,KB), m=analyze(st.P);
+    var rec={t:Date.now(), lang:KB, level:LEVELS[cur].name, want:want, target:w?keyOf(w):(want===' '?'tap':'?'), got:keyOf(r), gotLabel:got, ok:got===want,
+      m:{dist:+m.dist.toFixed(1), dur:Math.round(m.dur), startMs:Math.round(m.startDwell), startPct:+m.startPct.toFixed(1), endPct:+m.endPct.toFixed(1), retPct:+m.retPct.toFixed(1), dips:m.dips.map(function(x){return +x.toFixed(2);}), wMax:Math.round(m.wMax), star:m.star.map(function(x){ return [x.d,+x.ang.toFixed(1),+x.off.toFixed(1)]; })},
+      pts:st.P.map(function(q){ return [+(q.x-st.P[0].x).toFixed(1), +(q.y-st.P[0].y).toFixed(1), Math.round(q.t-st.P[0].t), Math.round(q.w||0)]; }),
+      cfg:{dpr:window.devicePixelRatio||1, W:Math.round(window.innerWidth), H:Math.round(window.innerHeight)}};
+    if(st.B) rec.chord=true;
+    var a=logSave(logLoad().concat([rec])); logUI(a.length); }
+  function logUI(n){ var c=document.getElementById('logCount'); if(c) c.textContent=n; }
+  if(APP){
+    var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px';
+    box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
+    el.optHint.closest('.opts').after(box); logUI(logLoad().length);
+    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.12.0', attempts:a})); };
+    document.getElementById('logClear').onclick=function(){ if(confirm('Стерти всі збережені логи?')){ logSave([]); logUI(0); } };
+  }
   cur=firstUndone();
   renderLevels(); intro();
   document.querySelectorAll('.kbsw button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-kb')===KB); b.addEventListener('click',function(){ if(KB!==b.getAttribute('data-kb')) setKB(b.getAttribute('data-kb')); }); });
