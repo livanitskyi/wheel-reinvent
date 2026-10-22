@@ -274,7 +274,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">У браузері<span>без встановлення</span></a></li>
         <li><a href="#game">Гра<span>11 рівнів: пам’ять, точність, швидкість</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.11.0 · 774 КБ</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.11.1 · 774 КБ</span></a></li>
       </ul>
       <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
     </div>
@@ -569,10 +569,16 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   function drillWords(){ var al=allowedMap(); return WORDS.filter(function(w){ return w.split('').every(function(c){return al[c];}); }); }
   function nextDrill(word){ var ws=drillWords(), w=word; if(!w){ do{ w=ws[Math.floor(Math.random()*ws.length)]; }while(ws.length>1 && G.dr && w===G.dr.word); }
     G.targets=[{w:w,hint:false}]; G.ti=0; G.ci=0; G.misses={}; G.dr={word:w, reps:[], t0:null, errs:0}; showReps(); show(); }
+  // Особистий рейтинг: для кожного слова — п'ять найкращих часів.
+  function topOf(key){ var v=(prog.drill||{})[key]; return v==null?[]:(typeof v==='number'?[v]:v); }
+  function addTop(key,ms){ var pd=prog.drill||(prog.drill={}), a=topOf(key).concat([Math.round(ms)]).sort(function(x,y){return x-y;}).slice(0,5); pd[key]=a; return a.indexOf(Math.round(ms)); }
+  function board(n){ var pd=prog.drill||{}, pre=KB+':';
+    return Object.keys(pd).filter(function(k){ return k.indexOf(pre)===0; }).map(function(k){ var w=k.slice(pre.length), b=topOf(k)[0]; return {w:w, ms:b, cpm:Math.round(w.length/b*60000)}; })
+      .sort(function(a,b){ return b.cpm-a.cpm; }).slice(0,n); }
   function fmt(ms){ return (ms/1000).toFixed(1)+' с'; }
   function showReps(){ var d=G&&G.dr; if(!d){ el.reps.hidden=true; return; } el.reps.hidden=false;
-    var best=(prog.drill||{})[KB+':'+d.word];
-    el.reps.innerHTML= d.reps.length? d.reps.slice(-6).map(function(x){ return x.ms===Math.min.apply(null,d.reps.map(function(y){return y.ms;}))?'<b>'+fmt(x.ms)+'</b>':fmt(x.ms)+(x.errs?' ·'+x.errs:''); }).join(' ')+(best?' · рекорд '+fmt(best):'') : (best?'рекорд '+fmt(best):'пиши слово — час піде з першого дотику'); }
+    var top=topOf(KB+':'+d.word), best=top[0];
+    el.reps.innerHTML= d.reps.length? d.reps.slice(-6).map(function(x){ return x.ms===Math.min.apply(null,d.reps.map(function(y){return y.ms;}))?'<b>'+fmt(x.ms)+'</b>':fmt(x.ms)+(x.errs?' ·'+x.errs:''); }).join(' ')+(top.length?' · топ: '+top.map(fmt).join(' · '):'') : (top.length?'топ: '+top.map(fmt).join(' · '):'пиши слово — час піде з першого дотику'); }
   function examIdx(){ for(var j=0;j<LEVELS.length;j++) if(LEVELS[j].exam&&!LEVELS[j].sprint) return j; return 0; }
   function unlocked(i){ return true; }
   function firstUndone(){ for(var i=0;i<LEVELS.length;i++){ var b=prog.best[i]; if(!(b&&b.stars>0)) return i; } return 0; }  // усі рівні відкриті (рішення автора)
@@ -618,10 +624,11 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c,KB); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
     var phoneOnly= L.touchOnly && !touchy;
     var wk= L.weak? weakest(5) : [];
-    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.phrases?'. Пробіл — тап. Підказка з’явиться після двох помилок.':L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':(L.exam||L.weak)?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
+    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.phrases?'. Пробіл — тап. Підказка з’явиться після двох помилок.':L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':(L.exam||L.weak||L.drill)?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
       (L.weak? (wk.length?'<p>Найчастіше плутаєш: '+wk.map(function(x){ return esc(x.c)+' '+Math.round(x.r*100)+'%'; }).join(' · ')+'</p>':'<p>Поки мало даних — пограй інші рівні, і тут з’являться твої слабкі літери.</p>') : '')+
       (ex?'<div class="row">'+ex+'</div>':'')+
-      (L.drill?'<p>Після кожного разу — час і твій рекорд для цього слова. Тап — наступне слово. Помилка не скидає спробу, але рахується.</p><input id="gOwn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="своє слово (необов’язково)">':'')+
+      (L.drill?'<p>Після кожного разу — час і твій рекорд для цього слова. Тап — наступне слово. Помилка не скидає спробу, але рахується.</p>'+
+        (board(8).length?'<div style="width:100%;text-align:left;font-size:14px"><div class="eyebrow" style="color:var(--padMuted);text-align:center;margin-bottom:6px">Твій рейтинг</div>'+board(8).map(function(x,i){ return '<div style="display:flex;gap:8px;padding:3px 0;border-top:1px solid var(--padLine)"><span style="color:var(--padMuted);width:1.4em">'+(i+1)+'</span><b style="flex:1">'+esc(x.w)+'</b><span>'+fmt(x.ms)+'</span><span style="color:var(--padMuted);width:5.5em;text-align:right">'+x.cpm+' л/хв</span></div>'; }).join('')+'</div>':'')+'<input id="gOwn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="своє слово (необов’язково)">':'')+
       (phoneOnly?'<p>Подушка потребує ширини дотику — мишка її не передає. Цей рівень пройди з телефона; далі можна грати й так.</p>':'')+
       '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Все одно спробувати':'Почати')+'</button></div>';
     el.over.hidden=false;
@@ -677,9 +684,10 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
       flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent= r==='tap'? 'тап → пробіл' : ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
       if(G.ci>=t.w.length){
         if(dr){ var d=G.dr, ms=performance.now()-d.t0; d.reps.push({ms:ms,errs:d.errs}); d.t0=null; d.errs=0; G.ci=0; G.misses={};
-          var key=KB+':'+d.word, pd=prog.drill||(prog.drill={}), rec= !pd[key] || ms<pd[key]; if(rec){ pd[key]=Math.round(ms); }
+          var key=KB+':'+d.word, had=topOf(key).length, place=addTop(key,ms), rec= place===0 && had>0;
           storeSet(progKey(),prog);
-          flash(fmt(ms),rec?'var(--gold)':'var(--good)'); el.res.textContent= (rec&&d.reps.length>1?'рекорд! ':'')+d.word+' — '+fmt(ms)+' · '+Math.round(d.word.length/ms*60000)+' літер/хв';
+          flash(fmt(ms),rec?'var(--gold)':'var(--good)');
+          el.res.textContent= (rec?'рекорд! ':place>=0&&had>0?(place+1)+'-е місце · ':'')+d.word+' — '+fmt(ms)+' · '+Math.round(d.word.length/ms*60000)+' літер/хв';
           showReps(); show(); return; }
         G.ti++; G.ci=0; }
       show(); return;
