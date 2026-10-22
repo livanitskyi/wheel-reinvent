@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sunscript</title>
+<meta name="description" content="Sunscript — клавіатура для письма наосліп: літери пишуться простими жестами по трьох осях великого пальця. Спробуй у браузері й потренуйся в грі.">
+<link rel="canonical" href="https://wheel-reinvent.com/sunscript/">
+<meta property="og:title" content="Sunscript — пиши, не дивлячись">
+<meta property="og:description" content="Не де натиснути, а як провести. Спробуй клавіатуру в браузері й потренуйся в грі.">
+<meta property="og:url" content="https://wheel-reinvent.com/sunscript/">
+<meta property="og:image" content="https://wheel-reinvent.com/sunscript/logo.jpg">
+<meta name="theme-color" content="#FBFAF7">
+<link rel="icon" href="logo.jpg" type="image/jpeg">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: паперова сторінка з маркерними кольорами логотипу; «пристрій» — темна площадка, як сама клавіатура. */
+:root{
+  --paper:#FBFAF7; --ink:#1B1A17; --muted:#6B675E; --line:#E4E0D6; --chip:#F1EEE6;
+  --pad:#17140F; --padInk:#F1EDE4; --padMuted:#9A9284; --padLine:#3A342A; --panel:#1C1914;
+  --axB:#1AA0E8; --axR:#EE5146; --axG:#17B354; --good:#17B354; --bad:#EE5146; --gold:#E9A63A;
+  --display:'Unbounded', 'Golos Text', system-ui, sans-serif;
+  --body:'Golos Text', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#12110E; --ink:#F1EDE4; --muted:#A39D90; --line:#2C2922; --chip:#1E1C17; color-scheme:dark } }
+:root[data-theme="dark"]{ --paper:#12110E; --ink:#F1EDE4; --muted:#A39D90; --line:#2C2922; --chip:#1E1C17; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(40px,8vw,84px);line-height:1.02;font-weight:800}
+h2{font-size:clamp(26px,4.2vw,40px);line-height:1.1;font-weight:700}
+h3{font-size:18px;font-weight:700}
+p{margin:0;max-width:62ch}
+a{color:inherit}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn{appearance:none;border:2px solid var(--ink);background:var(--ink);color:var(--paper);font:600 16px/1 var(--body);padding:14px 20px;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:focus-visible,.chipbtn:focus-visible,.lvl:focus-visible{outline:3px solid var(--axB);outline-offset:2px}
+section{padding-block:56px}
+section+section{border-top:1px solid var(--line)}
+
+/* шапка */
+.top{display:flex;align-items:center;gap:10px;padding-block:16px}
+.top img{width:34px;height:34px;border-radius:8px}
+.top b{font:700 17px var(--display)}
+.top nav{margin-left:auto;display:flex;gap:16px;font-weight:500}
+.top nav a{text-decoration:none;color:var(--muted)}
+
+/* герой */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;padding-block:24px 48px}
+.hero .lead{font-size:clamp(18px,2.2vw,22px);margin-top:18px;color:var(--muted)}
+.hero .lead b{color:var(--ink);font-weight:600}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.hero figure{margin:0;justify-self:center}
+.hero figure img{width:min(100%,360px);border-radius:28px;box-shadow:0 1px 0 var(--line)}
+.hero figcaption{font:500 13px var(--mono);color:var(--muted);text-align:center;margin-top:10px}
+@media (max-width:720px){ .hero{grid-template-columns:1fr} .hero figure{order:-1} .hero figure img{width:200px} .top nav{display:none} }
+
+/* осі */
+.axes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center;margin-top:28px}
+.axes svg{width:100%;max-width:380px;justify-self:center;display:block}
+.axes ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.axes li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.sw{width:34px;height:8px;border-radius:4px;margin-top:9px}
+@media (max-width:720px){ .axes{grid-template-columns:1fr} }
+
+/* жести */
+.kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:28px}
+.kind{border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;background:var(--paper)}
+.kind .g{grid-row:span 2;width:64px;height:64px;border-radius:14px;background:var(--pad);display:grid;place-items:center}
+.kind .ex{font:500 13px var(--mono);color:var(--muted)}
+.kind .ex b{font:700 18px var(--body);color:var(--ink)}
+@media (max-width:820px){ .kinds{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:520px){ .kinds{grid-template-columns:1fr} }
+.note{margin-top:22px;color:var(--muted)}
+.extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}
+.extras>div{background:var(--chip);border-radius:18px;padding:18px;display:grid;gap:8px;min-width:0}
+@media (max-width:640px){ .extras{grid-template-columns:1fr} }
+.kbd{font:500 14px var(--mono);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+
+/* пристрій */
+.device{background:var(--pad);color:var(--padInk);border-radius:26px;overflow:hidden;margin-top:24px;max-width:520px;margin-inline:auto;box-shadow:0 30px 60px -30px rgba(0,0,0,.45)}
+.screen{padding:14px 16px;min-height:62px;border-bottom:1px solid var(--padLine);display:flex;gap:10px;align-items:flex-start}
+.screen .txt{flex:1;min-width:0;font:500 20px/1.35 var(--body);word-break:break-word;white-space:pre-wrap}
+.screen .txt::after{content:'';display:inline-block;width:2px;height:1.1em;background:var(--axB);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){ .screen .txt::after{animation:none} }
+.screen .sbtn{flex:none;border:1px solid var(--padLine);background:transparent;color:var(--padInk);border-radius:10px;font:600 14px var(--body);padding:8px 10px;cursor:pointer}
+.status{display:flex;justify-content:space-between;gap:8px;padding:8px 16px 0;font:500 12px var(--mono);color:var(--padMuted);min-height:26px}
+.status .res{color:var(--padInk)}
+.status .svc{color:var(--gold)}
+.padzone{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
+.padzone canvas{display:block;width:100%;height:100%}
+.sandbox .padzone{height:300px}
+.cheat{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px 0;padding:10px 6px 14px;background:var(--panel);border-top:1px solid var(--padLine);pointer-events:none}
+.cheat .c{display:flex;align-items:center;justify-content:center;gap:2px;height:38px;font:600 17px var(--body);color:var(--padInk)}
+.cheat .c.hit{background:rgba(255,255,255,.07);border-radius:10px}
+.devhelp{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 16px 14px;font:500 12px var(--mono);color:var(--padMuted);border-top:1px solid var(--padLine)}
+
+/* гра */
+.levels{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.lvl{appearance:none;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:16px;padding:12px 14px;min-width:132px;text-align:left;cursor:pointer;display:grid;gap:4px;font:inherit}
+.lvl small{font:500 11px var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.lvl b{font:700 15px var(--display)}
+.lvl .stars{font-size:14px;letter-spacing:2px;color:var(--gold);min-height:18px}
+.lvl[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.lvl:disabled{opacity:.45;cursor:not-allowed}
+.game .stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:18px 16px 6px}
+.game .word{font:700 clamp(34px,8vw,52px)/1 var(--display);letter-spacing:.02em;text-align:center;min-width:0;word-break:break-word}
+.game .word span{color:var(--padMuted)}
+.game .word span.done{color:var(--good)}
+.game .word span.cur{color:var(--padInk);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:8px}
+.game .hint{width:72px;height:72px;border-radius:16px;background:#0F0D0A;display:grid;place-items:center;transition:opacity .2s}
+.game .score{font:500 13px/1.5 var(--mono);color:var(--padMuted);text-align:right;font-variant-numeric:tabular-nums}
+.game .score b{font:700 22px var(--display);color:var(--padInk)}
+.game .bar{height:4px;background:var(--padLine);margin:8px 16px 0;border-radius:2px;overflow:hidden}
+.game .bar i{display:block;height:100%;width:0;background:var(--axB);transition:width .25s}
+.game .padzone{height:280px}
+.game .fb{position:absolute;left:0;right:0;top:12px;text-align:center;font:700 18px var(--body);pointer-events:none;opacity:0;transition:opacity .25s}
+.game .fb.show{opacity:1}
+.shake{animation:shake .32s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+@media (prefers-reduced-motion:reduce){ .shake{animation:none} }
+.over{position:absolute;inset:0;background:rgba(23,20,15,.94);display:grid;place-items:center;text-align:center;padding:20px}
+.over[hidden]{display:none}
+.over .card{display:grid;gap:12px;justify-items:center;max-width:340px}
+.over h3{font-size:24px}
+.over .big{font:800 44px var(--display);color:var(--gold);letter-spacing:6px}
+.over p{color:var(--padMuted);font-size:15px}
+.over .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.over .btn{background:var(--padInk);color:var(--pad);border-color:var(--padInk)}
+.over .btn.ghost{background:transparent;color:var(--padInk)}
+.gamebox{position:relative}
+.opts{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:15px}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+
+footer{padding-block:36px 56px;color:var(--muted);font-size:15px;border-top:1px solid var(--line)}
+footer .wrap{display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-between}
+</style>
+
+</head>
+<body>
+<div class="wrap top">
+  <img src="logo.jpg" alt="">
+  <b>Sunscript</b><span style="color:var(--muted);font-size:14px;margin-left:4px">від <a href="/" style="text-decoration:none">Wheel Reinvent</a></span>
+  <nav><a href="#how">Як це</a><a href="#try">Спробувати</a><a href="#game">Гра</a></nav>
+</div>
+
+<div class="wrap hero">
+  <div>
+    <div class="eyebrow">Клавіатура для письма наосліп</div>
+    <h1 style="margin-top:14px">Пиши, не&nbsp;дивлячись.</h1>
+    <p class="lead"><b>Не де натиснути, а як провести.</b> Три лінії великого пальця, шість напрямків — і вся українська абетка. Без кнопок, без вгадування слів: однаковий жест завжди дає ту саму літеру.</p>
+    <div class="cta"><a class="btn" href="#game">Грати й вчитися</a><a class="btn ghost" href="#try">Спробувати</a></div>
+  </div>
+  <figure><img src="logo.jpg" alt="Три лінії, які великий палець малює найлегше: синя вертикаль, червона полога, зелена навскіс"><figcaption>три лінії, які палець малює сам</figcaption></figure>
+</div>
+
+<section id="how"><div class="wrap">
+  <div class="eyebrow">Як це працює</div>
+  <h2 style="margin-top:10px">Три осі — шість напрямків</h2>
+  <div class="axes">
+    <div id="starSvg"></div>
+    <ul>
+      <li><span class="sw" style="background:var(--axB)"></span><div><b>Синя</b> — майже вертикаль. Вгору <b>а</b>, вниз <b>і</b>.</div></li>
+      <li><span class="sw" style="background:var(--axR)"></span><div><b>Червона</b> — полога, як «/». Вгору-праворуч <b>е</b>, вниз-ліворуч <b>о</b>.</div></li>
+      <li><span class="sw" style="background:var(--axG)"></span><div><b>Зелена</b> — навскіс, як «\». Вгору-ліворуч <b>у</b>, вниз-праворуч <b>и</b>.</div></li>
+      <li><span class="sw" style="background:var(--line)"></span><div style="color:var(--muted)">Де саме на екрані провести — неважливо. Довжина й швидкість теж. Важить напрям і те, що палець робить по дорозі.</div></li>
+    </ul>
+  </div>
+
+  <h2 style="margin-top:56px">Шість жестів на кожен напрям</h2>
+  <p class="note" style="margin-top:12px">Провів і відпустив — голосна. Решта жестів того ж напрямку дають приголосні. Ось як це виглядає на синій осі вгору:</p>
+  <div class="kinds" id="kinds"></div>
+  <div class="extras">
+    <div><h3>Тапи</h3><p><span class="kbd">тап</span> — пробіл. <span class="kbd">довгий тап</span> — стерти. <span class="kbd">подвійний тап</span>, потім рух — команда: ↑ велика, ↓ Enter, ↗ символи, ↙ стерти слово, ↘ мова.</p></div>
+    <div><h3>Двома руками</h3><p>Хто торкнувся першим — той перший такт. Тап однією рукою, лінія іншою — пауза. Лінія, потім тап — потримати. Дві лінії в один бік — далі, у протилежні — назад.</p></div>
+  </div>
+</div></section>
+
+<section id="try"><div class="wrap">
+  <div class="eyebrow">Пісочниця</div>
+  <h2 style="margin-top:10px">Спробуй без встановлення</h2>
+  <p class="note" style="margin-top:12px">Проводь пальцем (або мишкою) по темному полю. Шпаргалка внизу — абетка, біля кожної літери її жест. Знайди «с» і спробуй.</p>
+  <div class="device sandbox">
+    <div class="screen"><div class="txt" id="sbText"></div><button class="sbtn" type="button" id="sbClear">Очистити</button></div>
+    <div class="status"><span class="res" id="sbRes">проведи пальцем</span><span class="svc" id="sbSvc"></span></div>
+    <div class="padzone" id="sbPad"><canvas></canvas></div>
+    <div class="cheat" id="sbCheat"></div>
+  </div>
+</div></section>
+
+<section id="game"><div class="wrap">
+  <div class="eyebrow">Гра</div>
+  <h2 style="margin-top:10px">Вчися рівнями</h2>
+  <p class="note" style="margin-top:12px">Кожен рівень додає один новий жест. 70% влучань відкривають наступний. Три зірки — за точність і темп.</p>
+  <div class="levels" id="levels"></div>
+  <div class="device game gamebox" id="gameBox">
+    <div class="stage">
+      <div class="hint" id="gHint" aria-label="підказка"></div>
+      <div class="word" id="gWord" aria-live="polite"></div>
+      <div class="score"><b id="gScore">0</b><br><span id="gCombo">×1</span></div>
+    </div>
+    <div class="bar"><i id="gBar"></i></div>
+    <div class="status"><span class="res" id="gRes">&nbsp;</span><span id="gCount"></span></div>
+    <div class="padzone" id="gPad"><canvas></canvas><div class="fb" id="gFb"></div></div>
+    <div class="over" id="gOver"><div class="card" id="gOverCard"></div></div>
+  </div>
+  <div class="opts"><label><input type="checkbox" id="optHint" checked> показувати підказку</label><label><input type="checkbox" id="optCheat"> шпаргалка під час гри</label></div>
+  <div class="device" id="gCheatWrap" hidden style="margin-top:12px"><div class="cheat" id="gCheat"></div></div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Sunscript — експериментальна клавіатура для Android від Wheel Reinvent. Тут працює той самий розпізнавач, що й у застосунку.</span>
+  <a href="/uk/">Wheel Reinvent</a>
+</div></footer>
+
+<script id="engine">
+// ── Розпізнавач зірки (той самий, що в клавіатурі; паритет перевірено на записаних штрихах) ──
+var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12};
+var DIRS=['U','NE','SE','D','SW','NW'];
+var OPP={U:'D',D:'U',NE:'SW',SW:'NE',NW:'SE',SE:'NW'};
+var ARROW={U:'↑',NE:'↗',SE:'↘',D:'↓',SW:'↙',NW:'↖'};
+function starAngles(){ var r=CFG.axRed,b=CFG.axBlue,g=CFG.axGreen; return {NE:r,SW:r+180,U:b,D:b+180,NW:g,SE:g+180}; }
+function angOf(dx,dy){ var a=Math.atan2(-dy,dx)*180/Math.PI; return (a+360)%360; }
+function angDist(a,b){ var d=Math.abs(a-b)%360; return d>180?360-d:d; }
+function nearestDir(dx,dy){ var A=starAngles(), a=angOf(dx,dy), best=null, bd=999;
+  DIRS.forEach(function(k){ var d=angDist(a,A[k]); if(d<bd){bd=d;best=k;} }); return {dir:best, off:bd, ang:a}; }
+function starSegs(P){
+  var steps=[], anc=0;
+  for(var i=1;i<P.length;i++){ var dx=P[i].x-P[anc].x, dy=P[i].y-P[anc].y; if(Math.hypot(dx,dy)<16) continue; steps.push({d:nearestDir(dx,dy).dir,i0:anc,i1:i}); anc=i; }
+  function runs(a){ var r=[]; a.forEach(function(x){ var l=r[r.length-1]; if(l&&l.d===x.d){ l.n+=x.n||1; l.i1=x.i1; } else r.push({d:x.d,n:x.n||1,i0:x.i0,i1:x.i1}); }); return r; }
+  var r=runs(steps);
+  if(r.length>1&&steps.length>=3){ var keep=r.filter(function(x){return x.n>1;}); if(keep.length) r=runs(keep); }
+  var merged=[];
+  r.forEach(function(x){ var l=merged[merged.length-1]; if(l&&x.d!==OPP[l.d]){ l.i1=x.i1; l.n+=x.n; } else merged.push({d:x.d,n:x.n,i0:x.i0,i1:x.i1}); });
+  return merged.map(function(x){ var nd=nearestDir(P[x.i1].x-P[x.i0].x, P[x.i1].y-P[x.i0].y); return {d:nd.dir, off:nd.off, ang:nd.ang}; });
+}
+function analyze(P){
+  var p0=P[0], pN=P[P.length-1], dist=Math.hypot(pN.x-p0.x,pN.y-p0.y);
+  var cum=[0]; for(var q=1;q<P.length;q++) cum.push(cum[q-1]+Math.hypot(P[q].x-P[q-1].x,P[q].y-P[q-1].y));
+  var path=cum[P.length-1], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+  var retPct= far>0?(far-dist)/far*100:0, dur=pN.t-p0.t;
+  function lowIdx(t){ var lo=0; while(lo<P.length-1&&P[lo+1].t<=t) lo++; return lo; }
+  function distAt(t){ var lo=lowIdx(t); if(lo>=P.length-1) return cum[P.length-1]; var a0=P[lo].t,a1=P[lo+1].t; return a1>a0? cum[lo]+(cum[lo+1]-cum[lo])*(t-a0)/(a1-a0) : cum[lo]; }
+  function posAt(t){ var lo=lowIdx(t); if(lo>=P.length-1) return [pN.x,pN.y]; var a0=P[lo].t,a1=P[lo+1].t,f=a1>a0?(t-a0)/(a1-a0):0; return [P[lo].x+(P[lo+1].x-P[lo].x)*f, P[lo].y+(P[lo+1].y-P[lo].y)*f]; }
+  var bins=[];
+  for(var tt=p0.t; tt<pN.t; tt+=16){ var ta=Math.max(p0.t,tt-16), tb=Math.min(pN.t,tt+32), A=posAt(ta), B=posAt(tb); bins.push(Math.hypot(B[0]-A[0],B[1]-A[1])/Math.max(1,tb-ta)*1000); }
+  var sm=bins.map(function(v,i){ var a=i>0?bins[i-1]:v, c=i<bins.length-1?bins[i+1]:v; return (a+v+c)/3; });
+  var peak=sm.length?Math.max.apply(null,sm):0, thr=peak*CFG.dipPct/100, edge=peak*CFG.edgePct/100;
+  var sIdx=sm.findIndex(function(v){return v>edge;}), eIdx=-1; for(var z=sm.length-1;z>=0;z--){ if(sm[z]>edge){eIdx=z;break;} }
+  if(sIdx<0){ sIdx=0; eIdx=Math.max(0,sm.length-1); }
+  var startDwell=Math.min(dur,sIdx*16), endDwell=Math.max(0,dur-(eIdx+1)*16), moveMs=Math.max(16,dur-startDwell-endDwell);
+  var dips=[];
+  if(sm.length){ var t0=p0.t+startDwell, t1=pN.t-endDwell, dTotal=Math.max(1,distAt(t1)-distAt(t0)), inDip=false, dStart=0;
+    for(var i2=sIdx;i2<=eIdx;i2++){ var low=sm[i2]<thr; if(low&&!inDip){inDip=true;dStart=i2;}
+      if((!low||i2===eIdx)&&inDip){ inDip=false; var before=distAt(p0.t+dStart*16)-distAt(t0), after=distAt(t1)-distAt(p0.t+i2*16);
+        if(before>dTotal*0.2&&after>dTotal*0.2) dips.push(before/dTotal); } } }
+  var wMax=0; P.forEach(function(q){ if(q.w>wMax) wMax=q.w; });
+  return {dist:dist,path:path,dur:dur,startPct:startDwell/moveMs*100,endPct:endDwell/moveMs*100,retPct:retPct,dips:dips,wMax:wMax,star:starSegs(P)};
+}
+// Результат: 'tap' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
+function classify(a){
+  if(a.dist<12&&a.path<40) return 'tap';
+  var segs=a.star; if(!segs.length) return 'tap';
+  var f=segs[0]; if(f.off>CFG.axTol) return '?';
+  if(a.startPct>=CFG.starPause) return {d:f.d,k:'P'};
+  if(a.wMax>=CFG.padThr) return {d:f.d,k:'*'};
+  var k='';
+  if(segs.length>=2){ if(segs[1].d===OPP[f.d]) k='<'; else return '?'; }
+  else if(a.retPct>=CFG.backPct) k='<';
+  else if(a.dips.length>=1) k='>';
+  else if(a.endPct>=CFG.endPct) k='H';
+  return {d:f.d,k:k};
+}
+function chord(a1,a2){
+  var t1=a1.dist<12&&a1.path<40, t2=a2.dist<12&&a2.path<40;
+  function dirOf(a){ var f=a.star[0]; return f&&f.off<=CFG.axTol? f.d : null; }
+  if(t1&&t2) return '?';
+  if(t1){ var d=dirOf(a2); return d?{d:d,k:'P'}:'?'; }
+  if(t2){ var e=dirOf(a1); return e?{d:e,k:'H'}:'?'; }
+  var d1=dirOf(a1), d2=dirOf(a2); if(!d1||!d2) return '?';
+  if(d2===d1) return {d:d1,k:'>'}; if(d2===OPP[d1]) return {d:d1,k:'<'}; return '?';
+}
+// Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
+var LAY={
+  uk:{U:'а б п в я ф',NE:'е д т з є с',SE:'и ч щ ж ь ш',D:'і ґ к г ї х',SW:'о м н л й р',NW:"у ц ' , ю ."},
+  sym:{U:'. , ! ? # <',NE:'1 2 3 4 $ >',SE:'5 6 7 8 % [',D:'9 0 - : & ]',SW:"' \" ( ) * {",NW:'@ + = / _ }'}
+};
+var KINDS=['','>','<','H','*','P'];
+function charOf(r,layer){ if(!r||typeof r!=='object') return null; return LAY[layer||'uk'][r.d].split(' ')[KINDS.indexOf(r.k)]; }
+function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].split(' ').indexOf(ch); if(i>=0) return {d:d,k:KINDS[i]}; } return null; }
+</script>
+
+<script>
+(function(){
+  var ABC="а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ь ю я ' , .".split(' ');
+  var ABC_SYM="1 2 3 4 5 6 7 8 9 0 . , ! ? - : ' \" ( ) [ ] { } < > @ # $ % & * _ + = /".split(' ');
+  var AXC={U:'var(--axB)',D:'var(--axB)',NE:'var(--axR)',SW:'var(--axR)',NW:'var(--axG)',SE:'var(--axG)'};
+  var KLABEL={'':'провів і відпустив','>':'далі: пригальмував і ще раз туди ж','<':'назад: повернувся тією ж лінією','H':'потримав у кінці','*':'подушкою пальця','P':'постояв на старті, потім провів'};
+  var KNAME={'':'Відпустити','>':'Далі','<':'Назад','H':'Потримати','*':'Подушка','P':'Пауза'};
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+  function storeGet(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+  function storeSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+  // ── Малюнки жестів (наконечник — напрям; кружок — постояв; два наконечники — далі; пуста стрілка — подушка) ──
+  function vec(d){ var a=starAngles()[d]*Math.PI/180; return [Math.cos(a),-Math.sin(a)]; }
+  function arrowHead(x,y,ux,uy,col,sz){ sz=sz||6; var px=-uy,py=ux;
+    return '<path d="M'+(x-ux*sz+px*sz*0.6).toFixed(1)+' '+(y-uy*sz+py*sz*0.6).toFixed(1)+' L'+x.toFixed(1)+' '+y.toFixed(1)+' L'+(x-ux*sz-px*sz*0.6).toFixed(1)+' '+(y-uy*sz-py*sz*0.6).toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'; }
+  function seg(x1,y1,x2,y2,col,w){ return '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+col+'" stroke-width="'+(w||2.6)+'" stroke-linecap="round"/>'; }
+  function glyph(d,kind,size){
+    size=size||44; var h=size/2, L=size*0.34, b=Math.max(4.5,size*0.13), col=AXC[d], out='<svg width="'+size+'" height="'+size+'" viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" aria-hidden="true">';
+    var u=vec(d), px=-u[1], py=u[0], sx=-u[0]*L, sy=-u[1]*L, ex=u[0]*L, ey=u[1]*L;
+    function ring(x,y,r){ return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="1.8"/>'; }
+    function P2(x,y){ return x.toFixed(1)+' '+y.toFixed(1); }
+    if(kind==='*'){ var w=3.2, hw=b+1.5, bx=ex-u[0]*7, by=ey-u[1]*7;
+      out+='<path d="M'+P2(sx+px*w,sy+py*w)+' L'+P2(bx+px*w,by+py*w)+' L'+P2(bx+px*hw,by+py*hw)+' L'+P2(ex+u[0]*2,ey+u[1]*2)+' L'+P2(bx-px*hw,by-py*hw)+' L'+P2(bx-px*w,by-py*w)+' L'+P2(sx-px*w,sy-py*w)+' Z" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linejoin="round"/>'; }
+    else if(!kind) out+=seg(sx,sy,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col);
+    else if(kind==='P'){ var cx0=sx+u[0]*2, cy0=sy+u[1]*2; out+=ring(cx0,cy0,3.4)+seg(cx0+u[0]*3.4,cy0+u[1]*3.4,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col); }
+    else if(kind==='>') out+=seg(sx,sy,ex,ey,col)+arrowHead(u[0]*2,u[1]*2,u[0],u[1],col)+arrowHead(ex,ey,u[0],u[1],col);
+    else if(kind==='<') out+=seg(sx,sy,ex,ey,col)+arrowHead(ex,ey,u[0],u[1],col)+arrowHead(-u[0]*L*0.55,-u[1]*L*0.55,-u[0],-u[1],col,Math.min(6,L*0.42));
+    else if(kind==='H'){ var hx=ex-u[0]*5, hy=ey-u[1]*5; out+=seg(sx,sy,hx,hy,col)+arrowHead(hx,hy,u[0],u[1],col)+ring(hx+u[0]*3.4,hy+u[1]*3.4,3.4); }
+    return out+'</svg>';
+  }
+
+  // ── Зірка в розділі «Як це працює» ──
+  (function(){
+    var size=340, h=size/2, R=108, out='<svg viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" role="img" aria-label="Шість напрямків і голосні на їхніх кінцях">';
+    DIRS.forEach(function(d){ var u=vec(d), col=AXC[d];
+      out+=seg(u[0]*16,u[1]*16,u[0]*R,u[1]*R,col,7)+arrowHead(u[0]*R,u[1]*R,u[0],u[1],col,14).replace('stroke-width="2.4"','stroke-width="7"');
+      out+='<text x="'+(u[0]*(R+34)).toFixed(1)+'" y="'+(u[1]*(R+34)+12).toFixed(1)+'" text-anchor="middle" font-family="Unbounded, Golos Text, sans-serif" font-weight="800" font-size="34" fill="var(--ink)">'+LAY.uk[d].split(' ')[0]+'</text>'; });
+    out+='<circle r="6" fill="var(--ink)"/></svg>';
+    document.getElementById('starSvg').innerHTML=out;
+    document.getElementById('kinds').innerHTML=KINDS.map(function(k){
+      var ch=LAY.uk.U.split(' ')[KINDS.indexOf(k)];
+      return '<div class="kind"><div class="g">'+glyph('U',k,54)+'</div><h3>'+KNAME[k]+'</h3><div class="ex">'+esc(KLABEL[k])+' → <b>'+esc(ch)+'</b></div></div>'; }).join('');
+  })();
+
+  function cheatHTML(layer,upper,hl){
+    var order= layer==='sym'? ABC_SYM : ABC;
+    return order.map(function(ch){ var w=whereOf(ch,layer); if(!w) return '';
+      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('');
+  }
+
+  // ── Площадка: один штрих або акорд двох рук; тап, довгий тап, подвійний тап ──
+  function Pad(zone,onResult){
+    var cv=zone.querySelector('canvas'), ctx=cv.getContext('2d'), W=0,H=0, s1=null, s2=null, trails=[], raf=0, lastTap=null;
+    function resize(){ var r=zone.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
+    window.addEventListener('resize',resize); setTimeout(resize,0);
+    function pt(e){ var r=cv.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top,t:e.timeStamp,w:Math.max(e.width||0,e.height||0)}; }
+    function line(P,a){ if(P.length<2) return; ctx.globalAlpha=a; ctx.strokeStyle='#F1EDE4'; ctx.lineWidth=5; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath(); ctx.moveTo(P[0].x,P[0].y); for(var i=1;i<P.length;i++) ctx.lineTo(P[i].x,P[i].y); ctx.stroke(); ctx.globalAlpha=1; }
+    function draw(){ ctx.clearRect(0,0,W,H); var now=performance.now(); trails=trails.filter(function(t){return now-t.t<900;});
+      trails.forEach(function(t){ line(t.pts,(1-(now-t.t)/900)*0.8); }); if(s1&&!s1.done) line(s1.pts,1); if(s2&&!s2.done) line(s2.pts,1); }
+    function loop(){ cancelAnimationFrame(raf); (function tick(){ draw(); if(s1||s2||trails.length) raf=requestAnimationFrame(tick); })(); }
+    zone.addEventListener('pointerdown',function(e){
+      if(s1 && !s2 && !s1.done && e.pointerId!==s1.id){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s2={id:e.pointerId,pts:[pt(e)]}; return; }
+      if(s1) return;
+      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s1={id:e.pointerId,pts:[pt(e)]}; loop(); });
+    zone.addEventListener('pointermove',function(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
+      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); });
+    function up(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
+      var l=pt(e), lp=s.pts[s.pts.length-1]; if(l.w===0&&lp) l.w=lp.w; s.pts.push(l); s.done=true; trails.push({pts:s.pts,t:performance.now()});
+      if(s1.done && (!s2||s2.done)){ var A=s1, B=s2; s1=null; s2=null; finish(A,B); } }
+    zone.addEventListener('pointerup',up);
+    zone.addEventListener('pointercancel',function(){ s1=null; s2=null; });
+    function finish(A,B){
+      var r;
+      if(B) r=chord(analyze(A.pts),analyze(B.pts));
+      else { var P=A.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+        if(far<12 && P[P.length-1].t-p0.t>=450){ lastTap=null; onResult('long'); return; }
+        r=classify(analyze(P)); }
+      if(r==='tap'){ var now=performance.now(), p=A.pts[0];
+        if(lastTap && now-lastTap.t<=300 && Math.hypot(p.x-lastTap.x,p.y-lastTap.y)<40){ lastTap=null; onResult('dbl'); return; }
+        lastTap={t:now,x:p.x,y:p.y}; onResult('tap'); return; }
+      lastTap=null; onResult(r);
+    }
+  }
+
+  // ── Пісочниця ──
+  (function(){
+    var text='', layer='uk', upper=false, service=false;
+    var tEl=document.getElementById('sbText'), res=document.getElementById('sbRes'), svc=document.getElementById('sbSvc'), cheat=document.getElementById('sbCheat');
+    function render(hl){ tEl.textContent=text; cheat.innerHTML=cheatHTML(layer,upper,hl); svc.textContent= service?'команда: ↑ велика · ↓ Enter · ↗ символи · ↙ слово · ↘ мова':(upper?'⇧ велика':(layer==='sym'?'символи':'')); }
+    document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
+    new Pad(document.getElementById('sbPad'),function(r){
+      if(r==='dbl'){ text=text.replace(/ $/,''); service=true; res.textContent='подвійний тап'; render(); return; }
+      if(service){ service=false;
+        if(r&&typeof r==='object'){ var c={U:'велика',D:'Enter',NE:'символи ⇄ літери',SW:'стерти слово',SE:'мова (тут лише українська)',NW:"апостроф"}[r.d];
+          if(r.d==='U') upper=true; else if(r.d==='D') text+='\n'; else if(r.d==='NE') layer= layer==='sym'?'uk':'sym';
+          else if(r.d==='SW') text=text.replace(/\s*\S+\s*$/,''); else if(r.d==='NW') text+="'";
+          res.textContent=c; } else res.textContent='команду скасовано';
+        render(); return; }
+      if(r==='tap'){ text+=' '; res.textContent='пробіл'; render(); return; }
+      if(r==='long'){ text=text.slice(0,-1); res.textContent='стерти'; render(); return; }
+      if(r==='?'){ res.textContent='не схоже на жоден напрям — тримайся однієї з трьох осей'; render(); return; }
+      var ch=charOf(r,layer); if(!ch){ render(); return; }
+      if(upper&&layer!=='sym'){ ch=ch.toUpperCase(); upper=false; }
+      text+=ch; res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+ch; render(ch.toLowerCase());
+    });
+    render();
+  })();
+
+  // ── Гра ──
+  var LEVELS=[
+    {name:'Голосні', k:[''], add:'а е и і о у', about:'провів і відпустив'},
+    {name:'Далі', k:['>'], add:'б д ч ґ м ц', about:'пригальмуй і штовхни ще раз'},
+    {name:'Назад', k:['<'], add:"п т щ к н '", about:'туди й назад тією ж лінією'},
+    {name:'Потримати', k:['H'], add:'в з ж г л ,', about:'доведи й постій'},
+    {name:'Подушка', k:['*'], add:'я є ь ї й ю', about:'проведи подушечкою пальця', touchOnly:true},
+    {name:'Пауза', k:['P'], add:'ф с ш х р .', about:'постій на старті, потім веди'},
+    {name:'Слова', words:true, about:'цілі слова'}
+  ];
+  var WORDS='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
+  var touchy= window.matchMedia && matchMedia('(pointer:coarse)').matches;
+  var prog=storeGet('sunscript-game',{best:{}});
+  var cur=0, G=null;
+  var el={levels:document.getElementById('levels'), word:document.getElementById('gWord'), hint:document.getElementById('gHint'), score:document.getElementById('gScore'), combo:document.getElementById('gCombo'),
+    bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
+    box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat')};
+  function unlocked(i){ if(i===0) return true; var p=prog.best[i-1]; return !!(p&&p.stars>0) || (LEVELS[i-1].touchOnly&&!touchy&&unlocked(i-1)); }
+  function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
+  function renderLevels(){
+    el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
+      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><small>Рівень '+(i+1)+(L.touchOnly&&!touchy?' · телефон':'')+'</small><b>'+L.name+'</b><span class="stars">'+(b?stars(b.stars):(ok?'':'🔒'))+'</span></button>'; }).join('');
+    el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro(); }); });
+  }
+  function pool(i){ var L=LEVELS[i];
+    if(L.words) return null;
+    var fresh=L.add.split(' '), old=[]; for(var j=0;j<i;j++){ if(!LEVELS[j].words && !(LEVELS[j].touchOnly&&!touchy)) old=old.concat(LEVELS[j].add.split(' ')); }
+    return {fresh:fresh, old:old}; }
+  function makeTargets(i){ var L=LEVELS[i], out=[];
+    if(L.words){ var allowed={}; LEVELS.forEach(function(l){ if(l.add && !(l.touchOnly&&!touchy)) l.add.split(' ').forEach(function(c){allowed[c]=1;}); });
+      var ws=WORDS.filter(function(w){ return w.split('').every(function(c){return allowed[c];}); });
+      for(var n=0;n<6;n++) out.push(ws[Math.floor(Math.random()*ws.length)]); return out; }
+    var p=pool(i), last='';
+    for(var k=0;k<15;k++){ var src= (p.old.length && Math.random()<0.3)? p.old : p.fresh, c; do{ c=src[Math.floor(Math.random()*src.length)]; }while(c===last && src.length>1); last=c; out.push(c); }
+    return out; }
+  function intro(){
+    var L=LEVELS[cur]; G=null;
+    el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
+    var ex= L.add? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--body)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
+    var phoneOnly= L.touchOnly && !touchy;
+    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен.':'')+'</p>'+
+      (ex?'<div class="row">'+ex+'</div>':'')+
+      (phoneOnly?'<p>Подушка потребує ширини дотику — мишка її не передає. Цей рівень пройди з телефона; далі можна грати й так.</p>':'')+
+      '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Все одно спробувати':'Почати')+'</button></div>';
+    el.over.hidden=false;
+    document.getElementById('gStart').addEventListener('click',start);
+  }
+  function start(){
+    G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, score:0, combo:1, t0:performance.now(), misses:{}};
+    el.over.hidden=true; show();
+  }
+  function curChar(){ var w=G.targets[G.ti]; return w? w[G.ci] : null; }
+  function show(){
+    var w=G.targets[G.ti]; if(!w){ return done(); }
+    el.word.innerHTML=w.split('').map(function(c,i){ return '<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+'">'+esc(c)+'</span>'; }).join('');
+    var c=curChar(), where=whereOf(c), showHint= el.optHint.checked && (!LEVELS[cur].words || G.misses[G.ti+':'+G.ci]);
+    el.hint.innerHTML= where? glyph(where.d,where.k,60) : ''; el.hint.style.opacity= showHint?1:0;
+    el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
+    el.count.textContent=(G.ti+1)+' / '+G.targets.length;
+    el.bar.style.width=(G.ti/G.targets.length*100)+'%';
+    if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML('uk',false,c); } else el.cheatWrap.hidden=true;
+  }
+  function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
+  function onGame(r){
+    if(!G || !el.over.hidden) return;
+    if(r==='tap'||r==='dbl'||r==='long') return;
+    var want=curChar(); if(!want) return;
+    G.tries++;
+    var got= r==='?'? null : charOf(r);
+    if(got===want){
+      G.hits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
+      flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
+      if(G.ci>=G.targets[G.ti].length){ G.ti++; G.ci=0; }
+      show(); return;
+    }
+    G.combo=1; G.misses[G.ti+':'+G.ci]=1;
+    var w=whereOf(want);
+    el.res.textContent= got? ('вийшло «'+got+'» — '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; треба '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'не схоже на жоден напрям';
+    flash(got?('«'+got+'»'):'?','var(--bad)');
+    el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake');
+    show();
+  }
+  function done(){
+    var acc=G.tries? G.hits/G.tries : 0, secs=(performance.now()-G.t0)/1000, per=secs/Math.max(1,G.hits);
+    var st= acc>=0.7 ? (acc>=0.9 && per<=2 ? 3 : acc>=0.8 ? 2 : 1) : 0;
+    var b=prog.best[cur]; if(!b || st>b.stars || (st===b.stars && G.score>b.score)) prog.best[cur]={stars:st, score:G.score, acc:Math.round(acc*100)};
+    storeSet('sunscript-game',prog);
+    el.bar.style.width='100%';
+    var next= cur+1<LEVELS.length && unlocked(cur+1);
+    el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(st? 'Рівень пройдено':'Ще трохи')+'</h3>'+
+      '<p>Влучань '+G.hits+' з '+G.tries+' ('+Math.round(acc*100)+'%) · '+per.toFixed(1)+' с на літеру · '+G.score+' очок</p>'+
+      (st?'':'<p>Для проходження треба 70% влучань.</p>')+
+      '<div class="row"><button type="button" class="btn ghost" id="gAgain">Ще раз</button>'+(next?'<button type="button" class="btn" id="gNext">Далі</button>':'')+'</div>';
+    el.over.hidden=false; G=null; renderLevels();
+    document.getElementById('gAgain').addEventListener('click',start);
+    var nb=document.getElementById('gNext'); if(nb) nb.addEventListener('click',function(){ cur++; renderLevels(); intro(); });
+  }
+  el.optHint.addEventListener('change',function(){ if(G) show(); });
+  el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML('uk',false); });
+  new Pad(document.getElementById('gPad'),onGame);
+  for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; }
+  renderLevels(); intro();
+})();
+</script>
+</body>
+</html>
