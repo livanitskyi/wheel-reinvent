@@ -214,7 +214,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
     <p class="lead">Here are all six on the blue line, upward. The other lines work the same way.</p>
     <div class="kinds" id="kinds"></div>
     <div class="pair">
-      <div><h3>Space and delete</h3><p>Tap: space. Rest in place, then swipe left: delete a letter (no letter uses the horizontal, so you won’t delete by accident). Double tap, then a swipe: a command. ↑ capital, ↓ Enter, ↗ symbols, ↙ delete word, ↘ language.</p></div>
+      <div><h3>Space and delete</h3><p>Tap: space. Double tap: delete a letter. Tap, then swipe left and hold: deletes letter by letter while you hold. Tap, then rest: a command, then a swipe. ↑ capital, ↓ Enter, ↗ symbols, ↘ language.</p></div>
       <div><h3>With two hands</h3><p>Whichever finger touches first is the first beat. Tap, then a line: pause. A line, then a tap: hold. Two lines the same way: next. Opposite ways: back.</p></div>
     </div>
   </div></section>
@@ -267,7 +267,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">In the browser<span>no install</span></a></li>
         <li><a href="#game">Game<span>9 levels and a sprint</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.8.0 · 750 KB</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.9.0 · 751 KB</span></a></li>
       </ul>
       <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
     </div>
@@ -292,7 +292,7 @@ document.querySelector('.theme').addEventListener('click',function(){
 </script>
 <script id="engine">
 // ── Розпізнавач зірки (той самий, що в клавіатурі; паритет перевірено на записаних штрихах) ──
-var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12, delHoldMs:300};
+var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12, dblMs:300, cmdHoldMs:300, repStartMs:250, repEveryMs:150};
 var DIRS=['U','NE','SE','D','SW','NW'];
 var OPP={U:'D',D:'U',NE:'SW',SW:'NE',NW:'SE',SE:'NW'};
 var ARROW={U:'↑',NE:'↗',SE:'↘',D:'↓',SW:'↙',NW:'↖'};
@@ -335,13 +335,11 @@ function analyze(P){
   return {dist:dist,path:path,dur:dur,startDwell:startDwell,startPct:startDwell/moveMs*100,endPct:endDwell/moveMs*100,retPct:retPct,dips:dips,wMax:wMax,star:starSegs(P)};
 }
 function isLeft(ang){ var A=starAngles(), dl=angDist(ang,180); return DIRS.every(function(k){ return dl<angDist(ang,A[k]); }); }
-// Результат: 'tap' | 'del' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
+// Результат: 'tap' | '?' | {d, k}; k: '' відпустити, '>' далі, '<' назад, 'H' потримати, '*' подушкою, 'P' пауза
 function classify(a){
   if(a.dist<12&&a.path<40) return 'tap';
   var segs=a.star; if(!segs.length) return 'tap';
   var f=segs[0];
-  // Стерти: постояв (≥ delHoldMs) і повів ліворуч — ближче до горизонталі, ніж до будь-якої осі. Горизонталь вільна.
-  if(a.startDwell>=CFG.delHoldMs && isLeft(f.ang)) return 'del';
   if(f.off>CFG.axTol) return '?';
   if(a.startPct>=CFG.starPause) return {d:f.d,k:'P'};
   if(a.wMax>=CFG.padThr) return {d:f.d,k:'*'};
@@ -433,7 +431,13 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
 
   // ── Площадка: один штрих або акорд двох рук; тап, довгий тап, подвійний тап ──
   function Pad(zone,onResult){
-    var cv=zone.querySelector('canvas'), ctx=cv.getContext('2d'), W=0,H=0, s1=null, s2=null, trails=[], raf=0, lastTap=null;
+    var cv=zone.querySelector('canvas'), ctx=cv.getContext('2d'), W=0,H=0, s1=null, s2=null, trails=[], raf=0;
+    // Другий дотик слідом за тапом (≤ dblMs): тап — стерти літеру ('dbl'); постояти — команди ('cmd');
+    // ліворуч і тримати — стирати по літері ('rep0', потім 'rep'), поки тримаєш. Тап уже поставив пробіл — його прибирає той, хто слухає.
+    var lastTapUp=-1, follow=false, repeating=false, watchT=0, repT=0;
+    function stopRep(){ clearInterval(watchT); clearInterval(repT); repeating=false; }
+    function watch(){ if(!s1||s1.done||s2||repeating) return; var p0=s1.pts[0], pN=s1.pts[s1.pts.length-1], dx=pN.x-p0.x, dy=pN.y-p0.y;
+      if(performance.now()-p0.t>=CFG.repStartMs && Math.hypot(dx,dy)>=24 && isLeft(angOf(dx,dy))){ repeating=true; clearInterval(watchT); onResult('rep0'); repT=setInterval(function(){ onResult('rep'); },CFG.repEveryMs); } }
     function resize(){ var r=zone.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
     window.addEventListener('resize',resize); setTimeout(resize,0);
     // Ширина дотику: з pointer-подій, а якщо браузер її не дає (буває 0 або 1) — з touch-подій (radiusX/radiusY).
@@ -454,24 +458,30 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     zone.addEventListener('pointerdown',function(e){
       if(s1 && !s2 && !s1.done && e.pointerId!==s1.id){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s2={id:e.pointerId,pts:[pt(e)]}; return; }
       if(s1) return;
-      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} diag.pw=diag.tr=diag.pr=diag.tf=0; s1={id:e.pointerId,pts:[pt(e)]}; loop(); });
+      e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} diag.pw=diag.tr=diag.pr=diag.tf=0; s1={id:e.pointerId,pts:[pt(e)]};
+      stopRep(); follow= lastTapUp>=0 && s1.pts[0].t-lastTapUp<=CFG.dblMs; lastTapUp=-1; if(follow) watchT=setInterval(watch,40);
+      loop(); });
     zone.addEventListener('pointermove',function(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
       var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); });
     function up(e){ var s= s1&&s1.id===e.pointerId?s1 : s2&&s2.id===e.pointerId?s2 : null; if(!s||s.done) return;
       var l=pt(e), lp=s.pts[s.pts.length-1]; if(l.w===0&&lp) l.w=lp.w; s.pts.push(l); s.done=true; trails.push({pts:s.pts,t:performance.now()});
       if(s1.done && (!s2||s2.done)){ var A=s1, B=s2; s1=null; s2=null; finish(A,B); } }
     zone.addEventListener('pointerup',up);
-    zone.addEventListener('pointercancel',function(){ s1=null; s2=null; });
+    zone.addEventListener('pointercancel',function(){ s1=null; s2=null; stopRep(); follow=false; });
     function finish(A,B){
-      var r; self.lastWidth=Math.round(Math.max.apply(null,A.pts.map(function(q){return q.w||0;})));
-      if(B) r=chord(analyze(A.pts),analyze(B.pts));
-      else { var P=A.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
-        if(far<12 && P[P.length-1].t-p0.t>=450){ lastTap=null; onResult('long'); return; }
-        r=classify(analyze(P)); }
-      if(r==='tap'){ var now=performance.now(), p=A.pts[0];
-        if(lastTap && now-lastTap.t<=300 && Math.hypot(p.x-lastTap.x,p.y-lastTap.y)<40){ lastTap=null; onResult('dbl'); return; }
-        lastTap={t:now,x:p.x,y:p.y}; onResult('tap'); return; }
-      lastTap=null; onResult(r);
+      var wasRep=repeating, wasFollow=follow; stopRep(); follow=false;
+      if(wasRep) return;
+      self.lastWidth=Math.round(Math.max.apply(null,A.pts.map(function(q){return q.w||0;})));
+      if(B){ onResult(chord(analyze(A.pts),analyze(B.pts))); return; }
+      var P=A.pts, p0=P[0], pN=P[P.length-1], far=0, dur=pN.t-p0.t; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+      var still=far<12;
+      if(wasFollow){
+        if(still){ onResult(dur>=CFG.cmdHoldMs?'cmd':'dbl'); return; }
+        var r0=classify(analyze(P));
+        if(typeof r0!=='object' && isLeft(angOf(pN.x-p0.x,pN.y-p0.y))){ onResult('dbl'); return; }
+        onResult(r0); return; }
+      if(still && dur>=450){ onResult('long'); return; }
+      var r=classify(analyze(P)); if(r==='tap') lastTapUp=pN.t; onResult(r);
     }
   }
 
@@ -483,19 +493,21 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     var pad=null;
     function render(hl){ tEl.textContent=text; cheat.innerHTML=cheatHTML(layer,upper,hl);
       var d=pad&&pad.diag, w= pad&&pad.lastWidth ? 'touch '+pad.lastWidth+' px'+(pad.lastWidth>=CFG.padThr?' · pad':'')+(d?' · w'+Math.round(d.pw)+' r'+Math.round(d.tr)+' p'+d.pr.toFixed(2)+' f'+d.tf.toFixed(2)+' ×'+(window.devicePixelRatio||1).toFixed(1):'') : '';
-      svc.textContent= service?'command: ↑ capital · ↓ Enter · ↗ symbols · ↙ word · ↘ language':(upper?'⇧ capital':(layer==='sym'?'symbols':w)); }
+      svc.textContent= service?'command: ↑ capital · ↓ Enter · ↗ symbols · ↘ language · ↖ \'':(upper?'⇧ capital':(layer==='sym'?'symbols':w)); }
     document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
     pad=new Pad(document.getElementById('sbPad'),function(r){
-      if(r==='dbl'){ text=text.replace(/ $/,''); service=true; res.textContent='double tap'; render(); return; }
+      if(r==='cmd'){ text=text.replace(/ $/,''); service=true; res.textContent='tap, then rest → command'; render(); return; }
+      if(r==='dbl'){ service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='double tap → delete'; render(); return; }
+      if(r==='rep0'){ service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='tap, then hold left → deleting'; render(); return; }
+      if(r==='rep'){ text=text.slice(0,-1); render(); return; }
       if(service){ service=false;
-        if(r&&typeof r==='object'){ var c={U:'capital',D:'Enter',NE:'symbols ⇄ letters',SW:'delete word',SE:'language: '+(KB==='uk'?'English':'Ukrainian'),NW:"apostrophe"}[r.d];
+        if(r&&typeof r==='object'){ var c={U:'capital',D:'Enter',NE:'symbols ⇄ letters',SE:'language: '+(KB==='uk'?'English':'Ukrainian'),NW:"apostrophe"}[r.d];
           if(r.d==='U') upper=true; else if(r.d==='D') text+='\n'; else if(r.d==='NE') layer= layer==='sym'?KB:'sym'; else if(r.d==='SE'){ setKB(KB==='uk'?'en':'uk'); layer=KB; }
-          else if(r.d==='SW') text=text.replace(/\s*\S+\s*$/,''); else if(r.d==='NW') text+="'";
-          res.textContent=c; } else res.textContent='command cancelled';
+          else if(r.d==='NW') text+="'";
+          res.textContent=c||'↙: no command'; } else res.textContent='command cancelled';
         render(); return; }
       if(r==='tap'){ text+=' '; res.textContent='space'; render(); return; }
       if(r==='long'){ res.textContent='long press: nothing'; render(); return; }
-      if(r==='del'){ text=text.slice(0,-1); res.textContent='rest, then left → delete'; render(); return; }
       if(r==='?'){ res.textContent='not one of the directions: stay on one of the three lines'; render(); return; }
       var ch=charOf(r,layer); if(!ch){ res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+': nothing here'; render(); return; }
       if(upper&&layer!=='sym'){ ch=ch.toUpperCase(); upper=false; }
@@ -601,7 +613,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
   function onGame(r){
     if(!G || !el.over.hidden) return;
-    if(r==='tap'||r==='dbl'||r==='long'||r==='del') return;
+    if(typeof r==='string' && r!=='?') return;
     var want=curChar(); if(!want) return;
     var t=curT(), recall=!t.hint;
     G.tries++; if(recall) G.rTries++;
