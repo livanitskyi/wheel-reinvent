@@ -269,7 +269,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">In the browser<span>no install</span></a></li>
         <li><a href="#game">Game<span>11 levels: memory, accuracy, speed</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.10.0 · 773 KB</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.10.1 · 773 KB</span></a></li>
       </ul>
       <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
     </div>
@@ -558,7 +558,8 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
     bar:document.getElementById('gBar'), res:document.getElementById('gRes'), count:document.getElementById('gCount'), fb:document.getElementById('gFb'), over:document.getElementById('gOver'), card:document.getElementById('gOverCard'),
     box:document.getElementById('gameBox'), optHint:document.getElementById('optHint'), optCheat:document.getElementById('optCheat'), cheatWrap:document.getElementById('gCheatWrap'), cheat:document.getElementById('gCheat')};
   function examIdx(){ for(var j=0;j<LEVELS.length;j++) if(LEVELS[j].exam&&!LEVELS[j].sprint) return j; return 0; }
-  function unlocked(i){ if(i===0) return true; if(LEVELS[i].phrases||LEVELS[i].weak) return unlocked(examIdx()); var p=prog.best[i-1]; return !!(p&&p.stars>0) || (LEVELS[i-1].touchOnly&&!touchy&&unlocked(i-1)); }
+  function unlocked(i){ return true; }
+  function firstUndone(){ for(var i=0;i<LEVELS.length;i++){ var b=prog.best[i]; if(!(b&&b.stars>0)) return i; } return 0; }  // усі рівні відкриті (рішення автора)
   function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
   function renderLevels(){
     el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
@@ -694,9 +695,9 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   el.optHint.addEventListener('change',function(){ if(G) show(); });
   el.optCheat.addEventListener('change',function(){ if(G) show(); else el.cheatWrap.hidden=!el.optCheat.checked; if(el.optCheat.checked && !G) el.cheat.innerHTML=cheatHTML(KB,false); });
   kbListeners.push(function(l){ clearInterval(start.timer); LEVELS= l==='en'?LEVELS_EN:LEVELS_UK; WORDS= l==='en'?WORDS_EN:WORDS_UK; PHRASES= l==='en'?PHRASES_EN:PHRASES_UK; prog=storeGet(progKey(),{best:{}}); G=null; cur=0;
-    for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; } if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
+    cur=firstUndone(); if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
   new Pad(document.getElementById('gPad'),onGame);
-  for(var i=0;i<LEVELS.length;i++){ if(unlocked(i)) cur=i; }
+  cur=firstUndone();
   renderLevels(); intro();
   document.querySelectorAll('.kbsw button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-kb')===KB); b.addEventListener('click',function(){ if(KB!==b.getAttribute('data-kb')) setKB(b.getAttribute('data-kb')); }); });
 })();
