@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sunscript</title>
-<meta name="description" content="Sunscript — клавіатура для письма наосліп: літери пишуться простими жестами по трьох осях великого пальця. Спробуй у браузері й потренуйся в грі.">
+<meta name="description" content="Sunscript — клавіатура для письма наосліп: літери пишуться простими жестами по трьох осях великого пальця. Спробуй у браузері, потренуйся в грі, встанови на Android.">
 <link rel="canonical" href="https://wheel-reinvent.com/sunscript/">
 <meta property="og:title" content="Sunscript — пиши, не дивлячись">
 <meta property="og:description" content="Не де натиснути, а як провести. Спробуй клавіатуру в браузері й потренуйся в грі.">
@@ -147,7 +147,7 @@ footer .wrap{display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-bet
 <body>
 <div class="wrap top">
   <img src="logo.jpg" alt="">
-  <b>Sunscript</b><span style="color:var(--muted);font-size:14px;margin-left:4px">від <a href="/" style="text-decoration:none">Wheel Reinvent</a></span>
+  <b>Sunscript</b><span style="color:var(--muted);font-size:14px;margin-left:4px">від <a href="/uk/" style="text-decoration:none">Wheel Reinvent</a></span>
   <nav><a href="#how">Як це</a><a href="#try">Спробувати</a><a href="#game">Гра</a></nav>
 </div>
 
@@ -156,7 +156,7 @@ footer .wrap{display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-bet
     <div class="eyebrow">Клавіатура для письма наосліп</div>
     <h1 style="margin-top:14px">Пиши, не&nbsp;дивлячись.</h1>
     <p class="lead"><b>Не де натиснути, а як провести.</b> Три лінії великого пальця, шість напрямків — і вся українська абетка. Без кнопок, без вгадування слів: однаковий жест завжди дає ту саму літеру.</p>
-    <div class="cta"><a class="btn" href="#game">Грати й вчитися</a><a class="btn ghost" href="#try">Спробувати</a></div>
+    <div class="cta"><a class="btn" href="#game">Грати й вчитися</a><a class="btn ghost" href="#try">Спробувати</a><a class="btn ghost" href="#get">Для Android</a></div>
   </div>
   <figure><img src="logo.jpg" alt="Три лінії, які великий палець малює найлегше: синя вертикаль, червона полога, зелена навскіс"><figcaption>три лінії, які палець малює сам</figcaption></figure>
 </div>
@@ -198,7 +198,7 @@ footer .wrap{display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-bet
 <section id="game"><div class="wrap">
   <div class="eyebrow">Гра</div>
   <h2 style="margin-top:10px">Вчися рівнями</h2>
-  <p class="note" style="margin-top:12px">Кожен рівень додає один новий жест. 70% влучань відкривають наступний. Три зірки — за точність і темп.</p>
+  <p class="note" style="margin-top:12px">Кожен рівень додає один новий жест і має дві частини: спершу <b>повторюєш</b> з підказкою, потім <b>згадуєш</b> без неї. Зірки рахуються лише за частину без підказки: 70% відкривають наступний рівень. Наприкінці — іспит з усіх літер і спринт на 60 секунд. Твої рекорди швидкості зберігаються на цьому пристрої.</p>
   <div class="levels" id="levels"></div>
   <div class="device game gamebox" id="gameBox">
     <div class="stage">
@@ -213,6 +213,16 @@ footer .wrap{display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-bet
   </div>
   <div class="opts"><label><input type="checkbox" id="optHint" checked> показувати підказку</label><label><input type="checkbox" id="optCheat"> шпаргалка під час гри</label></div>
   <div class="device" id="gCheatWrap" hidden style="margin-top:12px"><div class="cheat" id="gCheat"></div></div>
+</div></section>
+
+<section id="get"><div class="wrap">
+  <div class="eyebrow">Для Android</div>
+  <h2 style="margin-top:10px">Встановити клавіатуру</h2>
+  <p class="note" style="margin-top:12px">Поки застосунку немає в Google Play, його можна поставити файлом. Це ранній тестовий випуск: щось може не працювати, пиши нам про все, що помітиш.</p>
+  <div class="extras">
+    <div><h3>1. Завантаж</h3><p><a class="btn" href="sunscript.apk">Завантажити APK</a></p><p style="color:var(--muted);font-size:15px">Sunscript 0.7.4 · 749 КБ · Android 8 і новіші</p></div>
+    <div><h3>2. Встанови й увімкни</h3><p>Відкрий файл і дозволь встановлення з цього джерела. Потім у застосунку Sunscript натисни «Увімкнути в налаштуваннях» і «Вибрати клавіатуру».</p><p style="color:var(--muted);font-size:15px">Повернутися до звичайної клавіатури — значок клавіатури внизу екрана або утримання ✕.</p></div>
+  </div>
 </div></section>
 
 <footer><div class="wrap">
@@ -414,7 +424,9 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     {name:'Потримати', k:['H'], add:'в з ж г л ,', about:'доведи й постій'},
     {name:'Подушка', k:['*'], add:'я є ь ї й ю', about:'проведи подушечкою пальця', touchOnly:true},
     {name:'Пауза', k:['P'], add:'ф с ш х р .', about:'постій на старті, потім веди'},
-    {name:'Слова', words:true, about:'цілі слова'}
+    {name:'Слова', words:true, about:'цілі слова'},
+    {name:'Іспит', exam:true, about:'усі вивчені літери впереміш, без підказок'},
+    {name:'Спринт', sprint:true, exam:true, about:'60 секунд: скільки літер встигнеш без підказки'}
   ];
   var WORDS='мама вода сонце ранок хліб дім рука час день ніч кава місто слово небо море поле друг книга вікно автобус люди дорога пісня річка вечір зима літо осінь весна мрія серце тиша вітер дерево школа робота родина'.split(' ');
   var touchy= window.matchMedia && matchMedia('(pointer:coarse)').matches;
@@ -427,14 +439,25 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
   function renderLevels(){
     el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
-      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><small>Рівень '+(i+1)+(L.touchOnly&&!touchy?' · телефон':'')+'</small><b>'+L.name+'</b><span class="stars">'+(b?stars(b.stars):(ok?'':'🔒'))+'</span></button>'; }).join('');
+      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><small>Рівень '+(i+1)+(L.touchOnly&&!touchy?' · телефон':'')+'</small><b>'+L.name+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):(ok?'':'🔒'))+'</span>'+(b&&(b.cpm||b.per)?'<small>рекорд '+(L.sprint? b.cpm+' літ/хв' : b.per.toFixed(1)+' с/літ')+'</small>':'')+'</button>'; }).join('');
     el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro(); }); });
   }
   function pool(i){ var L=LEVELS[i];
     if(L.words) return null;
     var fresh=L.add.split(' '), old=[]; for(var j=0;j<i;j++){ if(!LEVELS[j].words && !(LEVELS[j].touchOnly&&!touchy)) old=old.concat(LEVELS[j].add.split(' ')); }
     return {fresh:fresh, old:old}; }
-  function makeTargets(i){ var L=LEVELS[i], out=[];
+  function learnedLetters(upto){ var all=[]; for(var j=0;j<upto;j++){ var l=LEVELS[j]; if(l.add && !(l.touchOnly&&!touchy)) all=all.concat(l.add.split(' ')); } return all; }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function makeTargets(i){ var L=LEVELS[i];
+    if(L.exam){ var all=learnedLetters(LEVELS.length), out=[], last='';
+      for(var n=0;n<(L.sprint?400:20);n++){ var c; do{ c=all[Math.floor(Math.random()*all.length)]; }while(c===last); last=c; out.push({w:c,hint:false}); } return out; }
+    var raw=makeRaw(i);
+    if(L.words) return raw.map(function(w){ return {w:w,hint:false}; });
+    // спершу повтори кожну нову літеру з підказкою, потім згадай без неї
+    var fresh=L.add.split(' '), learn=shuffle(fresh.slice()).concat(shuffle(fresh.slice()).slice(0,2));
+    return learn.map(function(c){ return {w:c,hint:true}; }).concat(raw.slice(0,12).map(function(c){ return {w:c,hint:false}; }));
+  }
+  function makeRaw(i){ var L=LEVELS[i], out=[];
     if(L.words){ var allowed={}; LEVELS.forEach(function(l){ if(l.add && !(l.touchOnly&&!touchy)) l.add.split(' ').forEach(function(c){allowed[c]=1;}); });
       var ws=WORDS.filter(function(w){ return w.split('').every(function(c){return allowed[c];}); });
       for(var n=0;n<6;n++) out.push(ws[Math.floor(Math.random()*ws.length)]); return out; }
@@ -444,9 +467,9 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   function intro(){
     var L=LEVELS[cur]; G=null;
     el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
-    var ex= L.add? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--body)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
+    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--body)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
     var phoneOnly= L.touchOnly && !touchy;
-    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен.':'')+'</p>'+
+    el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':L.exam?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
       (ex?'<div class="row">'+ex+'</div>':'')+
       (phoneOnly?'<p>Подушка потребує ширини дотику — мишка її не передає. Цей рівень пройди з телефона; далі можна грати й так.</p>':'')+
       '<div class="row"><button type="button" class="btn" id="gStart">'+(phoneOnly?'Все одно спробувати':'Почати')+'</button></div>';
@@ -454,18 +477,22 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     document.getElementById('gStart').addEventListener('click',start);
   }
   function start(){
-    G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, score:0, combo:1, t0:performance.now(), misses:{}};
+    G={targets:makeTargets(cur), ti:0, ci:0, hits:0, tries:0, rHits:0, rTries:0, score:0, combo:1, t0:performance.now(), misses:{}};
     el.over.hidden=true; show();
+    if(LEVELS[cur].sprint){ var g=G; clearInterval(start.timer); start.timer=setInterval(function(){
+      if(G!==g){ clearInterval(start.timer); return; }
+      var left=Math.max(0,60-(performance.now()-g.t0)/1000); el.count.textContent=Math.ceil(left)+' с'; el.bar.style.width=((60-left)/60*100)+'%';
+      if(left<=0){ clearInterval(start.timer); done(); } },200); }
   }
-  function curChar(){ var w=G.targets[G.ti]; return w? w[G.ci] : null; }
+  function curT(){ return G.targets[G.ti]; }
+  function curChar(){ var t=curT(); return t? t.w[G.ci] : null; }
   function show(){
-    var w=G.targets[G.ti]; if(!w){ return done(); }
+    var t=curT(); if(!t){ return done(); } var w=t.w;
     el.word.innerHTML=w.split('').map(function(c,i){ return '<span class="'+(i<G.ci?'done':i===G.ci?'cur':'')+'">'+esc(c)+'</span>'; }).join('');
-    var c=curChar(), where=whereOf(c), showHint= el.optHint.checked && (!LEVELS[cur].words || G.misses[G.ti+':'+G.ci]);
+    var c=curChar(), where=whereOf(c), missed=G.misses[G.ti+':'+G.ci], showHint= (t.hint && el.optHint.checked) || missed>=2;
     el.hint.innerHTML= where? glyph(where.d,where.k,60) : ''; el.hint.style.opacity= showHint?1:0;
     el.score.textContent=G.score; el.combo.textContent='×'+G.combo;
-    el.count.textContent=(G.ti+1)+' / '+G.targets.length;
-    el.bar.style.width=(G.ti/G.targets.length*100)+'%';
+    if(!LEVELS[cur].sprint){ el.count.textContent=(t.hint?'повтори':'згадай')+' · '+(G.ti+1)+' / '+G.targets.length; el.bar.style.width=(G.ti/G.targets.length*100)+'%'; }
     if(el.optCheat.checked){ el.cheatWrap.hidden=false; el.cheat.innerHTML=cheatHTML('uk',false,c); } else el.cheatWrap.hidden=true;
   }
   function flash(txt,col){ el.fb.textContent=txt; el.fb.style.color=col; el.fb.classList.add('show'); clearTimeout(flash.t); flash.t=setTimeout(function(){ el.fb.classList.remove('show'); },500); }
@@ -473,31 +500,47 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
     if(!G || !el.over.hidden) return;
     if(r==='tap'||r==='dbl'||r==='long') return;
     var want=curChar(); if(!want) return;
-    G.tries++;
+    var t=curT(), recall=!t.hint;
+    G.tries++; if(recall) G.rTries++;
     var got= r==='?'? null : charOf(r);
     if(got===want){
-      G.hits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
+      G.hits++; if(recall && !G.misses[G.ti+':'+G.ci]) G.rHits++; G.score+=10*G.combo; G.combo=Math.min(5,G.combo+1); G.ci++;
       flash('+'+(10*(G.combo-1)),'var(--good)'); el.res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+got;
-      if(G.ci>=G.targets[G.ti].length){ G.ti++; G.ci=0; }
+      if(G.ci>=t.w.length){ G.ti++; G.ci=0; }
       show(); return;
     }
-    G.combo=1; G.misses[G.ti+':'+G.ci]=1;
+    G.combo=1; G.misses[G.ti+':'+G.ci]=(G.misses[G.ti+':'+G.ci]||0)+1;
     var w=whereOf(want);
     el.res.textContent= got? ('вийшло «'+got+'» — '+ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+'; треба '+ARROW[w.d]+' '+KNAME[w.k].toLowerCase()) : 'не схоже на жоден напрям';
     flash(got?('«'+got+'»'):'?','var(--bad)');
     el.box.classList.remove('shake'); void el.box.offsetWidth; el.box.classList.add('shake');
     show();
   }
+  function countRecall(){ return G.targets.reduce(function(n,t){ return n+(t.hint?0:t.w.length); },0); }
+  function weak(){ var m={}; Object.keys(G.misses).forEach(function(k){ var p=k.split(':'), t=G.targets[+p[0]]; if(t) m[t.w[+p[1]]]=1; }); return Object.keys(m); }
   function done(){
-    var acc=G.tries? G.hits/G.tries : 0, secs=(performance.now()-G.t0)/1000, per=secs/Math.max(1,G.hits);
-    var st= acc>=0.7 ? (acc>=0.9 && per<=2 ? 3 : acc>=0.8 ? 2 : 1) : 0;
-    var b=prog.best[cur]; if(!b || st>b.stars || (st===b.stars && G.score>b.score)) prog.best[cur]={stars:st, score:G.score, acc:Math.round(acc*100)};
-    storeSet('sunscript-game',prog);
+    // Зірки — лише за частину без підказки: чи пам'ятаєш, а не чи вмієш повторити.
+    var L=LEVELS[cur], secs=(performance.now()-G.t0)/1000, per=secs/Math.max(1,G.hits);
+    var recallN= L.sprint? G.hits+Object.keys(G.misses).length : countRecall();
+    var acc=recallN? G.rHits/recallN : 0, cpm=Math.round(G.hits/Math.max(1,Math.min(secs,L.sprint?60:secs))*60);
+    var st= L.sprint ? (cpm>=40&&acc>=0.85?3 : cpm>=25&&acc>=0.75?2 : cpm>=12?1 : 0)
+                     : acc>=0.7 ? (acc>=0.9 && per<=2 ? 3 : acc>=0.8 ? 2 : 1) : 0;
+    // Особисті рекорди: найменше секунд на літеру, найбільше літер за хвилину, найбільше очок.
+    var b=prog.best[cur]||{stars:0,score:0}, rec=[];
+    if(st>0 && (!b.per || per<b.per)){ if(b.per) rec.push('найшвидше: '+per.toFixed(1)+' с на літеру'); b.per=+per.toFixed(2); }
+    if(st>0 && (!b.cpm || cpm>b.cpm)){ if(b.cpm) rec.push('найбільше: '+cpm+' літер за хвилину'); b.cpm=cpm; }
+    if(G.score>b.score){ if(b.score) rec.push('найбільше очок: '+G.score); b.score=G.score; }
+    if(st>b.stars) b.stars=st; b.acc=Math.max(b.acc||0,Math.round(acc*100));
+    prog.best[cur]=b; storeSet('sunscript-game',prog);
     el.bar.style.width='100%';
     var next= cur+1<LEVELS.length && unlocked(cur+1);
-    el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(st? 'Рівень пройдено':'Ще трохи')+'</h3>'+
-      '<p>Влучань '+G.hits+' з '+G.tries+' ('+Math.round(acc*100)+'%) · '+per.toFixed(1)+' с на літеру · '+G.score+' очок</p>'+
-      (st?'':'<p>Для проходження треба 70% влучань.</p>')+
+    el.card.innerHTML='<div class="big">'+stars(st)+'</div><h3>'+(rec.length?'Новий рекорд!':st? 'Рівень пройдено':'Ще трохи')+'</h3>'+
+      (rec.length?'<p style="color:var(--gold)">'+rec.map(esc).join('<br>')+'</p>':'')+
+      (L.sprint? '<p>'+G.hits+' літер за 60 с · без помилки з першої спроби '+Math.round(acc*100)+'% · '+G.score+' очок</p>'
+               : '<p>Згадав без підказки з першої спроби: '+G.rHits+' з '+recallN+' ('+Math.round(acc*100)+'%) · '+per.toFixed(1)+' с на літеру · '+cpm+' літер/хв · '+G.score+' очок</p>')+
+      '<p>Твої рекорди тут: '+(b.per?b.per.toFixed(1)+' с на літеру · ':'')+(b.cpm?b.cpm+' літер/хв · ':'')+b.score+' очок</p>'+
+      (weak().length?'<p>Повтори: '+weak().map(esc).join(' ')+'</p>':'')+
+      (st?'':(L.sprint?'<p>Для зірки — хоча б 12 літер за хвилину.</p>':'<p>Для проходження треба 70% без підказки.</p>'))+
       '<div class="row"><button type="button" class="btn ghost" id="gAgain">Ще раз</button>'+(next?'<button type="button" class="btn" id="gNext">Далі</button>':'')+'</div>';
     el.over.hidden=false; G=null; renderLevels();
     document.getElementById('gAgain').addEventListener('click',start);
