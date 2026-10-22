@@ -425,8 +425,7 @@ function whereOf(ch,layer){ if(ch==='·') return null; var L=LAY[layer||'uk']; f
   function cheatHTML(layer,upper,hl){
     var order= layer==='sym'? ABC_SYM : layer==='en'? ABC_EN : ABC;
     return order.map(function(ch){ var w=whereOf(ch,layer); if(!w) return '';
-      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('')+
-      '<div class="c"><span>⌫</span>'+delGlyph(28)+'</div>';
+      return '<div class="c'+(hl===ch?' hit':'')+'"><span>'+esc(upper&&layer!=='sym'?ch.toUpperCase():ch)+'</span>'+glyph(w.d,w.k,28)+'</div>'; }).join('');  // ⌫ не літера — у шпаргалці його немає (рішення автора)
   }
 
   // ── Площадка: один штрих або акорд двох рук; тап, довгий тап, подвійний тап ──
