@@ -12,224 +12,272 @@
 <meta property="og:image" content="https://wheel-reinvent.com/sunscript/logo.jpg">
 <meta name="theme-color" content="#FBFAF7">
 <link rel="icon" href="logo.jpg" type="image/jpeg">
+<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 <style>
-/* Layout: паперова сторінка з маркерними кольорами логотипу; «пристрій» — темна площадка, як сама клавіатура. */
+/* Sunscript — сторінка в родині Wheel Reinvent і DzenQ: папір і чорнило, Inter, один акцент.
+   Кольори трьох осей (з малюнка автора) — лише там, де вони щось означають: у жестах. */
 :root{
-  --paper:#FBFAF7; --ink:#1B1A17; --muted:#6B675E; --line:#E4E0D6; --chip:#F1EEE6;
-  --pad:#17140F; --padInk:#F1EDE4; --padMuted:#9A9284; --padLine:#3A342A; --panel:#1C1914;
-  --axB:#1AA0E8; --axR:#EE5146; --axG:#17B354; --good:#17B354; --bad:#EE5146; --gold:#E9A63A;
-  --display:'Unbounded', 'Golos Text', system-ui, sans-serif;
-  --body:'Golos Text', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --bg:#FBFAF7; --ink:#1B1A17; --ink-2:#5F5B54; --ink-3:#97928A; --line:#E6E2DA; --ghost:#D8D3C9;
+  --accent:#1E6FA8; --btn:#1B1A17; --btn-ink:#F6F3EC;
+  --pad:#17140F; --padInk:#F1EDE4; --padMuted:#9A9284; --padLine:#332E26; --panel:#1C1914;
+  --axB:#1AA0E8; --axR:#EE5146; --axG:#17B354; --good:#17B354; --bad:#EE5146; --gold:#E3A548;
+  --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --paper:#12110E; --ink:#F1EDE4; --muted:#A39D90; --line:#2C2922; --chip:#1E1C17; color-scheme:dark } }
-:root[data-theme="dark"]{ --paper:#12110E; --ink:#F1EDE4; --muted:#A39D90; --line:#2C2922; --chip:#1E1C17; color-scheme:dark }
-*{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
-h1{font-size:clamp(40px,8vw,84px);line-height:1.02;font-weight:800}
-h2{font-size:clamp(26px,4.2vw,40px);line-height:1.1;font-weight:700}
-h3{font-size:18px;font-weight:700}
-p{margin:0;max-width:62ch}
+:root[data-theme="dark"]{ --bg:#121315; --ink:#ECE8DF; --ink-2:#A9A69E; --ink-3:#7E7C76; --line:#2B2C2F; --ghost:#3A3B3F; --accent:#7FB8E0; --btn:#ECE8DF; --btn-ink:#121315; color-scheme:dark }
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;overflow-x:hidden;transition:background .3s,color .3s}
+p,h1,h2,h3{margin:0}
 a{color:inherit}
-.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.btn{appearance:none;border:2px solid var(--ink);background:var(--ink);color:var(--paper);font:600 16px/1 var(--body);padding:14px 20px;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
-.btn.ghost{background:transparent;color:var(--ink)}
-.btn:focus-visible,.chipbtn:focus-visible,.lvl:focus-visible{outline:3px solid var(--axB);outline-offset:2px}
-section{padding-block:56px}
-section+section{border-top:1px solid var(--line)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(24px, env(safe-area-inset-left, 0px));padding-right:max(24px, env(safe-area-inset-right, 0px))}
+@media (max-width:600px){ .wrap{padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))} }
 
-/* шапка */
-.top{display:flex;align-items:center;gap:10px;padding-block:16px}
-.top img{width:34px;height:34px;border-radius:8px}
-.top b{font:700 17px var(--display)}
-.top nav{margin-left:auto;display:flex;gap:16px;font-weight:500}
-.top nav a{text-decoration:none;color:var(--muted)}
+/* Шапка */
+.nav .wrap{display:flex;align-items:center;gap:16px;height:72px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:17px;margin-right:auto}
+.brand img{width:28px;height:28px;border-radius:7px}
+.by{font-size:14px;color:var(--ink-3);text-decoration:none}
+.by:hover{color:var(--ink)}
+.theme{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.theme svg{width:18px;height:18px}
+.theme .sun{display:none}
+:root[data-theme="dark"] .theme .sun{display:block}
+:root[data-theme="dark"] .theme .moon{display:none}
+@media (hover:hover){ .theme:hover{color:var(--ink);background:var(--line)} }
 
-/* герой */
-.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;padding-block:24px 48px}
-.hero .lead{font-size:clamp(18px,2.2vw,22px);margin-top:18px;color:var(--muted)}
-.hero .lead b{color:var(--ink);font-weight:600}
-.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
-.hero figure{margin:0;justify-self:center}
-.hero figure img{width:min(100%,360px);border-radius:28px;box-shadow:0 1px 0 var(--line)}
-.hero figcaption{font:500 13px var(--mono);color:var(--muted);text-align:center;margin-top:10px}
-@media (max-width:720px){ .hero{grid-template-columns:1fr} .hero figure{order:-1} .hero figure img{width:200px} .top nav{display:none} }
+/* Перший екран */
+.hero{padding:64px 0 88px;text-align:center}
+.hero .mark{width:96px;height:96px;border-radius:24px;margin:0 auto 32px;display:block}
+:root[data-theme="dark"] .hero .mark{box-shadow:0 0 0 1px var(--line)}
+.hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.02;letter-spacing:-.035em;font-weight:700;text-wrap:balance}
+.hero p{margin:22px auto 0;color:var(--ink-2);font-size:clamp(17px,1.7vw,20px);max-width:28em;line-height:1.55}
+.hero p b{color:var(--ink);font-weight:600}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:36px}
+.btn{display:inline-flex;align-items:center;padding:15px 26px;border-radius:999px;background:var(--btn);color:var(--btn-ink);font-weight:600;text-decoration:none;font-size:16px;border:0;cursor:pointer;font-family:inherit;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ghost)}
+.btn:focus-visible,.lvl:focus-visible,.theme:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-/* осі */
-.axes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center;margin-top:28px}
-.axes svg{width:100%;max-width:380px;justify-self:center;display:block}
-.axes ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
-.axes li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
-.sw{width:34px;height:8px;border-radius:4px;margin-top:9px}
-@media (max-width:720px){ .axes{grid-template-columns:1fr} }
+/* Розділи */
+section.part{padding:88px 0;border-top:1px solid var(--line)}
+.label{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+.part h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;letter-spacing:-.03em;font-weight:700;max-width:18em;text-wrap:balance}
+.part .lead{margin-top:16px;color:var(--ink-2);max-width:34em}
 
-/* жести */
-.kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:28px}
-.kind{border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;background:var(--paper)}
-.kind .g{grid-row:span 2;width:64px;height:64px;border-radius:14px;background:var(--pad);display:grid;place-items:center}
-.kind .ex{font:500 13px var(--mono);color:var(--muted)}
-.kind .ex b{font:700 18px var(--body);color:var(--ink)}
-@media (max-width:820px){ .kinds{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:520px){ .kinds{grid-template-columns:1fr} }
-.note{margin-top:22px;color:var(--muted)}
-.extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}
-.extras>div{background:var(--chip);border-radius:18px;padding:18px;display:grid;gap:8px;min-width:0}
-@media (max-width:640px){ .extras{grid-template-columns:1fr} }
-.kbd{font:500 14px var(--mono);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.axes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center;margin-top:40px}
+.axes svg{width:100%;max-width:340px;justify-self:center;display:block}
+.axes dl{margin:0;display:grid;gap:0}
+.axes dl>div{display:grid;grid-template-columns:40px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.axes dt{margin:0}.axes dd{margin:0;color:var(--ink-2)}.axes dd b{color:var(--ink);font-weight:600}
+.sw{display:block;width:40px;height:4px;border-radius:2px;margin-top:12px}
+@media (max-width:760px){ .axes{grid-template-columns:1fr;gap:24px} }
 
-/* пристрій */
-.device{background:var(--pad);color:var(--padInk);border-radius:26px;overflow:hidden;margin-top:24px;max-width:520px;margin-inline:auto;box-shadow:0 30px 60px -30px rgba(0,0,0,.45)}
-.screen{padding:14px 16px;min-height:62px;border-bottom:1px solid var(--padLine);display:flex;gap:10px;align-items:flex-start}
-.screen .txt{flex:1;min-width:0;font:500 20px/1.35 var(--body);word-break:break-word;white-space:pre-wrap}
+.kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 40px;margin-top:40px}
+.kind{display:grid;grid-template-columns:56px 1fr;gap:4px 16px;align-items:center;padding:18px 0;border-top:1px solid var(--line)}
+.kind .g{grid-row:span 2;width:56px;height:56px;border-radius:14px;background:var(--pad);display:grid;place-items:center}
+.kind h3{font-size:16px;font-weight:600}
+.kind .ex{color:var(--ink-2);font-size:15px;line-height:1.4}
+.kind .ex b{color:var(--ink);font-weight:700;font-size:17px}
+@media (max-width:860px){ .kinds{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:540px){ .kinds{grid-template-columns:1fr} }
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:0 40px;margin-top:32px}
+.pair>div{padding:18px 0;border-top:1px solid var(--line);min-width:0}
+.pair h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.pair p{color:var(--ink-2);font-size:16px}
+@media (max-width:700px){ .pair{grid-template-columns:1fr} }
+
+/* Пристрій: темна площадка, як сама клавіатура */
+.device{background:var(--pad);color:var(--padInk);border-radius:28px;overflow:hidden;margin:40px auto 0;max-width:460px}
+.screen{padding:16px 18px;min-height:64px;border-bottom:1px solid var(--padLine);display:flex;gap:10px;align-items:flex-start}
+.screen .txt{flex:1;min-width:0;font-size:20px;line-height:1.35;font-weight:500;word-break:break-word;white-space:pre-wrap}
 .screen .txt::after{content:'';display:inline-block;width:2px;height:1.1em;background:var(--axB);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-@media (prefers-reduced-motion:reduce){ .screen .txt::after{animation:none} }
-.screen .sbtn{flex:none;border:1px solid var(--padLine);background:transparent;color:var(--padInk);border-radius:10px;font:600 14px var(--body);padding:8px 10px;cursor:pointer}
-.status{display:flex;justify-content:space-between;gap:8px;padding:8px 16px 0;font:500 12px var(--mono);color:var(--padMuted);min-height:26px}
+.screen .sbtn{flex:none;border:0;background:transparent;color:var(--padMuted);font:500 14px var(--sans);padding:6px 4px;cursor:pointer}
+.screen .sbtn:hover{color:var(--padInk)}
+.status{display:flex;justify-content:space-between;gap:8px;padding:10px 18px 0;font-size:13px;color:var(--padMuted);min-height:30px}
 .status .res{color:var(--padInk)}
 .status .svc{color:var(--gold)}
 .padzone{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
 .padzone canvas{display:block;width:100%;height:100%}
-.sandbox .padzone{height:300px}
+.sandbox .padzone{height:280px}
 .cheat{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px 0;padding:10px 6px 14px;background:var(--panel);border-top:1px solid var(--padLine);pointer-events:none}
-.cheat .c{display:flex;align-items:center;justify-content:center;gap:2px;height:38px;font:600 17px var(--body);color:var(--padInk)}
+.cheat .c{display:flex;align-items:center;justify-content:center;gap:2px;height:38px;font-weight:600;font-size:17px;color:var(--padInk)}
 .cheat .c.hit{background:rgba(255,255,255,.07);border-radius:10px}
-.devhelp{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 16px 14px;font:500 12px var(--mono);color:var(--padMuted);border-top:1px solid var(--padLine)}
 
-/* гра */
-.levels{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
-.lvl{appearance:none;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:16px;padding:12px 14px;min-width:132px;text-align:left;cursor:pointer;display:grid;gap:4px;font:inherit}
-.lvl small{font:500 11px var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
-.lvl b{font:700 15px var(--display)}
-.lvl .stars{font-size:14px;letter-spacing:2px;color:var(--gold);min-height:18px}
-.lvl[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.lvl:disabled{opacity:.45;cursor:not-allowed}
-.game .stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:18px 16px 6px}
-.game .word{font:700 clamp(34px,8vw,52px)/1 var(--display);letter-spacing:.02em;text-align:center;min-width:0;word-break:break-word}
+/* Гра */
+.game-grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:48px;align-items:start;margin-top:40px}
+.game-grid .device{margin:0}
+@media (max-width:860px){ .game-grid{grid-template-columns:1fr;gap:28px} .game-grid .device{margin:0 auto;width:100%} }
+.levels{display:grid;margin:0}
+.lvl{appearance:none;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;display:grid;grid-template-columns:28px 1fr auto;gap:2px 12px;align-items:baseline;padding:12px 0;cursor:pointer}
+.lvl:last-child{border-bottom:1px solid var(--line)}
+.lvl .n{color:var(--ink-3);font-size:14px;font-variant-numeric:tabular-nums}
+.lvl b{font-weight:600}
+.lvl .stars{color:var(--gold);letter-spacing:2px;font-size:14px;min-width:3.6em;text-align:right}
+.lvl .rec{grid-column:2 / 4;color:var(--ink-3);font-size:13px;font-variant-numeric:tabular-nums}
+.lvl[aria-pressed="true"] b{color:var(--accent)}
+.lvl[aria-pressed="true"] .n{color:var(--accent)}
+.lvl:disabled{cursor:not-allowed;color:var(--ink-3)}
+@media (hover:hover){ .lvl:not(:disabled):hover b{color:var(--accent)} }
+.game .stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:18px 18px 6px}
+.game .word{font-weight:700;font-size:clamp(34px,7vw,48px);line-height:1;letter-spacing:.01em;text-align:center;min-width:0;word-break:break-word}
 .game .word span{color:var(--padMuted)}
 .game .word span.done{color:var(--good)}
 .game .word span.cur{color:var(--padInk);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:8px}
-.game .hint{width:72px;height:72px;border-radius:16px;background:#0F0D0A;display:grid;place-items:center;transition:opacity .2s}
-.game .score{font:500 13px/1.5 var(--mono);color:var(--padMuted);text-align:right;font-variant-numeric:tabular-nums}
-.game .score b{font:700 22px var(--display);color:var(--padInk)}
-.game .bar{height:4px;background:var(--padLine);margin:8px 16px 0;border-radius:2px;overflow:hidden}
+.game .hint{width:68px;height:68px;border-radius:16px;background:#0F0D0A;display:grid;place-items:center;transition:opacity .2s}
+.game .score{font-size:13px;line-height:1.5;color:var(--padMuted);text-align:right;font-variant-numeric:tabular-nums}
+.game .score b{font-size:22px;color:var(--padInk)}
+.game .bar{height:3px;background:var(--padLine);margin:8px 18px 0;border-radius:2px;overflow:hidden}
 .game .bar i{display:block;height:100%;width:0;background:var(--axB);transition:width .25s}
-.game .padzone{height:280px}
-.game .fb{position:absolute;left:0;right:0;top:12px;text-align:center;font:700 18px var(--body);pointer-events:none;opacity:0;transition:opacity .25s}
+.game .padzone{height:260px}
+.game .fb{position:absolute;left:0;right:0;top:12px;text-align:center;font-weight:700;font-size:18px;pointer-events:none;opacity:0;transition:opacity .25s}
 .game .fb.show{opacity:1}
 .shake{animation:shake .32s}
 @keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
-@media (prefers-reduced-motion:reduce){ .shake{animation:none} }
-.over{position:absolute;inset:0;background:rgba(23,20,15,.94);display:grid;place-items:center;text-align:center;padding:20px}
+.over{position:absolute;inset:0;background:rgba(23,20,15,.95);display:grid;place-items:center;text-align:center;padding:24px}
 .over[hidden]{display:none}
-.over .card{display:grid;gap:12px;justify-items:center;max-width:340px}
-.over h3{font-size:24px}
-.over .big{font:800 44px var(--display);color:var(--gold);letter-spacing:6px}
-.over p{color:var(--padMuted);font-size:15px}
+.over .card{display:grid;gap:12px;justify-items:center;max-width:320px}
+.over .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--padMuted)}
+.over h3{font-size:24px;letter-spacing:-.02em}
+.over .big{font-size:36px;color:var(--gold);letter-spacing:6px}
+.over p{color:var(--padMuted);font-size:15px;line-height:1.5}
 .over .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.over .btn{background:var(--padInk);color:var(--pad);border-color:var(--padInk)}
-.over .btn.ghost{background:transparent;color:var(--padInk)}
+.over .btn{background:var(--padInk);color:var(--pad)}
+.over .btn.ghost{background:none;color:var(--padInk);box-shadow:inset 0 0 0 1px #4A4438}
 .gamebox{position:relative}
-.opts{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:15px}
-.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.opts{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:var(--ink-2);font-size:15px}
+.opts label{display:flex;gap:8px;align-items:center;cursor:pointer}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .shake{animation:none} .screen .txt::after{animation:none} .btn{transition:none} }
 
-footer{padding-block:36px 56px;color:var(--muted);font-size:15px;border-top:1px solid var(--line)}
-footer .wrap{display:flex;gap:12px 24px;flex-wrap:wrap;justify-content:space-between}
+/* Унизу, тихо: посилання */
+.more{border-top:1px solid var(--line);padding:72px 0 40px}
+.more .cols{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
+.more h3{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-bottom:10px}
+.more ul{list-style:none;margin:0;padding:0}
+.more li a{display:flex;align-items:baseline;gap:12px;padding:13px 0;border-top:1px solid var(--line);text-decoration:none;font-size:16px}
+.more li a span{margin-left:auto;color:var(--ink-3);font-size:14px;text-align:right}
+.more li a::after{content:"→";color:var(--ink-3)}
+@media (hover:hover){ .more li a:hover,.more li a:hover::after{color:var(--accent)} }
+.more .fine{margin-top:14px;color:var(--ink-3);font-size:14px;max-width:34em}
+.foot{margin-top:48px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--ink-3)}
+.foot a{text-decoration:none}.foot a:hover{color:var(--ink)}
+@media (max-width:720px){ .more .cols{grid-template-columns:1fr;gap:36px} }
 </style>
 
 </head>
 <body>
-<div class="wrap top">
-  <img src="logo.jpg" alt="">
-  <b>Sunscript</b><span style="color:var(--muted);font-size:14px;margin-left:4px">від <a href="/uk/" style="text-decoration:none">Wheel Reinvent</a></span>
-  <nav><a href="#how">Як це</a><a href="#try">Спробувати</a><a href="#game">Гра</a></nav>
-</div>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#top"><img src="logo.jpg" alt="">Sunscript</a>
+  <a class="by" href="/uk/">Wheel Reinvent</a>
+  <button class="theme" type="button" aria-label="Темна тема" title="Темна тема"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+</div></header>
 
-<div class="wrap hero">
-  <div>
-    <div class="eyebrow">Клавіатура для письма наосліп</div>
-    <h1 style="margin-top:14px">Пиши, не&nbsp;дивлячись.</h1>
-    <p class="lead"><b>Не де натиснути, а як провести.</b> Три лінії великого пальця, шість напрямків — і вся українська абетка. Без кнопок, без вгадування слів: однаковий жест завжди дає ту саму літеру.</p>
-    <div class="cta"><a class="btn" href="#game">Грати й вчитися</a><a class="btn ghost" href="#try">Спробувати</a><a class="btn ghost" href="#get">Для Android</a></div>
-  </div>
-  <figure><img src="logo.jpg" alt="Три лінії, які великий палець малює найлегше: синя вертикаль, червона полога, зелена навскіс"><figcaption>три лінії, які палець малює сам</figcaption></figure>
-</div>
+<main id="top">
+  <section class="hero"><div class="wrap">
+    <img class="mark" src="logo.jpg" alt="Три лінії, які великий палець малює найлегше">
+    <h1>Пиши, не дивлячись.</h1>
+    <p><b>Не де натиснути, а як провести.</b> Три лінії великого пальця, шість напрямків — і вся українська абетка. Однаковий жест завжди дає ту саму літеру.</p>
+    <div class="btns"><a class="btn" href="#try">Спробувати</a><a class="btn ghost" href="#game">Гра</a><a class="btn ghost" href="sunscript.apk">Android</a></div>
+  </div></section>
 
-<section id="how"><div class="wrap">
-  <div class="eyebrow">Як це працює</div>
-  <h2 style="margin-top:10px">Три осі — шість напрямків</h2>
-  <div class="axes">
-    <div id="starSvg"></div>
-    <ul>
-      <li><span class="sw" style="background:var(--axB)"></span><div><b>Синя</b> — майже вертикаль. Вгору <b>а</b>, вниз <b>і</b>.</div></li>
-      <li><span class="sw" style="background:var(--axR)"></span><div><b>Червона</b> — полога, як «/». Вгору-праворуч <b>е</b>, вниз-ліворуч <b>о</b>.</div></li>
-      <li><span class="sw" style="background:var(--axG)"></span><div><b>Зелена</b> — навскіс, як «\». Вгору-ліворуч <b>у</b>, вниз-праворуч <b>и</b>.</div></li>
-      <li><span class="sw" style="background:var(--line)"></span><div style="color:var(--muted)">Де саме на екрані провести — неважливо. Довжина й швидкість теж. Важить напрям і те, що палець робить по дорозі.</div></li>
-    </ul>
-  </div>
-
-  <h2 style="margin-top:56px">Шість жестів на кожен напрям</h2>
-  <p class="note" style="margin-top:12px">Провів і відпустив — голосна. Решта жестів того ж напрямку дають приголосні. Ось як це виглядає на синій осі вгору:</p>
-  <div class="kinds" id="kinds"></div>
-  <div class="extras">
-    <div><h3>Тапи</h3><p><span class="kbd">тап</span> — пробіл. <span class="kbd">довгий тап</span> — стерти. <span class="kbd">подвійний тап</span>, потім рух — команда: ↑ велика, ↓ Enter, ↗ символи, ↙ стерти слово, ↘ мова.</p></div>
-    <div><h3>Двома руками</h3><p>Хто торкнувся першим — той перший такт. Тап однією рукою, лінія іншою — пауза. Лінія, потім тап — потримати. Дві лінії в один бік — далі, у протилежні — назад.</p></div>
-  </div>
-</div></section>
-
-<section id="try"><div class="wrap">
-  <div class="eyebrow">Пісочниця</div>
-  <h2 style="margin-top:10px">Спробуй без встановлення</h2>
-  <p class="note" style="margin-top:12px">Проводь пальцем (або мишкою) по темному полю. Шпаргалка внизу — абетка, біля кожної літери її жест. Знайди «с» і спробуй.</p>
-  <div class="device sandbox">
-    <div class="screen"><div class="txt" id="sbText"></div><button class="sbtn" type="button" id="sbClear">Очистити</button></div>
-    <div class="status"><span class="res" id="sbRes">проведи пальцем</span><span class="svc" id="sbSvc"></span></div>
-    <div class="padzone" id="sbPad"><canvas></canvas></div>
-    <div class="cheat" id="sbCheat"></div>
-  </div>
-</div></section>
-
-<section id="game"><div class="wrap">
-  <div class="eyebrow">Гра</div>
-  <h2 style="margin-top:10px">Вчися рівнями</h2>
-  <p class="note" style="margin-top:12px">Кожен рівень додає один новий жест і має дві частини: спершу <b>повторюєш</b> з підказкою, потім <b>згадуєш</b> без неї. Зірки рахуються лише за частину без підказки: 70% відкривають наступний рівень. Наприкінці — іспит з усіх літер і спринт на 60 секунд. Твої рекорди швидкості зберігаються на цьому пристрої.</p>
-  <div class="levels" id="levels"></div>
-  <div class="device game gamebox" id="gameBox">
-    <div class="stage">
-      <div class="hint" id="gHint" aria-label="підказка"></div>
-      <div class="word" id="gWord" aria-live="polite"></div>
-      <div class="score"><b id="gScore">0</b><br><span id="gCombo">×1</span></div>
+  <section class="part" id="how"><div class="wrap">
+    <div class="label">Як це працює</div>
+    <h2>Три лінії, шість напрямків.</h2>
+    <p class="lead">Де саме на екрані провести — неважливо. Довжина й швидкість теж. Важить напрям і те, що палець робить по дорозі.</p>
+    <div class="axes">
+      <div id="starSvg"></div>
+      <dl>
+        <div><dt><span class="sw" style="background:var(--axB)"></span></dt><dd><b>Синя</b> — майже вертикаль. Вгору <b>а</b>, вниз <b>і</b>.</dd></div>
+        <div><dt><span class="sw" style="background:var(--axR)"></span></dt><dd><b>Червона</b> — полога, як «/». Вгору-праворуч <b>е</b>, вниз-ліворуч <b>о</b>.</dd></div>
+        <div><dt><span class="sw" style="background:var(--axG)"></span></dt><dd><b>Зелена</b> — навскіс, як «\». Вгору-ліворуч <b>у</b>, вниз-праворуч <b>и</b>.</dd></div>
+      </dl>
     </div>
-    <div class="bar"><i id="gBar"></i></div>
-    <div class="status"><span class="res" id="gRes">&nbsp;</span><span id="gCount"></span></div>
-    <div class="padzone" id="gPad"><canvas></canvas><div class="fb" id="gFb"></div></div>
-    <div class="over" id="gOver"><div class="card" id="gOverCard"></div></div>
-  </div>
-  <div class="opts"><label><input type="checkbox" id="optHint" checked> показувати підказку</label><label><input type="checkbox" id="optCheat"> шпаргалка під час гри</label></div>
-  <div class="device" id="gCheatWrap" hidden style="margin-top:12px"><div class="cheat" id="gCheat"></div></div>
-</div></section>
+  </div></section>
 
-<section id="get"><div class="wrap">
-  <div class="eyebrow">Для Android</div>
-  <h2 style="margin-top:10px">Встановити клавіатуру</h2>
-  <p class="note" style="margin-top:12px">Поки застосунку немає в Google Play, його можна поставити файлом. Це ранній тестовий випуск: щось може не працювати, пиши нам про все, що помітиш.</p>
-  <div class="extras">
-    <div><h3>1. Завантаж</h3><p><a class="btn" href="sunscript.apk">Завантажити APK</a></p><p style="color:var(--muted);font-size:15px">Sunscript 0.7.4 · 749 КБ · Android 8 і новіші</p></div>
-    <div><h3>2. Встанови й увімкни</h3><p>Відкрий файл і дозволь встановлення з цього джерела. Потім у застосунку Sunscript натисни «Увімкнути в налаштуваннях» і «Вибрати клавіатуру».</p><p style="color:var(--muted);font-size:15px">Повернутися до звичайної клавіатури — значок клавіатури внизу екрана або утримання ✕.</p></div>
-  </div>
-</div></section>
+  <section class="part"><div class="wrap">
+    <div class="label">Шість жестів</div>
+    <h2>Провів і відпустив — голосна. Решта — приголосні.</h2>
+    <p class="lead">Ось усі шість на синій лінії вгору. На інших лініях так само.</p>
+    <div class="kinds" id="kinds"></div>
+    <div class="pair">
+      <div><h3>Тапи</h3><p>Тап — пробіл. Довгий тап — стерти. Подвійний тап, потім рух — команда: ↑ велика, ↓ Enter, ↗ символи, ↙ стерти слово, ↘ мова.</p></div>
+      <div><h3>Двома руками</h3><p>Хто торкнувся першим — той перший такт. Тап, потім лінія — пауза. Лінія, потім тап — потримати. Дві лінії в один бік — далі, у протилежні — назад.</p></div>
+    </div>
+  </div></section>
 
-<footer><div class="wrap">
-  <span>Sunscript — експериментальна клавіатура для Android від Wheel Reinvent. Тут працює той самий розпізнавач, що й у застосунку.</span>
-  <a href="/uk/">Wheel Reinvent</a>
+  <section class="part" id="try"><div class="wrap">
+    <div class="label">Спробувати</div>
+    <h2>Без встановлення, прямо тут.</h2>
+    <p class="lead">Проводь пальцем або мишкою по темному полю. Внизу — абетка: біля кожної літери її жест.</p>
+    <div class="device sandbox">
+      <div class="screen"><div class="txt" id="sbText"></div><button class="sbtn" type="button" id="sbClear">Очистити</button></div>
+      <div class="status"><span class="res" id="sbRes">проведи пальцем</span><span class="svc" id="sbSvc"></span></div>
+      <div class="padzone" id="sbPad"><canvas></canvas></div>
+      <div class="cheat" id="sbCheat"></div>
+    </div>
+  </div></section>
+
+  <section class="part" id="game"><div class="wrap">
+    <div class="label">Гра</div>
+    <h2>Спершу повтори. Потім згадай.</h2>
+    <p class="lead">Кожен рівень додає один жест: спершу повторюєш з підказкою, потім згадуєш без неї. Зірки — лише за те, що згадав сам. Наприкінці іспит і спринт на 60 секунд; рекорди зберігаються на цьому пристрої.</p>
+    <div class="game-grid">
+      <div>
+        <div class="levels" id="levels"></div>
+        <div class="opts"><label><input type="checkbox" id="optHint" checked> підказка</label><label><input type="checkbox" id="optCheat"> шпаргалка</label></div>
+      </div>
+      <div>
+        <div class="device game gamebox" id="gameBox">
+          <div class="stage">
+            <div class="hint" id="gHint" aria-label="підказка"></div>
+            <div class="word" id="gWord" aria-live="polite"></div>
+            <div class="score"><b id="gScore">0</b><br><span id="gCombo">×1</span></div>
+          </div>
+          <div class="bar"><i id="gBar"></i></div>
+          <div class="status"><span class="res" id="gRes">&nbsp;</span><span id="gCount"></span></div>
+          <div class="padzone" id="gPad"><canvas></canvas><div class="fb" id="gFb"></div></div>
+          <div class="over" id="gOver"><div class="card" id="gOverCard"></div></div>
+        </div>
+        <div class="device" id="gCheatWrap" hidden style="margin-top:12px"><div class="cheat" id="gCheat"></div></div>
+      </div>
+    </div>
+  </div></section>
+</main>
+
+<footer class="more" id="get"><div class="wrap">
+  <div class="cols">
+    <div>
+      <h3>Спробувати</h3>
+      <ul>
+        <li><a href="#try">У браузері<span>без встановлення</span></a></li>
+        <li><a href="#game">Гра<span>9 рівнів і спринт</span></a></li>
+        <li><a href="sunscript.apk">Android<span>APK · 0.7.4 · 749 КБ</span></a></li>
+      </ul>
+      <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
+    </div>
+    <div>
+      <h3>Wheel Reinvent</h3>
+      <ul>
+        <li><a href="/uk/">Про компанію<span>wheel-reinvent.com</span></a></li>
+        <li><a href="mailto:liubomyr.ivanitskyi@gmail.com?subject=Sunscript">Написати нам<span>відгук, тест, ідеї</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Sunscript · пиши, не дивлячись</span><span>© 2026 Wheel Reinvent</span></div>
 </div></footer>
 
+<script>
+try{ if(localStorage.getItem('theme')==='dark') document.documentElement.dataset.theme='dark'; }catch(e){}
+document.querySelector('.theme').addEventListener('click',function(){
+  var dark=document.documentElement.dataset.theme!=='dark';
+  if(dark) document.documentElement.dataset.theme='dark'; else delete document.documentElement.dataset.theme;
+  try{ localStorage.setItem('theme', dark?'dark':'light'); }catch(e){}
+});
+</script>
 <script id="engine">
 // ── Розпізнавач зірки (той самий, що в клавіатурі; паритет перевірено на записаних штрихах) ──
 var CFG={axRed:29, axBlue:88, axGreen:136, axTol:25, dipPct:35, edgePct:12, endPct:100, starPause:65, padThr:95, backPct:12};
@@ -342,8 +390,8 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   (function(){
     var size=340, h=size/2, R=108, out='<svg viewBox="'+(-h)+' '+(-h)+' '+size+' '+size+'" role="img" aria-label="Шість напрямків і голосні на їхніх кінцях">';
     DIRS.forEach(function(d){ var u=vec(d), col=AXC[d];
-      out+=seg(u[0]*16,u[1]*16,u[0]*R,u[1]*R,col,7)+arrowHead(u[0]*R,u[1]*R,u[0],u[1],col,14).replace('stroke-width="2.4"','stroke-width="7"');
-      out+='<text x="'+(u[0]*(R+34)).toFixed(1)+'" y="'+(u[1]*(R+34)+12).toFixed(1)+'" text-anchor="middle" font-family="Unbounded, Golos Text, sans-serif" font-weight="800" font-size="34" fill="var(--ink)">'+LAY.uk[d].split(' ')[0]+'</text>'; });
+      out+=seg(u[0]*16,u[1]*16,u[0]*R,u[1]*R,col,5)+arrowHead(u[0]*R,u[1]*R,u[0],u[1],col,12).replace('stroke-width="2.4"','stroke-width="5"');
+      out+='<text x="'+(u[0]*(R+34)).toFixed(1)+'" y="'+(u[1]*(R+34)+12).toFixed(1)+'" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="30" fill="var(--ink)">'+LAY.uk[d].split(' ')[0]+'</text>'; });
     out+='<circle r="6" fill="var(--ink)"/></svg>';
     document.getElementById('starSvg').innerHTML=out;
     document.getElementById('kinds').innerHTML=KINDS.map(function(k){
@@ -439,7 +487,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   function stars(n){ return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n); }
   function renderLevels(){
     el.levels.innerHTML=LEVELS.map(function(L,i){ var b=prog.best[i], ok=unlocked(i);
-      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><small>Рівень '+(i+1)+(L.touchOnly&&!touchy?' · телефон':'')+'</small><b>'+L.name+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):(ok?'':'🔒'))+'</span>'+(b&&(b.cpm||b.per)?'<small>рекорд '+(L.sprint? b.cpm+' літ/хв' : b.per.toFixed(1)+' с/літ')+'</small>':'')+'</button>'; }).join('');
+      return '<button type="button" class="lvl" data-i="'+i+'" aria-pressed="'+(i===cur)+'"'+(ok?'':' disabled')+'><span class="n">'+(i+1)+'</span><b>'+L.name+(L.touchOnly&&!touchy?' <span style="color:var(--ink-3);font-weight:400">· телефон</span>':'')+'</b><span class="stars">'+(b&&b.stars?stars(b.stars):'')+'</span>'+(b&&(b.cpm||b.per)?'<span class="rec">рекорд: '+(L.sprint? b.cpm+' літер за хвилину' : b.per.toFixed(1)+' с на літеру')+'</span>':'')+'</button>'; }).join('');
     el.levels.querySelectorAll('.lvl').forEach(function(btn){ btn.addEventListener('click',function(){ cur=+btn.getAttribute('data-i'); renderLevels(); intro(); }); });
   }
   function pool(i){ var L=LEVELS[i];
@@ -467,7 +515,7 @@ function whereOf(ch,layer){ var L=LAY[layer||'uk']; for(var d in L){ var i=L[d].
   function intro(){
     var L=LEVELS[cur]; G=null;
     el.word.innerHTML=''; el.hint.innerHTML=''; el.res.textContent=''; el.count.textContent=''; el.bar.style.width='0';
-    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--body)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
+    var ex= L.add&&!L.exam? L.add.split(' ').slice(0,3).map(function(c){ var w=whereOf(c); return '<span style="display:inline-flex;align-items:center;gap:2px;font:700 22px var(--sans)">'+esc(c)+glyph(w.d,w.k,34)+'</span>'; }).join(' ') : '';
     var phoneOnly= L.touchOnly && !touchy;
     el.card.innerHTML='<div class="eyebrow" style="color:var(--padMuted)">Рівень '+(cur+1)+'</div><h3>'+L.name+'</h3><p>'+esc(L.about)+(L.words?'. Пробіл між словами не потрібен. Підказка з’явиться після двох помилок.':L.exam?'. Підказка з’явиться після двох помилок.':'. Спершу повтори з підказкою, потім згадай без неї.')+'</p>'+
       (ex?'<div class="row">'+ex+'</div>':'')+
