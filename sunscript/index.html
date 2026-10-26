@@ -311,7 +311,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">У браузері<span>без встановлення</span></a></li>
         <li><a href="#game">Гра<span>вчити, слово, спринт, на слух</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.68.1-s7 · 856 КБ</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.68.2-s7 · 842 КБ</span></a></li>
       </ul>
       <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
     </div>
@@ -647,15 +647,6 @@ function simpleResult(P){ var r=SIMPLE.recognize(P); if(r.tap) return 'tap'; if(
   if(r.h!==undefined){ if(r.k==='') return r.h?'tap':'dbl'; return '?'; } return {d:r.d,k:r.k}; }
 function simpleChain(P){ var r=SIMPLE.recognize(P); return r.chain||null; }
 function classifyP(P){ return simpleResult(P); }   // завжди код клавіатури: LEN.on (старий розпізнавач довжин) стояв увімкненим за замовчуванням (автор 26.10: «на сайті старий зчитувач»)
-function chord(a1,a2){
-  var t1=a1.dist<12&&a1.path<40, t2=a2.dist<12&&a2.path<40;
-  function dirOf(a){ var f=a.star[0]; return f&&f.off<=CFG.axTol? f.d : null; }
-  if(t1&&t2) return '?';
-  if(t1){ var d=dirOf(a2); return d?{d:d,k:'P'}:'?'; }
-  if(t2){ var e=dirOf(a1); return e?{d:e,k:'H'}:'?'; }
-  var d1=dirOf(a1), d2=dirOf(a2); if(!d1||!d2) return '?';
-  if(d2===d1) return {d:d1,k:'>'}; if(d2===OPP[d1]) return {d:d1,k:'<'}; return '?';
-}
 // Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
 var LAY={
   // 23.10 (автор, за формою букв): ч ↔ ц («ц» — двійня «щ», «ч» схожа на «у»), ґ ↔ ф («ґ» — «г» з гачком угору).
@@ -870,7 +861,7 @@ var SIMPLE=(function(){
       trails.forEach(function(t){ line(t.pts,(1-(now-t.t)/2000)*0.8); }); if(s1&&!s1.done) line(s1.pts,1); if(s2&&!s2.done) line(s2.pts,1); }
     function loop(){ cancelAnimationFrame(raf); (function tick(){ draw(); if(s1||s2||trails.length) raf=requestAnimationFrame(tick); })(); }
     zone.addEventListener('pointerdown',function(e){
-      if(s1 && !s2 && !s1.done && e.pointerId!==s1.id){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} s2={id:e.pointerId,pts:[pt(e)]}; return; }
+      // другий палець ігнорується (автор 26.10: дві руки прибрано)
       if(s1) return;
       e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} diag.pw=diag.tr=diag.pr=diag.tf=0; s1={id:e.pointerId,pts:[pt(e)],c0:[Math.round(e.clientX),Math.round(e.clientY)]};
       stopRep(); follow= lastTapUp>=0 && s1.pts[0].t-lastTapUp<=CFG.dblMs; lastTapUp=-1; armed=null; watchT=setInterval(watch,40);
@@ -890,7 +881,6 @@ var SIMPLE=(function(){
         if(Math.hypot(ddx,ddy)>=24){ var nd=nearestDir(ddx,ddy); onResult(nd.off<=CFG.axTol?'cmdgo:'+nd.dir:'cmdgo:?'); }
         return; }
       self.lastWidth=Math.round(Math.max.apply(null,A.pts.map(function(q){return q.w||0;})));
-      if(B){ onResult(chord(analyze(A.pts),analyze(B.pts))); return; }
       var P=A.pts, p0=P[0], pN=P[P.length-1], far=0, dur=pN.t-p0.t; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
       var still=far<12;
       if(wasFollow){
@@ -1452,7 +1442,7 @@ var SIMPLE=(function(){
   function logUI(n){ var c=document.getElementById('logCount'); if(c) c.textContent=n; }
   // На сайті (без застосунку) — зберегти файлом через можливість «downloads» сторінки або звичайним завантаженням.
   var DL=null; if(!APP && window.claude && window.claude.use){ window.claude.use('downloads').then(function(d){ DL=d; }).catch(function(){}); }
-  function logJSON(){ return JSON.stringify({app:'sunscript', version:'0.68.1-s7', site:!APP, attempts:logLoad()}); }
+  function logJSON(){ return JSON.stringify({app:'sunscript', version:'0.68.2-s7', site:!APP, attempts:logLoad()}); }
   function saveSite(){ var a=logLoad(); if(!a.length) return; var name='sunscript-log-'+new Date().toISOString().slice(0,16).replace(/[-:T]/g,'')+'.json';
     if(DL){ DL.save({filename:name, data:logJSON()}).catch(function(){}); return; }
     try{ var url=URL.createObjectURL(new Blob([logJSON()],{type:'application/json'})), l=document.createElement('a'); l.href=url; l.download=name; document.body.appendChild(l); l.click(); setTimeout(function(){ URL.revokeObjectURL(url); l.remove(); },1000); }catch(e){} }
@@ -1467,8 +1457,8 @@ var SIMPLE=(function(){
     var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px'; box.style.alignItems='center';
     box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logSave" style="color:var(--ink);border-color:var(--line)">зберегти файл</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
     el.optHint.closest('.opts').after(box); logUI(logLoad().length);
-    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.68.1-s7', attempts:a})); };
-    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.68.1-s7', attempts:a})); };
+    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.68.2-s7', attempts:a})); };
+    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.68.2-s7', attempts:a})); };
     document.getElementById('logClear').onclick=function(){ if(confirm('Стерти всі збережені логи?')){ logSave([]); logUI(0); } };
   }
   renderLevels(); intro();
