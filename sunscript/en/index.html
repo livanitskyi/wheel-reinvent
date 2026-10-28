@@ -311,7 +311,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">In the browser<span>no install</span></a></li>
         <li><a href="#game">Game<span>learn, word, sprint, by ear</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.76.0-s7 · 1151 KB</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.80.1-s7 · 1169 KB</span></a></li>
       </ul>
       <p class="fine">Until the app is on Google Play, install it from the file: open the APK, allow the install, then in the app tap “Enable in settings” and “Choose keyboard”. Android 8 and newer. The app is in Ukrainian for now. This is an early test release.</p>
     </div>
@@ -721,6 +721,7 @@ var DUO=(function(){
     var chain=[],q=lost.length;
     L.forEach(function(sg,k){ if(gone[k])return;
       var a=(Math.atan2(-(p[sg.i1].y-p[sg.i0].y),p[sg.i1].x-p[sg.i0].x)*180/Math.PI+360)%360,d=dirOf(a);
+      if(!d && Math.abs(a-180)<36) d= a>=180?'SW':'NW';   // горизонталь правої в слові двох рук — до ↙ (о) чи ↖ (у), як у клавіатурі
       if(!d){q++;return;} var up=d==='U'||d==='NE'||d==='NW',e=ev[k],kind='';
       if(e){ var lk=e.l.k; if(lk==='t')kind=e.first?'P':'*'; else if(lk==='u'||lk==='d')kind=((lk==='u')===up)?'>':(e.first?'<':'H'); else {q++;return;} }
       chain.push({d:d,k:kind,why:'дві руки: '+d+(kind?' '+kind:'')}); });
@@ -1524,7 +1525,7 @@ var SIMPLE=(function(){
   function logUI(n){ var c=document.getElementById('logCount'); if(c) c.textContent=n; }
   // На сайті (без застосунку) — зберегти файлом через можливість «downloads» сторінки або звичайним завантаженням.
   var DL=null; if(!APP && window.claude && window.claude.use){ window.claude.use('downloads').then(function(d){ DL=d; }).catch(function(){}); }
-  function logJSON(){ return JSON.stringify({app:'sunscript', version:'0.76.0-s7', site:!APP, attempts:logLoad()}); }
+  function logJSON(){ return JSON.stringify({app:'sunscript', version:'0.80.1-s7', site:!APP, attempts:logLoad()}); }
   function saveSite(){ var a=logLoad(); if(!a.length) return; var name='sunscript-log-'+new Date().toISOString().slice(0,16).replace(/[-:T]/g,'')+'.json';
     if(DL){ DL.save({filename:name, data:logJSON()}).catch(function(){}); return; }
     try{ var url=URL.createObjectURL(new Blob([logJSON()],{type:'application/json'})), l=document.createElement('a'); l.href=url; l.download=name; document.body.appendChild(l); l.click(); setTimeout(function(){ URL.revokeObjectURL(url); l.remove(); },1000); }catch(e){} }
@@ -1539,8 +1540,8 @@ var SIMPLE=(function(){
     var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px'; box.style.alignItems='center';
     box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logSave" style="color:var(--ink);border-color:var(--line)">зберегти файл</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
     el.optHint.closest('.opts').after(box); logUI(logLoad().length);
-    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.76.0-s7', attempts:a})); };
-    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.76.0-s7', attempts:a})); };
+    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.80.1-s7', attempts:a})); };
+    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.80.1-s7', attempts:a})); };
     document.getElementById('logClear').onclick=function(){ if(confirm('Стерти всі збережені логи?')){ logSave([]); logUI(0); } };
   }
   renderLevels(); intro();
