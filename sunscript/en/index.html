@@ -915,22 +915,33 @@ var SIMPLE=(function(){
     function loop(){ cancelAnimationFrame(raf); (function tick(){ draw(); if(s1||ses.length||trails.length) raf=requestAnimationFrame(tick); })(); }
     zone.addEventListener('pointerdown',function(e){
       // другий палець, поки перший на екрані, — слово двома руками (DUO, як у клавіатурі)
-      if(s1){ if(ses.some(function(x){return !x.done;})){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} ses.push({id:e.pointerId,pts:[pt(e)]}); if(!duo){ duo=true; stopRep(); follow=false; armed=null; lastTapUp=-1; } } return; }
+      if(s1){ if(ses.some(function(x){return !x.done;})){ e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} ses.push({id:e.pointerId,pts:[pt(e)]}); if(!duo){ duo=true; stopRep(); follow=false; armed=null; lastTapUp=-1; } duoLive(); } return; }
       e.preventDefault(); try{zone.setPointerCapture(e.pointerId);}catch(_){} diag.pw=diag.tr=diag.pr=diag.tf=0; s1={id:e.pointerId,pts:[pt(e)],c0:[Math.round(e.clientX),Math.round(e.clientY)]}; ses=[s1]; duo=false;
       stopRep(); follow= lastTapUp>=0 && s1.pts[0].t-lastTapUp<=CFG.dblMs; lastTapUp=-1; armed=null; watchT=setInterval(watch,40);
       loop(); });
     function strokeOf(id){ for(var i=ses.length-1;i>=0;i--) if(ses[i].id===id&&!ses[i].done) return ses[i]; return null; }
     zone.addEventListener('pointermove',function(e){ var s=strokeOf(e.pointerId); if(!s||s.done) return;
-      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); });
+      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); if(duo) duoLive(); });
     function up(e){ var s=strokeOf(e.pointerId); if(!s||s.done) return;
       var l=pt(e), lp=s.pts[s.pts.length-1]; if(l.w===0&&lp) l.w=lp.w; s.pts.push(l); s.done=true; trails.push({pts:s.pts,t:performance.now()});
       if(ses.every(function(x){return x.done;})){ var A=s1, all=ses, wasDuo=duo; s1=null; s2=null; ses=[]; duo=false; if(wasDuo) finishDuo(all); else finish(A,null); } }
+    function duoParts(all,live){ var R=all.reduce(function(a,b){ return b.pts[0].x>a.pts[0].x?b:a; });
+      return {R:R, lefts:all.filter(function(x){return x!==R;}).map(function(x){ return {t:x.pts[0].t,u:x.done||!live?x.pts[x.pts.length-1].t:Infinity,k:DUO.leftKind(x.pts)}; })}; }
+    // Поточне слово під пальцями (як у клавіатурі): показ міняється, лише коли протрималось 100 мс (без бліку «й» на торканні лівої)
+    var liveShown=null, livePend=null, liveT=0;
+    function duoLive(){ if(!self.onLive) return; var d=duoParts(ses,true), P=d.R.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+      var r= far>DUO.SLOP? DUO.run(P,d.lefts) : null, key=r? JSON.stringify(r.chain.map(function(c){return c.d+c.k;})) : '';
+      if(key===liveShown){ livePend=null; clearTimeout(liveT); return; }
+      if(key!==livePend){ livePend=key; clearTimeout(liveT); liveT=setTimeout(function(){ if(!duo) return; liveShown=key; livePend=null; self.onLive(r? r.chain : []); },100); } }
+    function liveEnd(){ clearTimeout(liveT); livePend=null; liveShown=null; if(self.onLive) self.onLive(null); }
     /** Слово двома руками: права — найправіший дотик, ліва — решта. Права не рушила — знаки (як у клавіатурі). */
-    function finishDuo(all){ stopRep(); follow=false; armed=null;
+    function finishDuo(all){ stopRep(); follow=false; armed=null; liveEnd();
       var R=all.reduce(function(a,b){ return b.pts[0].x>a.pts[0].x?b:a; }), P=R.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
       var lefts=all.filter(function(x){return x!==R;}).map(function(x){ return {t:x.pts[0].t,u:x.pts[x.pts.length-1].t,k:DUO.leftKind(x.pts)}; });
       self.lastStroke={P:P, B:null, c0:R.c0||[0,0], duo:true};
-      if(far<=DUO.SLOP){ onResult('?'); return; }
+      if(far<=DUO.SLOP){ var lk= lefts.length? lefts[0].k : null;   // права тап: ліва тап «-», ↑ «?», ↓ «!», ← мова — там, де знаки мають сенс (пісочниця)
+        if(self.signs && lk){ onResult({duoSign: lk==='t'?'-' : lk==='u'?'?' : lk==='d'?'!' : 'lang'}); return; }
+        onResult('?'); return; }
       var r=DUO.run(P,lefts); if(!r||!r.chain.length){ onResult('?'); return; }
       if(r.q){ onResult('?'); return; }
       onResult(r.chain.length>1?{chain:r.chain}:r.chain[0]); }
@@ -979,12 +990,15 @@ var SIMPLE=(function(){
       svc.textContent= service?'commands':(upper?'⇧ capital':(layer==='sym'?'symbols':w)); }
     document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
     pad=new Pad(document.getElementById('sbPad'),function(r){
+      if(r&&r.duoSign){ if(service){ service=false; res.textContent='command cancelled'; render(); return; }
+        if(r.duoSign==='lang'){ setKB(KB==='uk'?'en':'uk'); layer=KB; res.textContent='мова: '+(KB==='uk'?'українська':'English')+' (права тап + ліва ←)'; earPlay('tap'); render(); return; }
+        text+=r.duoSign; res.textContent='дві руки: права тап → «'+r.duoSign+'»'; earPlay('tap'); render(); return; }
       if(r==='cmd'||r==='cmdF'){ earPlay('mode'); if(r==='cmdF') text=text.replace(/ $/,''); service=true; res.textContent='long press → command'; render(); return; }
       if(typeof r==='string' && r.indexOf('cmdgo:')===0){ var dd=r.slice(6); service=false; if(dd==='?'){ earPlay('?'); res.textContent='command cancelled'; } else { earPlay('tap'); runCmd(dd); } render(); return; }
       if(r==='dbl'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='double tap → delete'; render(); return; }
       if(r==='rep0'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='tap, then hold left → deleting'; render(); return; }
       if(r==='rep'){ earPlay('del'); text=text.slice(0,-1); render(); return; }
-      if(r&&r.chain){ if(service){ service=false; res.textContent='command cancelled'; render(); return; }
+      if(r&&r.chain){ if(service){ service=false; res.textContent='команду скасовано'; render(); return; }
         earChain(r.chain); var s2=r.chain.map(function(x){ return charOf(x,layer)||''; }).join('');
         if(upper&&layer!=='sym'&&s2){ s2=s2[0].toUpperCase()+s2.slice(1); upper=false; }
         text+=s2; res.textContent='syllable: '+r.chain.map(function(x){ return ARROW[x.d]+(x.k?KNAME[x.k][0].toLowerCase():''); }).join(' ')+' → '+s2; render(); return; }
@@ -999,6 +1013,8 @@ var SIMPLE=(function(){
       if(upper&&layer!=='sym'){ ch=ch.toUpperCase(); upper=false; }
       text+=ch; res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+ch; render(ch.toLowerCase());
     });
+    pad.signs=true;   // права тап + ліва: «-», «?», «!», мова
+    pad.onLive=function(ch){ if(ch===null) return; res.textContent= ch.length? 'зараз: «'+ch.map(function(x){ return charOf(x,layer)||'·'; }).join('')+'»' : ''; };
     render();
   })();
 
@@ -1486,6 +1502,9 @@ var SIMPLE=(function(){
     if(!el.cheatWrap.hidden) el.cheat.innerHTML=cheatHTML(KB,false); renderLevels(); intro(); });
   wsBindPeek();
   var gpad=new Pad(document.getElementById('gPad'),onGame);
+  gpad.onLive=function(ch){   // поточне слово двох рук під пальцями
+    if(ch===null){ if(/^зараз:/.test(el.res.textContent)) el.res.textContent=''; return; }
+    el.res.textContent= ch.length? 'зараз: «'+ch.map(function(x){ return charOf(x,KB)||'·'; }).join('')+'»' : ''; };
   // ── Логи тренування (лише в застосунку): штрихи з ціллю — щоб автор міг надіслати їх для розбору. Не більше LOG_MAX спроб. ──
   var APP=window.SunscriptApp, LOG_MAX=1500, LOG_KEY='sunscript-log';
   function logLoad(){ return storeGet(LOG_KEY,[]); }
