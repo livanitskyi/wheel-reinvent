@@ -728,7 +728,7 @@ var DUO=(function(){
       if(e){ var lk=e.l.k; if(lk==='t')kind=e.first?'P':'*'; else if(lk==='u'||lk==='d')kind=((lk==='u')===up)?'>':(e.first?'<':'H'); else {q++;return;} }
       chain.push({d:d,k:kind,why:'дві руки: '+d+(kind?' '+kind:'')}); });
     return {chain:chain,q:q};}
-  return {run:run,leftKind:leftKind,SLOP:SLOP};
+  return {run:run,leftKind:leftKind,SLOP:SLOP,corners:corners};
 })();
 var SIMPLE=(function(){
   var sd=function(a,b){return ((a-b+540)%360)-180;}, ad=function(a,b){return Math.abs(sd(a,b));}, ang=function(x,y){return (Math.atan2(-y,x)*180/Math.PI+360)%360;};
@@ -766,6 +766,8 @@ var SIMPLE=(function(){
     if(P.length<2||far(P)<=SLOP)return {tap:1};
     if(path(P)>STRAIGHT*disp(P))return backForth(P)||{q:'не одна лінія'};
     var a=med(P),hz=horiz(a);
+    // горизонталь — лише без зламу (як Simple.bent у клавіатурі, 0.84.2)
+    if(hz&&P.length>=3&&DUO.corners(P.map(function(q){return {x:q[0],y:q[1]};})).length)return {q:'злам перед горизонталлю'};
     if(hz){ if(tapShare(P)>=TAP)return {h:hz>0,k:'P',why:'горизонталь: пауза'}; if(depth(P)>=BRAKE)return {h:hz>0,k:'>',why:'горизонталь: далі'}; return {h:hz>0,k:'',why:'горизонталь: лінія'}; }
     var d=dir(a);if(!d)return {q:'між осями ('+Math.round(a)+'°)'};
     var sh=tapShare(P);if(sh>=TAP)return {d:d,k:'P',why:'пауза, тап '+Math.round(sh*100)+'%'};
@@ -927,10 +929,10 @@ var SIMPLE=(function(){
       loop(); });
     function strokeOf(id){ for(var i=ses.length-1;i>=0;i--) if(ses[i].id===id&&!ses[i].done) return ses[i]; return null; }
     zone.addEventListener('pointermove',function(e){ var s=strokeOf(e.pointerId); if(!s||s.done) return;
-      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); if(duo) duoLive(); });
+      var list=e.getCoalescedEvents?e.getCoalescedEvents():[e]; if(!list.length) list=[e]; list.forEach(function(c){ s.pts.push(pt(c)); }); if(duo) duoLive(); else if(s===s1) oneLive(); });
     function up(e){ var s=strokeOf(e.pointerId); if(!s||s.done) return;
       var l=pt(e), lp=s.pts[s.pts.length-1]; if(l.w===0&&lp) l.w=lp.w; s.pts.push(l); s.done=true; trails.push({pts:s.pts,t:performance.now()});
-      if(ses.every(function(x){return x.done;})){ var A=s1, all=ses, wasDuo=duo; s1=null; s2=null; ses=[]; duo=false; if(wasDuo) finishDuo(all); else finish(A,null); } }
+      if(ses.every(function(x){return x.done;})){ var A=s1, all=ses, wasDuo=duo; s1=null; s2=null; ses=[]; duo=false; if(wasDuo) finishDuo(all); else { liveEnd(); finish(A,null); } } }
     function duoParts(all,live){ var R=all.reduce(function(a,b){ return b.pts[0].x>a.pts[0].x?b:a; });
       return {R:R, lefts:all.filter(function(x){return x!==R;}).map(function(x){ return {t:x.pts[0].t,u:x.done||!live?x.pts[x.pts.length-1].t:Infinity,k:DUO.leftKind(x.pts)}; })}; }
     // Поточне слово під пальцями (як у клавіатурі): показ міняється, лише коли протрималось 100 мс (без бліку «й» на торканні лівої)
@@ -939,6 +941,12 @@ var SIMPLE=(function(){
       var r= far>DUO.SLOP? DUO.run(P,d.lefts) : null, key=r? JSON.stringify(r.chain.map(function(c){return c.d+c.k;})) : '';
       if(key===liveShown){ livePend=null; clearTimeout(liveT); return; }
       if(key!==livePend){ livePend=key; clearTimeout(liveT); liveT=setTimeout(function(){ if(!duo) return; liveShown=key; livePend=null; self.onLive(r? r.chain : []); },100); } }
+    // однією рукою (як у клавіатурі, автор 30.10): літера під пальцем — у тексті одразу; міняється, лише коли протрималась 100 мс
+    function oneLive(){ if(!self.onLive||!self.signs||!s1||follow||repeating) return; var P=s1.pts, p0=P[0], far=0; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
+      var ch=[]; if(far>DUO.SLOP){ var r=SIMPLE.recognize(P.map(function(q){return q;})); if(r.chain) ch=r.chain; else if(r.d) ch=[{d:r.d,k:r.k}]; }
+      var key=JSON.stringify(ch.map(function(c){return c.d+c.k;}));
+      if(key===liveShown){ livePend=null; clearTimeout(liveT); return; }
+      if(key!==livePend){ livePend=key; clearTimeout(liveT); liveT=setTimeout(function(){ if(!s1||duo) return; liveShown=key; livePend=null; self.onLive(ch); },100); } }
     function liveEnd(){ clearTimeout(liveT); livePend=null; liveShown=null; if(self.onLive) self.onLive(null); }
     /** Слово двома руками: права — найправіший дотик, ліва — решта. Права не рушила — знаки (як у клавіатурі). */
     function finishDuo(all){ stopRep(); follow=false; armed=null; liveEnd();
@@ -991,7 +999,9 @@ var SIMPLE=(function(){
       res.textContent=c||'команду скасовано'; }
     // Режим команд: шпаргалка показує команди (як у клавіатурі).
     function cmdSheet(){ return '<div class="cmdh">КОМАНДИ — проведи в напрямку</div>'+[['U','велика'],['D','Enter'],['NE','символи'],['SE','мова'],['NW','апостроф'],['SW','налаштування']].map(function(x){ return '<div class="c cmd">'+glyph(x[0],'',28)+'<span>'+x[1]+'</span></div>'; }).join(''); }
-    function render(hl){ tEl.textContent=text; cheat.innerHTML= service? cmdSheet() : cheatHTML(layer,upper,hl); cheat.classList.toggle('cmds',service);
+    var live='';
+    function render(hl){ var lv=live; if(lv&&upper&&layer!=='sym') lv=lv[0].toUpperCase()+lv.slice(1);
+      tEl.textContent=text; if(lv){ var sp=document.createElement('span'); sp.textContent=lv; sp.style.cssText='text-decoration:underline;opacity:.65'; tEl.appendChild(sp); } cheat.innerHTML= service? cmdSheet() : cheatHTML(layer,upper,hl); cheat.classList.toggle('cmds',service);
       var d=pad&&pad.diag, w= pad&&pad.lastWidth ? 'дотик '+pad.lastWidth+' px'+(pad.lastWidth>=CFG.padThr?' · подушка':'')+(d?' · w'+Math.round(d.pw)+' r'+Math.round(d.tr)+' p'+d.pr.toFixed(2)+' f'+d.tf.toFixed(2)+' ×'+(window.devicePixelRatio||1).toFixed(1):'') : '';
       svc.textContent= service?'команди':(upper?'⇧ велика':(layer==='sym'?'символи':w)); }
     document.getElementById('sbClear').addEventListener('click',function(){ text=''; render(); });
@@ -1025,7 +1035,8 @@ var SIMPLE=(function(){
       text+=ch; res.textContent=ARROW[r.d]+' '+KNAME[r.k].toLowerCase()+' → '+ch; render(ch.toLowerCase());
     });
     pad.signs=true;   // права тап + ліва: «-», «?», «!», мова
-    pad.onLive=function(ch){ if(ch===null) return; res.textContent= ch.length? 'зараз: «'+ch.map(function(x){ return charOf(x,layer)||'·'; }).join('')+'»' : ''; };
+    // поточне під пальцями — у тексті, підкресленим (як у клавіатурі); на відриві його замінює справжній результат
+    pad.onLive=function(ch){ live= ch? ch.map(function(x){ return charOf(x,layer)||''; }).join('') : ''; render(); };
     render();
   })();
 
