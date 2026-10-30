@@ -311,7 +311,7 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
       <ul>
         <li><a href="#try">У браузері<span>без встановлення</span></a></li>
         <li><a href="#game">Гра<span>вчити, слово, спринт, на слух</span></a></li>
-        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.84.7-s7 · 1173 КБ</span></a></li>
+        <li><a href="/sunscript/sunscript.apk">Android<span>APK · 0.86.0-s7 · 1173 КБ</span></a></li>
       </ul>
       <p class="fine">Поки застосунку немає в Google Play, його ставлять файлом: відкрий APK, дозволь встановлення, потім у застосунку — «Увімкнути в налаштуваннях» і «Вибрати клавіатуру». Android 8 і новіші. Це ранній тестовий випуск.</p>
     </div>
@@ -683,7 +683,8 @@ var DUO=(function(){
   var SLOP=8, V0=50, VWIN=50, TURN=40, MIN_SEG=12, TAPZ=3, HALF=22, C={NE:40,U:92,NW:144,SW:216,D:265,SE:319};
   function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
   function ad(a,b){var d=Math.abs(a-b)%360;return d>180?360-d:d;}
-  function dirOf(a){var best=null,bd=1e9;for(var k in C){var d=ad(a,C[k]);if(d<bd){bd=d;best=k;}}return bd>HALF?null:best;}
+  function dirOf(a){if(a>C.D+HALF&&a<350)return 'SE';   // ↘ ширша (як Simple.dir у клавіатурі, 0.86.0)
+    var best=null,bd=1e9;for(var k in C){var d=ad(a,C[k]);if(d<bd){bd=d;best=k;}}return bd>HALF?null:best;}
   function moves(p){var out=[],moving=false,anchor=0,start=0;
     function v(i){var j=i;while(j>0&&p[i].t-p[j].t<VWIN)j--;var dt=p[i].t-p[j].t;return dt>0?dist(p[i],p[j])/dt*1000:0;}
     for(var i=0;i<p.length;i++){ if(!moving){ if(dist(p[i],p[anchor])>SLOP){moving=true;start=Math.max(anchor,i-1);} }
@@ -737,7 +738,8 @@ var SIMPLE=(function(){
   function far(P){var m=0;P.forEach(function(p){m=Math.max(m,Math.hypot(p[0]-P[0][0],p[1]-P[0][1]));});return m;}
   function steps(P){var q=[P[0]];for(var i=1;i<P.length;i++){var a=P[i-1],b=P[i];for(;;){var l=q[q.length-1];if(Math.hypot(b[0]-l[0],b[1]-l[1])<STEP)break;var dx=b[0]-a[0],dy=b[1]-a[1],fx=a[0]-l[0],fy=a[1]-l[1];var A=dx*dx+dy*dy,B=2*(fx*dx+fy*dy),Cc=fx*fx+fy*fy-STEP*STEP;var t=(-B+Math.sqrt(Math.max(0,B*B-4*A*Cc)))/(2*A);var np=[a[0]+dx*t,a[1]+dy*t];q.push(np);a=np;}}return q;}
   function med(P){var c=ang(P[P.length-1][0]-P[0][0],P[P.length-1][1]-P[0][1]);var q=steps(P);if(q.length<2)return c;var v=[];for(var i=1;i<q.length;i++)v.push(sd(ang(q[i][0]-q[i-1][0],q[i][1]-q[i-1][1]),c));v.sort(function(a,b){return a-b;});return (c+v[Math.floor(v.length/2)]+360)%360;}
-  function dir(a,CC){CC=CC||C;var best=null,bd=1e9;for(var k in CC){var d=ad(a,CC[k]);if(d<bd){bd=d;best=k;}}return bd>HALF?null:best;}
+  function dir(a,CC){if(!CC&&a>C.D+HALF&&a<360-HALF_H)return 'SE';   // ↘ ширша: 287–350° (як у клавіатурі, 0.86.0)
+    CC=CC||C;var best=null,bd=1e9;for(var k in CC){var d=ad(a,CC[k]);if(d<bd){bd=d;best=k;}}return bd>HALF?null:best;}
   var PC={NE:40,U:80,NW:144,SW:216,D:265,SE:319};   // подушки: я — 80° (автор 26.10)
   function horiz(a){return ad(a,0)<=HALF_H?1:(a>=166&&a<=200)?-1:0;}   // ← стерти 166–200° (як у клавіатурі, 0.81.2)
   function rest(P){var n=P.length,k=n-1;for(var c=n-2;c>=0;c--){var ok=true;for(var j=c+1;j<n;j++)if(Math.hypot(P[j][0]-P[c][0],P[j][1]-P[c][1])>SLOP){ok=false;break;}if(ok)k=c;else break;}return k;}
@@ -1530,7 +1532,7 @@ var SIMPLE=(function(){
   function logUI(n){ var c=document.getElementById('logCount'); if(c) c.textContent=n; }
   // На сайті (без застосунку) — зберегти файлом через можливість «downloads» сторінки або звичайним завантаженням.
   var DL=null; if(!APP && window.claude && window.claude.use){ window.claude.use('downloads').then(function(d){ DL=d; }).catch(function(){}); }
-  function logJSON(){ return JSON.stringify({app:'sunscript', version:'0.84.7-s7', site:!APP, attempts:logLoad()}); }
+  function logJSON(){ return JSON.stringify({app:'sunscript', version:'0.86.0-s7', site:!APP, attempts:logLoad()}); }
   function saveSite(){ var a=logLoad(); if(!a.length) return; var name='sunscript-log-'+new Date().toISOString().slice(0,16).replace(/[-:T]/g,'')+'.json';
     if(DL){ DL.save({filename:name, data:logJSON()}).catch(function(){}); return; }
     try{ var url=URL.createObjectURL(new Blob([logJSON()],{type:'application/json'})), l=document.createElement('a'); l.href=url; l.download=name; document.body.appendChild(l); l.click(); setTimeout(function(){ URL.revokeObjectURL(url); l.remove(); },1000); }catch(e){} }
@@ -1545,8 +1547,8 @@ var SIMPLE=(function(){
     var box=document.createElement('div'); box.className='opts'; box.style.marginTop='8px'; box.style.alignItems='center';
     box.innerHTML='<span>логи: <b id="logCount">0</b> / '+LOG_MAX+'</span><button type="button" class="nextw" id="logSend" style="color:var(--ink);border-color:var(--line)">надіслати</button><button type="button" class="nextw" id="logSave" style="color:var(--ink);border-color:var(--line)">зберегти файл</button><button type="button" class="nextw" id="logClear" style="color:var(--ink-2);border-color:var(--line)">очистити</button>';
     el.optHint.closest('.opts').after(box); logUI(logLoad().length);
-    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.84.7-s7', attempts:a})); };
-    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.84.7-s7', attempts:a})); };
+    document.getElementById('logSend').onclick=function(){ var a=logLoad(); if(!a.length) return; APP.share(JSON.stringify({app:'sunscript', version:'0.86.0-s7', attempts:a})); };
+    document.getElementById('logSave').onclick=function(){ var a=logLoad(); if(!a.length) return; if(APP.save) APP.save(JSON.stringify({app:'sunscript', version:'0.86.0-s7', attempts:a})); };
     document.getElementById('logClear').onclick=function(){ if(confirm('Стерти всі збережені логи?')){ logSave([]); logUI(0); } };
   }
   renderLevels(); intro();
