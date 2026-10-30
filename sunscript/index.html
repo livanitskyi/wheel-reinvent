@@ -256,8 +256,8 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
     <p class="lead">Ось усі шість на синій лінії вгору. На інших лініях так само.</p>
     <div class="kinds" id="kinds"></div>
     <div class="pair">
-      <div><h3>Пробіл, стерти, команди</h3><p>Тап — пробіл. Подвійний тап або довгий штрих ліворуч — стерти літеру. Тап, потім веди ліворуч і тримай — стирає по літері, поки тримаєш. Довгий дотик (пів секунди на місці) — команди: шпаргалка показує їх, далі проведи, можна не відпускаючи: ↑ велика, ↓ Enter, ↗ символи, ↘ мова, ↖ апостроф.</p></div>
-      <div><h3>Двома руками</h3><p>Хто торкнувся першим — той перший такт. Тап, потім лінія — пауза. Лінія, потім тап — потримати. Дві лінії в один бік — далі, у протилежні — назад.</p></div>
+      <div><h3>Пробіл, стерти, команди</h3><p>Тап — пробіл. Пряма ліворуч — стерти літеру; ліворуч і тримай — стирає далі. Праворуч: лінія — дефіс, далі — крапка, хвостик — кома, галочка — Enter, з паузою на старті — велика літера (ще раз — вимкнути). Подвійний тап — символи; там пауза — команди: ↑ велика, ↓ Enter, ↗ назад до літер, ↘ мова, ↖ апостроф. Мову ще можна перемкнути тапом по її плашці.</p></div>
+      <div><h3>Двома руками</h3><p>Права малює все слово однією ламаною, не відриваючись: кожен злам чи новий рух — нова літера, сама права пише голосні. Ліва додає вид. Торкнулась, поки права веде лінію, — кінець літери: тап — постояти, ↑ чи ↓ у бік лінії — далі, проти — хвостик. Тримала, коли права рушила, — початок: тап — пауза, проти лінії — галочка. Ліва ← — зняти засічку, ще раз — стерти літеру. Права тап, а ліва: тап — «-», ↑ — «?», ↓ — «!», ← — мова.</p></div>
     </div>
   </div></section>
 
@@ -643,10 +643,11 @@ function lenSyl(P){
 }
 // Усі режими тренажера розпізнають тим самим кодом, що й клавіатура (SIMPLE), а не старим розпізнавачем (автор 26.10: «далі не те»).
 // Горизонталь: → провів = пробіл (tap), ← провів = стерти (dbl), решта горизонталей — «?».
-function simpleResult(P){ var r=SIMPLE.recognize(P); if(r.tap) return 'tap'; if(r.chain) return r.chain.length>1?{chain:r.chain}:r.chain[0]; if(r.q) return '?';
-  if(r.h!==undefined){ if(r.k==='') return r.h?'tap':'dbl'; return '?'; } return {d:r.d,k:r.k}; }
+function simpleResult(P,full){ var r=SIMPLE.recognize(P); if(r.tap) return 'tap'; if(r.chain) return r.chain.length>1?{chain:r.chain}:r.chain[0]; if(r.q) return '?';
+  // горизонталь — як у клавіатурі: ← лінія — стерти; → (лише пісочниця, full): лінія «-», далі «.», хвостик «,», галочка Enter, пауза — шифт
+  if(r.h!==undefined){ if(!r.h&&r.k==='') return 'dbl'; return full&&r.h? {hz:r.k} : '?'; } return {d:r.d,k:r.k}; }
 function simpleChain(P){ var r=SIMPLE.recognize(P); return r.chain||null; }
-function classifyP(P){ return simpleResult(P); }   // завжди код клавіатури: LEN.on (старий розпізнавач довжин) стояв увімкненим за замовчуванням (автор 26.10: «на сайті старий зчитувач»)
+function classifyP(P,full){ return simpleResult(P,full); }   // завжди код клавіатури: LEN.on (старий розпізнавач довжин) стояв увімкненим за замовчуванням (автор 26.10: «на сайті старий зчитувач»)
 // Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
 var LAY={
   // 23.10 (автор, за формою букв): ч ↔ ц («ц» — двійня «щ», «ч» схожа на «у»), ґ ↔ ф («ґ» — «г» з гачком угору).
@@ -799,7 +800,7 @@ var SIMPLE=(function(){
   var ABC_SYM="1 2 3 4 5 6 7 8 9 0 . , ! ? - : ' \" ( ) [ ] { } < > @ # $ % & * _ + = /".split(' ');
   var AXC={U:'var(--axB)',D:'var(--axB)',NE:'var(--axR)',SW:'var(--axR)',NW:'var(--axG)',SE:'var(--axG)'};
   var KLABEL={'':'провів і відпустив','>':'далі: двічі туди ж (пригальмував між ними)','<':'назад: туди, потім назад до старту (чи далі)','H':'потримати: туди, потім трохи назад, не до старту','*':'постояти: провів, потім крапка в кінці','P':'пауза: постояв на старті (крапка), потім провів'};
-  var KNAME={'':'Відпустити','>':'Далі','<':'Назад','H':'Потримати','*':'Постояти','P':'Пауза'};
+  var KNAME={'':'Відпустити','>':'Далі','<':'Галочка','H':'Хвостик','*':'Постояти','P':'Пауза'};
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
   function storeGet(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
   function storeSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
@@ -897,7 +898,9 @@ var SIMPLE=(function(){
     function watch(){ if(!s1||s1.done||duo||repeating||armed!==null) return; var p0=s1.pts[0], pN=s1.pts[s1.pts.length-1], dx=pN.x-p0.x, dy=pN.y-p0.y;
       // Довгий дотик на місці (≥ cmdLongMs, з'їзд до 20 px) — команди вмикаються одразу, ще під пальцем.
       var mm=0; s1.pts.forEach(function(q){ mm=Math.max(mm,Math.hypot(q.x-p0.x,q.y-p0.y)); });
-      if(performance.now()-p0.t>=CFG.cmdLongMs && mm<20){ armed=s1.pts.length-1; onResult(follow?'cmdF':'cmd'); return; }
+      // довгий дотик — нічого (як у клавіатурі: команди — у шарі знаків, подвійним тапом). ← і тримати — стирати по літері
+      if(!follow && Math.hypot(dx,dy)>16 && angDist(angOf(dx,dy),180)<=10){ var lq=s1.pts[s1.pts.length-1], mv=-1; for(var mi=s1.pts.length-1;mi>=0;mi--) if(Math.hypot(s1.pts[mi].x-lq.x,s1.pts[mi].y-lq.y)>8){ mv=mi; break; }
+        if(mv>=0 && performance.now()-s1.pts[mv].t>=CFG.repStartMs){ repeating=true; clearInterval(watchT); onResult('rep0'); repT=setInterval(function(){ onResult('rep'); },CFG.repEveryMs); return; } }
       if(follow && performance.now()-p0.t>=CFG.repStartMs && Math.hypot(dx,dy)>=24 && isLeft(angOf(dx,dy))){ repeating=true; clearInterval(watchT); onResult('rep0'); repT=setInterval(function(){ onResult('rep'); },CFG.repEveryMs); } }
     function resize(){ var r=zone.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
     window.addEventListener('resize',resize); setTimeout(resize,0);
@@ -961,8 +964,8 @@ var SIMPLE=(function(){
       var P=A.pts, p0=P[0], pN=P[P.length-1], far=0, dur=pN.t-p0.t; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
       var still=far<12;
       if(wasFollow){
-        if(still){ onResult('dbl'); return; }
-        var r0=classifyP(P);
+        if(still){ onResult(self.signs?'sym':'dbl'); return; }
+        var r0=classifyP(P,self.signs);
         if(typeof r0!=='object' && isLeft(angOf(pN.x-p0.x,pN.y-p0.y))){ onResult('dbl'); return; }
         if(CHAIN.on||CHAIN.force){ var c0=simpleChain(P); if(c0){ onResult(c0.length>1?{chain:c0}:c0[0]); return; } }
         onResult(r0); return; }
@@ -971,7 +974,7 @@ var SIMPLE=(function(){
       var dL=Math.hypot(pN.x-p0.x,pN.y-p0.y), pathL=0; for(var qi=1;qi<P.length;qi++) pathL+=Math.hypot(P[qi].x-P[qi-1].x,P[qi].y-P[qi-1].y);
       if(dL>=CFG.delSwipe && angDist(angOf(pN.x-p0.x,pN.y-p0.y),180)<=CFG.delTol && pathL<=1.2*dL){ onResult('dbl'); return; }   // довгий, прямий, майже строго ←
       if(CHAIN.on||CHAIN.force){ var cc=simpleChain(P); if(cc){ onResult(cc.length>1?{chain:cc}:cc[0]); return; } }
-      var r=classifyP(P); if(r==='tap') lastTapUp=pN.t;
+      var r=classifyP(P,self.signs); if(r==='tap') lastTapUp=pN.t;
       onResult(r);
     }
   }
@@ -998,8 +1001,13 @@ var SIMPLE=(function(){
         text+=r.duoSign; res.textContent='дві руки: права тап → «'+r.duoSign+'»'; earPlay('tap'); render(); return; }
       if(r==='cmd'||r==='cmdF'){ earPlay('mode'); if(r==='cmdF') text=text.replace(/ $/,''); service=true; res.textContent='довгий дотик → команда'; render(); return; }
       if(typeof r==='string' && r.indexOf('cmdgo:')===0){ var dd=r.slice(6); service=false; if(dd==='?'){ earPlay('?'); res.textContent='команду скасовано'; } else { earPlay('tap'); runCmd(dd); } render(); return; }
-      if(r==='dbl'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='подвійний тап → стерти'; render(); return; }
-      if(r==='rep0'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='тап і тримаєш ліворуч → стирає'; render(); return; }
+      if(r==='sym'){ earPlay('mode'); service=false; text=text.replace(/ $/,''); layer= layer==='sym'?KB:'sym'; res.textContent='подвійний тап → '+(layer==='sym'?'символи (пауза — команди)':'літери'); render(); return; }
+      if(r==='dbl'){ earPlay('del'); service=false; text=text.slice(0,-1); res.textContent='← → стерти'; render(); return; }
+      if(r&&r.hz!==undefined){ if(r.hz==='P'){ earPlay('mode'); upper=!upper; res.textContent='→ з паузою → '+(upper?'⇧ велика':'шифт вимкнено'); render(); return; }
+        var sg={'':'-','>':'.','H':',','<':'\n'}[r.hz]; if(sg===undefined){ earPlay('?'); res.textContent='→ — тут нічого'; render(); return; }
+        earPlay('tap'); text+=sg; res.textContent= sg==='\n'? '→ галочка → Enter' : '→ → «'+sg+'»'; render(); return; }
+      if(layer==='sym' && r && typeof r==='object' && r.k==='P'){ earPlay('tap'); runCmd(r.d); render(); return; }   // у шарі знаків пауза — команда (як у клавіатурі)
+      if(r==='rep0'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='← і тримаєш → стирає'; render(); return; }
       if(r==='rep'){ earPlay('del'); text=text.slice(0,-1); render(); return; }
       if(r&&r.chain){ if(service){ service=false; res.textContent='команду скасовано'; render(); return; }
         earChain(r.chain); var s2=r.chain.map(function(x){ return charOf(x,layer)||''; }).join('');
@@ -1025,18 +1033,18 @@ var SIMPLE=(function(){
   var GROUPS_UK=[
     {name:'Голосні', k:[''], add:'а е и і о у', about:'провів і відпустив'},
     {name:'Далі', k:['>'], add:'б д ш х л ч', about:'двічі туди ж, пригальмуй між ними'},
-    {name:'Назад', k:['<'], add:"п т ж к н '", about:'туди й назад до старту'},
-    {name:'Потримати', k:['H'], add:'в р ц г с ,', about:'туди й трохи назад, не до старту'},
-    {name:'Подушка', k:['*'], add:'я є ь ї й ю', about:'проведи подушечкою пальця', touchOnly:true},
+    {name:'Галочка', k:['<'], add:"п т ж к н '", about:'коротко назад, потім довго — напрям за довшою'},
+    {name:'Хвостик', k:['H'], add:'в р ц г с ,', about:'довго, потім коротко назад'},
+    {name:'Постояти', k:['*'], add:'я є ь ї й ю', about:'провів і постояв у кінці'},
     {name:'Пауза', k:['P'], add:"ґ . щ ф , '", about:'постій на старті (крапка), потім веди'},
     {name:'Усі', all:true, k:[], add:'', about:'усі літери впереміш, без кінця — підказка лише після помилок'}
   ];
   var GROUPS_EN=[
     {name:'Голосні', k:[''], add:'a e y i o u', about:'провів і відпустив'},
     {name:'Далі', k:['>'], add:'b d x l c', about:'двічі туди ж, пригальмуй між ними'},
-    {name:'Назад', k:['<'], add:"p t j k n '", about:'туди й назад до старту'},
-    {name:'Потримати', k:['H'], add:'v r ? h s ,', about:'туди й трохи назад, не до старту'},
-    {name:'Подушка', k:['*'], add:'w - q', about:'проведи подушечкою пальця', touchOnly:true},
+    {name:'Галочка', k:['<'], add:"p t j k n '", about:'коротко назад, потім довго — напрям за довшою'},
+    {name:'Хвостик', k:['H'], add:'v r ? h s ,', about:'довго, потім коротко назад'},
+    {name:'Постояти', k:['*'], add:'w - q', about:'провів і постояв у кінці'},
     {name:'Пауза', k:['P'], add:'g z ! f m .', about:'постій на старті (крапка), потім веди'},
     {name:'Усі', all:true, k:[], add:'', about:'усі літери впереміш, без кінця — підказка лише після помилок'}
   ];

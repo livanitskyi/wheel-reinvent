@@ -256,8 +256,8 @@ section.part{padding:88px 0;border-top:1px solid var(--line)}
     <p class="lead">Here are all six on the blue line, upward. The other lines work the same way.</p>
     <div class="kinds" id="kinds"></div>
     <div class="pair">
-      <div><h3>Space, delete, commands</h3><p>Tap: space. Double tap or a long swipe left: delete a letter. Tap, then swipe left and hold: deletes letter by letter while you hold. Long press (half a second in place): commands. The cheat sheet shows them; then swipe, without lifting if you like: ↑ capital, ↓ Enter, ↗ symbols, ↘ language, ↖ apostrophe.</p></div>
-      <div><h3>With two hands</h3><p>Whichever finger touches first is the first beat. Tap, then a line: pause. A line, then a tap: hold. Two lines the same way: next. Opposite ways: back.</p></div>
+      <div><h3>Space, delete, commands</h3><p>Tap — space. A straight line left — delete a letter; left and hold — keeps deleting. To the right: a line — hyphen, next — period, tail — comma, tick — Enter, with a pause at the start — capital letter (again — off). Double tap — symbols; there a pause gives commands: ↑ capital, ↓ Enter, ↗ back to letters, ↘ language, ↖ apostrophe. You can also switch the language by tapping its badge.</p></div>
+      <div><h3>Two hands</h3><p>The right hand draws the whole word as one zigzag without lifting: every corner or new movement is a new letter; the right hand alone writes vowels. The left hand adds the kind. Touched while the right is drawing — the end of the letter: tap — stay, ↑ or ↓ along the line — next, against it — tail. Held down when the right starts moving — the start: tap — pause, against the line — tick. Left ← — remove the mark, again — delete the letter. Right taps and the left: tap — "-", ↑ — "?", ↓ — "!", ← — language.</p></div>
     </div>
   </div></section>
 
@@ -643,10 +643,11 @@ function lenSyl(P){
 }
 // Усі режими тренажера розпізнають тим самим кодом, що й клавіатура (SIMPLE), а не старим розпізнавачем (автор 26.10: «далі не те»).
 // Горизонталь: → провів = пробіл (tap), ← провів = стерти (dbl), решта горизонталей — «?».
-function simpleResult(P){ var r=SIMPLE.recognize(P); if(r.tap) return 'tap'; if(r.chain) return r.chain.length>1?{chain:r.chain}:r.chain[0]; if(r.q) return '?';
-  if(r.h!==undefined){ if(r.k==='') return r.h?'tap':'dbl'; return '?'; } return {d:r.d,k:r.k}; }
+function simpleResult(P,full){ var r=SIMPLE.recognize(P); if(r.tap) return 'tap'; if(r.chain) return r.chain.length>1?{chain:r.chain}:r.chain[0]; if(r.q) return '?';
+  // горизонталь — як у клавіатурі: ← лінія — стерти; → (лише пісочниця, full): лінія «-», далі «.», хвостик «,», галочка Enter, пауза — шифт
+  if(r.h!==undefined){ if(!r.h&&r.k==='') return 'dbl'; return full&&r.h? {hz:r.k} : '?'; } return {d:r.d,k:r.k}; }
 function simpleChain(P){ var r=SIMPLE.recognize(P); return r.chain||null; }
-function classifyP(P){ return simpleResult(P); }   // завжди код клавіатури: LEN.on (старий розпізнавач довжин) стояв увімкненим за замовчуванням (автор 26.10: «на сайті старий зчитувач»)
+function classifyP(P,full){ return simpleResult(P,full); }   // завжди код клавіатури: LEN.on (старий розпізнавач довжин) стояв увімкненим за замовчуванням (автор 26.10: «на сайті старий зчитувач»)
 // Абетка E10: напрямок — місце в роті; далі/назад — вибухова пара; потримати/пауза — протяжна; подушка — м'якість.
 var LAY={
   // 23.10 (автор, за формою букв): ч ↔ ц («ц» — двійня «щ», «ч» схожа на «у»), ґ ↔ ф («ґ» — «г» з гачком угору).
@@ -799,7 +800,7 @@ var SIMPLE=(function(){
   var ABC_SYM="1 2 3 4 5 6 7 8 9 0 . , ! ? - : ' \" ( ) [ ] { } < > @ # $ % & * _ + = /".split(' ');
   var AXC={U:'var(--axB)',D:'var(--axB)',NE:'var(--axR)',SW:'var(--axR)',NW:'var(--axG)',SE:'var(--axG)'};
   var KLABEL={'':'swipe and let go','>':'next: twice the same way (slow down in between)','<':'back: there, then back to the start (or past it)','H':'hold: there, then a little back, not to the start','*':'stay: swipe, then a dot at the end','P':'pause: rest at the start (a dot), then swipe'};
-  var KNAME={'':'Release','>':'Next','<':'Back','H':'Hold','*':'Stay','P':'Pause'};
+  var KNAME={'':'Release','>':'Next','<':'Tick','H':'Tail','*':'Stay','P':'Pause'};
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
   function storeGet(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
   function storeSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
@@ -897,7 +898,9 @@ var SIMPLE=(function(){
     function watch(){ if(!s1||s1.done||duo||repeating||armed!==null) return; var p0=s1.pts[0], pN=s1.pts[s1.pts.length-1], dx=pN.x-p0.x, dy=pN.y-p0.y;
       // Довгий дотик на місці (≥ cmdLongMs, з'їзд до 20 px) — команди вмикаються одразу, ще під пальцем.
       var mm=0; s1.pts.forEach(function(q){ mm=Math.max(mm,Math.hypot(q.x-p0.x,q.y-p0.y)); });
-      if(performance.now()-p0.t>=CFG.cmdLongMs && mm<20){ armed=s1.pts.length-1; onResult(follow?'cmdF':'cmd'); return; }
+      // довгий дотик — нічого (як у клавіатурі: команди — у шарі знаків, подвійним тапом). ← і тримати — стирати по літері
+      if(!follow && Math.hypot(dx,dy)>16 && angDist(angOf(dx,dy),180)<=10){ var lq=s1.pts[s1.pts.length-1], mv=-1; for(var mi=s1.pts.length-1;mi>=0;mi--) if(Math.hypot(s1.pts[mi].x-lq.x,s1.pts[mi].y-lq.y)>8){ mv=mi; break; }
+        if(mv>=0 && performance.now()-s1.pts[mv].t>=CFG.repStartMs){ repeating=true; clearInterval(watchT); onResult('rep0'); repT=setInterval(function(){ onResult('rep'); },CFG.repEveryMs); return; } }
       if(follow && performance.now()-p0.t>=CFG.repStartMs && Math.hypot(dx,dy)>=24 && isLeft(angOf(dx,dy))){ repeating=true; clearInterval(watchT); onResult('rep0'); repT=setInterval(function(){ onResult('rep'); },CFG.repEveryMs); } }
     function resize(){ var r=zone.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); draw(); }
     window.addEventListener('resize',resize); setTimeout(resize,0);
@@ -961,8 +964,8 @@ var SIMPLE=(function(){
       var P=A.pts, p0=P[0], pN=P[P.length-1], far=0, dur=pN.t-p0.t; P.forEach(function(q){ far=Math.max(far,Math.hypot(q.x-p0.x,q.y-p0.y)); });
       var still=far<12;
       if(wasFollow){
-        if(still){ onResult('dbl'); return; }
-        var r0=classifyP(P);
+        if(still){ onResult(self.signs?'sym':'dbl'); return; }
+        var r0=classifyP(P,self.signs);
         if(typeof r0!=='object' && isLeft(angOf(pN.x-p0.x,pN.y-p0.y))){ onResult('dbl'); return; }
         if(CHAIN.on||CHAIN.force){ var c0=simpleChain(P); if(c0){ onResult(c0.length>1?{chain:c0}:c0[0]); return; } }
         onResult(r0); return; }
@@ -971,7 +974,7 @@ var SIMPLE=(function(){
       var dL=Math.hypot(pN.x-p0.x,pN.y-p0.y), pathL=0; for(var qi=1;qi<P.length;qi++) pathL+=Math.hypot(P[qi].x-P[qi-1].x,P[qi].y-P[qi-1].y);
       if(dL>=CFG.delSwipe && angDist(angOf(pN.x-p0.x,pN.y-p0.y),180)<=CFG.delTol && pathL<=1.2*dL){ onResult('dbl'); return; }   // довгий, прямий, майже строго ←
       if(CHAIN.on||CHAIN.force){ var cc=simpleChain(P); if(cc){ onResult(cc.length>1?{chain:cc}:cc[0]); return; } }
-      var r=classifyP(P); if(r==='tap') lastTapUp=pN.t;
+      var r=classifyP(P,self.signs); if(r==='tap') lastTapUp=pN.t;
       onResult(r);
     }
   }
@@ -998,8 +1001,13 @@ var SIMPLE=(function(){
         text+=r.duoSign; res.textContent='дві руки: права тап → «'+r.duoSign+'»'; earPlay('tap'); render(); return; }
       if(r==='cmd'||r==='cmdF'){ earPlay('mode'); if(r==='cmdF') text=text.replace(/ $/,''); service=true; res.textContent='long press → command'; render(); return; }
       if(typeof r==='string' && r.indexOf('cmdgo:')===0){ var dd=r.slice(6); service=false; if(dd==='?'){ earPlay('?'); res.textContent='command cancelled'; } else { earPlay('tap'); runCmd(dd); } render(); return; }
-      if(r==='dbl'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='double tap → delete'; render(); return; }
-      if(r==='rep0'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='tap, then hold left → deleting'; render(); return; }
+      if(r==='sym'){ earPlay('mode'); service=false; text=text.replace(/ $/,''); layer= layer==='sym'?KB:'sym'; res.textContent='double tap → '+(layer==='sym'?'symbols (pause — commands)':'letters'); render(); return; }
+      if(r==='dbl'){ earPlay('del'); service=false; text=text.slice(0,-1); res.textContent='← → delete'; render(); return; }
+      if(r&&r.hz!==undefined){ if(r.hz==='P'){ earPlay('mode'); upper=!upper; res.textContent='→ with a pause → '+(upper?'⇧ capital':'shift off'); render(); return; }
+        var sg={'':'-','>':'.','H':',','<':'\n'}[r.hz]; if(sg===undefined){ earPlay('?'); res.textContent='→ — nothing here'; render(); return; }
+        earPlay('tap'); text+=sg; res.textContent= sg==='\n'? '→ tick → Enter' : '→ → "'+sg+'"'; render(); return; }
+      if(layer==='sym' && r && typeof r==='object' && r.k==='P'){ earPlay('tap'); runCmd(r.d); render(); return; }   // у шарі знаків пауза — команда (як у клавіатурі)
+      if(r==='rep0'){ earPlay('del'); service=false; text=text.replace(/ $/,'').slice(0,-1); res.textContent='← and hold → deleting'; render(); return; }
       if(r==='rep'){ earPlay('del'); text=text.slice(0,-1); render(); return; }
       if(r&&r.chain){ if(service){ service=false; res.textContent='команду скасовано'; render(); return; }
         earChain(r.chain); var s2=r.chain.map(function(x){ return charOf(x,layer)||''; }).join('');
@@ -1025,18 +1033,18 @@ var SIMPLE=(function(){
   var GROUPS_UK=[
     {name:'Vowels', k:[''], add:'а е и і о у', about:'swipe and let go'},
     {name:'Next', k:['>'], add:'б д ш х л ч', about:'twice the same way, slow down in between'},
-    {name:'Back', k:['<'], add:"п т ж к н '", about:'there and back to the start'},
-    {name:'Hold', k:['H'], add:'в р ц г с ,', about:'there and a little back, not to the start'},
-    {name:'Pad', k:['*'], add:'я є ь ї й ю', about:'swipe with the pad of your finger', touchOnly:true},
+    {name:'Tick', k:['<'], add:"п т ж к н '", about:'short back, then long — the longer line sets the direction'},
+    {name:'Tail', k:['H'], add:'в р ц г с ,', about:'long, then a short way back'},
+    {name:'Stay', k:['*'], add:'я є ь ї й ю', about:'draw, then stay at the end'},
     {name:'Pause', k:['P'], add:"ґ . щ ф , '", about:'rest at the start (a dot), then swipe'},
     {name:'Усі', all:true, k:[], add:'', about:'усі літери впереміш, без кінця — підказка лише після помилок'}
   ];
   var GROUPS_EN=[
     {name:'Vowels', k:[''], add:'a e y i o u', about:'swipe and let go'},
     {name:'Next', k:['>'], add:'b d x l c', about:'twice the same way, slow down in between'},
-    {name:'Back', k:['<'], add:"p t j k n '", about:'there and back to the start'},
-    {name:'Hold', k:['H'], add:'v r ? h s ,', about:'there and a little back, not to the start'},
-    {name:'Pad', k:['*'], add:'w - q', about:'swipe with the pad of your finger', touchOnly:true},
+    {name:'Tick', k:['<'], add:"p t j k n '", about:'short back, then long — the longer line sets the direction'},
+    {name:'Tail', k:['H'], add:'v r ? h s ,', about:'long, then a short way back'},
+    {name:'Stay', k:['*'], add:'w - q', about:'draw, then stay at the end'},
     {name:'Pause', k:['P'], add:'g z ! f m .', about:'rest at the start (a dot), then swipe'},
     {name:'Усі', all:true, k:[], add:'', about:'усі літери впереміш, без кінця — підказка лише після помилок'}
   ];
